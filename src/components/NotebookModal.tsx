@@ -51,9 +51,9 @@ const AVAILABLE_SUBJECTS = [
 const COVER_OPTIONS: { id: CoverStyle; name: string; desc: string; previewClass: string }[] = [
   {
     id: "modern-indigo",
-    name: "Cyberpunk Grid",
-    desc: "Kozmik karanlık arka plan üzerinde neon çizgiler ve fütüristik köşebentler.",
-    previewClass: "bg-slate-950 border border-indigo-500/50 flex flex-col justify-between p-2 text-white relative after:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(rgba(99,102,241,0.07)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.07)_1px,transparent_1px)] after:bg-[size:8px_8px]",
+    name: "Mühendislik Taslağı (Blue Blueprint)",
+    desc: "Koyu blueprint mavisi zemin üzerinde milimetrik grafik kağıdı, dişli çark çizimleri ve proje antet tablosu.",
+    previewClass: "bg-[#0b1a2d] border border-cyan-500/40 flex flex-col justify-between p-2 text-white relative after:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(rgba(56,189,248,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(56,189,248,0.05)_1px,transparent_1px)] after:bg-[size:6px_6px]",
   },
   {
     id: "creative-sunset",
