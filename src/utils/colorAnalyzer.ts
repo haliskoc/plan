@@ -72,3 +72,30 @@ export function fileToDataUrl(file: File): Promise<string> {
     reader.readAsDataURL(file);
   });
 }
+
+export function urlToDataUrl(url: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    try {
+      new URL(url);
+    } catch {
+      reject(new Error("Geçersiz URL"));
+      return;
+    }
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, 0, 0);
+      try {
+        resolve(canvas.toDataURL("image/jpeg", 0.85));
+      } catch {
+        reject(new Error("Resim CORS nedeniyle okunamadı. Farklı bir URL deneyin."));
+      }
+    };
+    img.onerror = () => reject(new Error("Resim yüklenemedi. URL'yi kontrol edin."));
+    img.src = url;
+  });
+}

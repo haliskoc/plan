@@ -2,8 +2,8 @@
 
 import React, { useState, useRef } from "react";
 import { usePlanStore } from "@/store/usePlanStore";
-import { X, SettingsIcon, Sun, Moon, Target, FileText, Image, Trash2 } from "lucide-react";
-import { analyzeImageColor, fileToDataUrl } from "@/utils/colorAnalyzer";
+import { X, SettingsIcon, Sun, Moon, Target, FileText, Image, Trash2, Link, Upload } from "lucide-react";
+import { analyzeImageColor, fileToDataUrl, urlToDataUrl } from "@/utils/colorAnalyzer";
 
 interface SettingsProps {
   isOpen: boolean;
@@ -17,6 +17,8 @@ export function Settings({ isOpen, onClose }: SettingsProps) {
   const [dailyGoal, setDailyGoal] = useState(goals.dailyMinutes);
   const [weeklyGoal, setWeeklyGoal] = useState(goals.weeklyMinutes);
   const [uploading, setUploading] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
+  const [bgTab, setBgTab] = useState<"file" | "url">("file");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
@@ -35,9 +37,21 @@ export function Settings({ isOpen, onClose }: SettingsProps) {
       alert("Lütfen bir resim dosyası seçin.");
       return;
     }
+    await processImage(fileToDataUrl(file));
+    e.target.value = "";
+  };
+
+  const handleUrlSubmit = async () => {
+    const url = urlInput.trim();
+    if (!url) return;
+    await processImage(urlToDataUrl(url));
+    setUrlInput("");
+  };
+
+  const processImage = async (promise: Promise<string>) => {
     setUploading(true);
     try {
-      const dataUrl = await fileToDataUrl(file);
+      const dataUrl = await promise;
       const analysis = await analyzeImageColor(dataUrl);
       setPdfSettings({
         backgroundImage: dataUrl,
@@ -45,11 +59,10 @@ export function Settings({ isOpen, onClose }: SettingsProps) {
         textColorDark: analysis.darkTextColors[0],
         textColorLight: analysis.lightTextColors[0],
       });
-    } catch {
-      alert("Resim yüklenirken bir hata oluştu.");
+    } catch (err: any) {
+      alert(err?.message || "Resim yüklenirken bir hata oluştu.");
     }
     setUploading(false);
-    e.target.value = "";
   };
 
   const handleRemoveBg = () => {
@@ -180,7 +193,6 @@ export function Settings({ isOpen, onClose }: SettingsProps) {
             <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
               <Image className="w-3.5 h-3.5 text-indigo-400" /> Arka Plan Görseli
             </label>
-            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
 
             {pdfSettings.backgroundImage ? (
               <div className="space-y-3">
@@ -200,10 +212,45 @@ export function Settings({ isOpen, onClose }: SettingsProps) {
                 </button>
               </div>
             ) : (
-              <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
-                className="w-full py-3 border border-dashed border-neutral-700 rounded-xl text-xs text-neutral-500 hover:text-neutral-300 hover:border-neutral-600 transition-all cursor-pointer">
-                {uploading ? "Analiz ediliyor..." : "+ Arka plan resmi seç"}
-              </button>
+              <div className="space-y-3">
+                {/* Tab: File / URL */}
+                <div className="grid grid-cols-2 p-1 bg-neutral-900 border border-neutral-800 rounded-lg">
+                  <button onClick={() => setBgTab("file")}
+                    className={`py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                      bgTab === "file" ? "bg-indigo-600 text-white" : "text-neutral-400 hover:text-neutral-200" }`}>
+                    <Upload className="w-3 h-3" /> Dosya
+                  </button>
+                  <button onClick={() => setBgTab("url")}
+                    className={`py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                      bgTab === "url" ? "bg-indigo-600 text-white" : "text-neutral-400 hover:text-neutral-200" }`}>
+                    <Link className="w-3 h-3" /> Link
+                  </button>
+                </div>
+
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+
+                {bgTab === "file" ? (
+                  <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
+                    className="w-full py-3 border border-dashed border-neutral-700 rounded-xl text-xs text-neutral-500 hover:text-neutral-300 hover:border-neutral-600 transition-all cursor-pointer">
+                    {uploading ? "Analiz ediliyor..." : "+ Bilgisayardan resim seç"}
+                  </button>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={urlInput}
+                      onChange={(e) => setUrlInput(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleUrlSubmit()}
+                      placeholder="https://ornek.com/arkaplan.jpg"
+                      className="flex-1 bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white placeholder-neutral-600 focus:outline-hidden focus:border-indigo-500 transition-all"
+                    />
+                    <button onClick={handleUrlSubmit} disabled={uploading || !urlInput.trim()}
+                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap">
+                      {uploading ? "..." : "Yükle"}
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
 
             {/* Opaklık */}
