@@ -11,7 +11,7 @@ import {
   Image
 } from "@react-pdf/renderer";
 import { PlanItem, PdfSettings } from "@/store/usePlanStore";
-import { YKS_TOPICS } from "@/data/topics";
+import { YKS_TOPICS, TOPICS_MAP } from "@/data/topics";
 import { formatFullDate, formatMonthName } from "@/utils/dates";
 import { differenceInDays, parseISO, startOfWeek, endOfWeek, eachDayOfInterval, format } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -317,7 +317,7 @@ export function DailyPDF({ planTitle, examDateStr, dateStr, items, selectedTrack
                 <Text style={[s.colNote, { fontWeight: "bold" }]}>Not</Text>
               </View>
               {items.map((item, index) => {
-                const topic = YKS_TOPICS.find((t) => t.id === item.topicId);
+                const topic = TOPICS_MAP.get(item.topicId);
                 const rowStyle = index % 2 === 0 ? s.tableRow : s.tableRowAlternate;
                 const isDone = item.status === "tamamlandi";
                 const subColors = getSubjectColorsPDF(topic?.subject);
@@ -402,7 +402,7 @@ export function WeeklyPDF({ planTitle, examDateStr, selectedDateStr, items, sele
                   </View>
                   <View style={s.weeklyCardList}>
                     {dayItems.map((item) => {
-                      const topic = YKS_TOPICS.find((t) => t.id === item.topicId);
+                      const topic = TOPICS_MAP.get(item.topicId);
                       const sc = getSubjectColorsPDF(topic?.subject);
                       return (
                         <View key={item.id} style={[s.weeklyCard, { backgroundColor: sc.bg, borderLeftColor: sc.border }]}>
@@ -495,7 +495,7 @@ export function MonthlyPDF({ planTitle, examDateStr, selectedMonthStr, items, se
                     </View>
                     <View style={{ width: "78%", display: "flex", flexDirection: "column", gap: 3 }}>
                       {dayItems.map((item) => {
-                        const topic = YKS_TOPICS.find((t) => t.id === item.topicId);
+                        const topic = TOPICS_MAP.get(item.topicId);
                         const sc = getSubjectColorsPDF(topic?.subject);
                         return (
                           <View key={item.id} style={{ flexDirection: "row", alignItems: "center" }}>

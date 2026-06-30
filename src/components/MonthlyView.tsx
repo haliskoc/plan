@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { usePlanStore, PlanItem } from "@/store/usePlanStore";
-import { YKS_TOPICS } from "@/data/topics";
+import { TOPICS_MAP } from "@/data/topics";
 import { formatMonthName, formatFullDate } from "@/utils/dates";
 import { 
   ChevronLeft, 
@@ -115,15 +115,28 @@ export function MonthlyView() {
     updatePlanItem(id, { note });
   };
 
+  // Pre-compute items by date for O(1) lookups
+  const itemsByDateMap = useMemo(() => {
+    const map = new Map<string, { items: PlanItem[]; completed: number; duration: number }>();
+    for (const item of plan.items) {
+      if (!map.has(item.date)) map.set(item.date, { items: [], completed: 0, duration: 0 });
+      const entry = map.get(item.date)!;
+      entry.items.push(item);
+      if (item.status === "tamamlandi") entry.completed++;
+      entry.duration += item.durationMinutes;
+    }
+    return map;
+  }, [plan.items]);
+
   // Filter items that fall in this active month
   const monthStartStr = format(monthStart, "yyyy-MM-01");
   const monthEndStr = format(monthEnd, "yyyy-MM-dd");
-  const monthlyItems = plan.items.filter((item) => {
-    return item.date >= monthStartStr && item.date <= monthEndStr;
-  });
+  const monthlyItems = useMemo(() => {
+    return plan.items.filter((item) => item.date >= monthStartStr && item.date <= monthEndStr);
+  }, [plan.items, monthStartStr, monthEndStr]);
 
   // Items for currently opened popover date
-  const popoverItems = popoverDate 
+  const popoverItems = popoverDate
     ? plan.items.filter((item) => item.date === popoverDate)
     : [];
 
@@ -197,13 +210,12 @@ export function MonthlyView() {
           const dateStr = format(day, "yyyy-MM-dd");
           const isCurrentMonth = isSameMonth(day, activeDate);
           
-          const dayItems = plan.items.filter((item) => item.date === dateStr);
-          const completedItemsCount = dayItems.filter((i) => i.status === "tamamlandi").length;
-          
-          const hasItems = dayItems.length > 0;
+          const dayData = itemsByDateMap.get(dateStr);
+          const dayItems = dayData ? dayData.items : [];
+          const completedItemsCount = dayData ? dayData.completed : 0;
+          const hasItems = dayData && dayData.items.length > 0;
           const allCompleted = hasItems && completedItemsCount === dayItems.length;
-          
-          const totalDuration = dayItems.reduce((sum, i) => sum + i.durationMinutes, 0);
+          const totalDuration = dayData ? dayData.duration : 0;
 
           const isToday = dateStr === format(new Date(), "yyyy-MM-dd");
           const isSelected = dateStr === selectedDate;
@@ -301,7 +313,7 @@ export function MonthlyView() {
                 </div>
               ) : (
                 popoverItems.map((item) => {
-                  const topic = YKS_TOPICS.find((t) => t.id === item.topicId);
+                  const topic = TOPICS_MAP.get(item.topicId);
                   if (!topic) return null;
                   const isCompleted = item.status === "tamamlandi";
 

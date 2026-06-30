@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { usePlanStore } from "@/store/usePlanStore";
 import { 
   BookOpen, 
@@ -135,11 +135,17 @@ export function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpe
     );
   }
 
-  const totalItems = plan.items.length;
-  const completedItems = plan.items.filter(item => item.status === "tamamlandi").length;
-  const totalMinutes = plan.items.reduce((sum, item) => sum + item.durationMinutes, 0);
-  const totalHours = Math.round(totalMinutes / 60);
-  const completionPercentage = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+  const { totalItems, completedItems, totalHours, completionPercentage } = useMemo(() => {
+    const total = plan.items.length;
+    const completed = plan.items.filter(item => item.status === "tamamlandi").length;
+    const minutes = plan.items.reduce((sum, item) => sum + item.durationMinutes, 0);
+    return {
+      totalItems: total,
+      completedItems: completed,
+      totalHours: Math.round(minutes / 60),
+      completionPercentage: total > 0 ? Math.round((completed / total) * 100) : 0,
+    };
+  }, [plan.items]);
 
   return (
     <header className="w-full bg-neutral-950/80 border-b border-neutral-900 sticky top-0 z-50 backdrop-blur-md px-4 sm:px-6 py-4 shadow-sm">

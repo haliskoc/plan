@@ -47,6 +47,12 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
+                  var bg = localStorage.getItem('yks-planner-bg');
+                  if (bg) {
+                    document.documentElement.style.setProperty('--pdf-bg', 'url(' + bg + ')');
+                  }
+                } catch(e) {}
+                try {
                   var stored = localStorage.getItem('yks-planner-storage');
                   var theme = 'dark';
                   if (stored) {

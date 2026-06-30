@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { differenceInSeconds, differenceInDays, parseISO } from "date-fns";
 
 interface CountdownProps {
@@ -22,27 +22,41 @@ export function Countdown({ targetDateStr, startDateStr }: CountdownProps) {
   useEffect(() => {
     setMounted(true);
     const targetDate = parseISO(targetDateStr);
+    let interval: ReturnType<typeof setInterval> | null = null;
 
     const calculateTimeLeft = () => {
       const now = new Date();
       const diffSeconds = differenceInSeconds(targetDate, now);
-
       if (diffSeconds <= 0) {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isOver: true });
         return;
       }
-
-      const days = Math.floor(diffSeconds / (3600 * 24));
-      const hours = Math.floor((diffSeconds % (3600 * 24)) / 3600);
-      const minutes = Math.floor((diffSeconds % 3600) / 60);
-      const seconds = diffSeconds % 60;
-
-      setTimeLeft({ days, hours, minutes, seconds, isOver: false });
+      setTimeLeft({
+        days: Math.floor(diffSeconds / (3600 * 24)),
+        hours: Math.floor((diffSeconds % (3600 * 24)) / 3600),
+        minutes: Math.floor((diffSeconds % 3600) / 60),
+        seconds: diffSeconds % 60,
+        isOver: false,
+      });
     };
 
-    calculateTimeLeft();
-    const interval = setInterval(calculateTimeLeft, 1000);
-    return () => clearInterval(interval);
+    const startInterval = () => {
+      calculateTimeLeft();
+      interval = setInterval(calculateTimeLeft, 1000);
+    };
+
+    const stopInterval = () => {
+      if (interval) { clearInterval(interval); interval = null; }
+    };
+
+    const handleVisibility = () => {
+      if (document.hidden) stopInterval();
+      else startInterval();
+    };
+
+    startInterval();
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => { stopInterval(); document.removeEventListener("visibilitychange", handleVisibility); };
   }, [targetDateStr]);
 
   if (!mounted) {
@@ -51,9 +65,16 @@ export function Countdown({ targetDateStr, startDateStr }: CountdownProps) {
     );
   }
 
-  const targetDate = parseISO(targetDateStr);
-  const startDate = startDateStr ? parseISO(startDateStr) : new Date();
-  const totalDays = Math.max(1, differenceInDays(targetDate, startDate) + 1);
+  const { targetDate, startDate, totalDays } = useMemo(() => {
+    const td = parseISO(targetDateStr);
+    const sd = startDateStr ? parseISO(startDateStr) : new Date();
+    return {
+      targetDate: td,
+      startDate: sd,
+      totalDays: Math.max(1, differenceInDays(td, sd) + 1),
+    };
+  }, [targetDateStr, startDateStr]);
+
   const daysPassed = Math.max(0, differenceInDays(new Date(), startDate));
   const percentagePassed = Math.min(100, Math.round((daysPassed / totalDays) * 100));
 

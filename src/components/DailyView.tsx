@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { usePlanStore, PlanItem } from "@/store/usePlanStore";
-import { YKS_TOPICS } from "@/data/topics";
+import { TOPICS_MAP } from "@/data/topics";
 import { formatFullDate } from "@/utils/dates";
 import { getSubjectColor } from "@/utils/subjectColors";
 import { 
@@ -139,7 +139,7 @@ export function DailyView() {
           </div>
         ) : (
           dayItems.map((item) => {
-            const topic = YKS_TOPICS.find((t) => t.id === item.topicId);
+            const topic = TOPICS_MAP.get(item.topicId);
             if (!topic) return null;
             const isCompleted = item.status === "tamamlandi";
 

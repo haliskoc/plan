@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { usePlanStore } from "@/store/usePlanStore";
-import { YKS_TOPICS } from "@/data/topics";
+import { YKS_TOPICS, TOPICS_MAP } from "@/data/topics";
 import { getSubjectColor } from "@/utils/subjectColors";
 import { Repeat, Plus, Trash2, Clock, RefreshCw, Power } from "lucide-react";
 

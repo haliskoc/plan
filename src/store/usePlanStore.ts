@@ -482,6 +482,9 @@ export const usePlanStore = create<PlanState>()(
       },
 
       setPdfBackgroundImage: (dataUrl) => {
+        try {
+          localStorage.setItem("yks-planner-bg", dataUrl);
+        } catch {}
         set((s) => ({
           pdfSettings: { ...s.pdfSettings, backgroundImage: dataUrl },
         }));
@@ -489,6 +492,11 @@ export const usePlanStore = create<PlanState>()(
     }),
     {
       name: "yks-planner-storage",
+      partialize: (state) => {
+        const { pomodoro, undoStack, redoStack, ...rest } = state;
+        const { backgroundImage, ...pdf } = rest.pdfSettings;
+        return { ...rest, pdfSettings: { ...pdf, backgroundImage: "" } };
+      },
       onRehydrateStorage: () => (state, error) => {
         if (error || !state) {
           console.warn("localStorage bozuk, varsayılan değerlerle başlatılıyor.");
@@ -528,6 +536,12 @@ export const usePlanStore = create<PlanState>()(
           }
           if (!state.undoStack) state.undoStack = [];
           if (!state.redoStack) state.redoStack = [];
+          try {
+            const bg = localStorage.getItem("yks-planner-bg");
+            if (bg) {
+              state.pdfSettings.backgroundImage = bg;
+            }
+          } catch {}
           state.setHasHydrated(true);
         } catch {
           state.setHasHydrated(true);

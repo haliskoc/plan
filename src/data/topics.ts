@@ -265,3 +265,5 @@ export const YKS_TOPICS: Topic[] = [
   { id: "ayt-din-4", examType: "AYT", subject: "Din Kültürü (AYT)", track: "SOZ", name: "Kur'an'da Temel Kavramlar (Cihat, İhlas, Takva)", order: 4 },
   { id: "ayt-din-5", examType: "AYT", subject: "Din Kültürü (AYT)", track: "SOZ", name: "İnançla İlgili Güncel Meseleler", order: 5 },
 ];
+
+export const TOPICS_MAP = new Map(YKS_TOPICS.map((t) => [t.id, t]));

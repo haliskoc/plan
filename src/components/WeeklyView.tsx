@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { usePlanStore } from "@/store/usePlanStore";
-import { YKS_TOPICS } from "@/data/topics";
+import React, { useState, useEffect, useMemo } from "react";
+import { usePlanStore, PlanItem } from "@/store/usePlanStore";
+import { TOPICS_MAP } from "@/data/topics";
 import { getShortDate, formatDayName } from "@/utils/dates";
 import { 
   ChevronLeft, 
@@ -76,9 +76,25 @@ export function WeeklyView() {
   const weekStartStr = format(startOfActiveWeek, "yyyy-MM-dd");
   const weekEndStr = format(endOfActiveWeek, "yyyy-MM-dd");
   
-  const weeklyItems = plan.items.filter((item) => {
-    return item.date >= weekStartStr && item.date <= weekEndStr;
-  });
+  // Pre-compute items by date
+  const itemsByDateMap = useMemo(() => {
+    const map = new Map<string, { items: PlanItem[]; minutes: number }>();
+    for (const item of plan.items) {
+      if (item.date >= weekStartStr && item.date <= weekEndStr) {
+        if (!map.has(item.date)) map.set(item.date, { items: [], minutes: 0 });
+        const entry = map.get(item.date)!;
+        entry.items.push(item);
+        entry.minutes += item.durationMinutes;
+      }
+    }
+    return map;
+  }, [plan.items, weekStartStr, weekEndStr]);
+
+  const weeklyItems = useMemo(() => {
+    const all: PlanItem[] = [];
+    itemsByDateMap.forEach((v) => all.push(...v.items));
+    return all;
+  }, [itemsByDateMap]);
 
   const weekRangeLabel = `${format(startOfActiveWeek, "d MMMM", { locale: tr })} - ${format(endOfActiveWeek, "d MMMM yyyy", { locale: tr })}`;
 
@@ -142,8 +158,9 @@ export function WeeklyView() {
         <div className="grid grid-cols-7 gap-2 sm:gap-3 min-w-[740px] sm:min-w-[840px] h-[calc(100vh-340px)]">
           {daysOfWeek.map((day) => {
             const dateStr = format(day, "yyyy-MM-dd");
-            const dayItems = plan.items.filter((item) => item.date === dateStr);
-            const totalMin = dayItems.reduce((sum, item) => sum + item.durationMinutes, 0);
+            const dayData = itemsByDateMap.get(dateStr);
+            const dayItems = dayData ? dayData.items : [];
+            const totalMin = dayData ? dayData.minutes : 0;
             
             const isToday = dateStr === format(new Date(), "yyyy-MM-dd");
             const isSelected = dateStr === selectedDate;
@@ -180,7 +197,7 @@ export function WeeklyView() {
                 {/* Day list items */}
                 <div className="flex-1 overflow-y-auto space-y-2 pr-0.5 scrollbar-none">
                   {dayItems.map((item) => {
-                    const topic = YKS_TOPICS.find((t) => t.id === item.topicId);
+                    const topic = TOPICS_MAP.get(item.topicId);
                     if (!topic) return null;
                     const isCompleted = item.status === "tamamlandi";
 
