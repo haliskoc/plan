@@ -270,7 +270,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   coverMetaValue: {
-    fontStyle: "italic",
   },
   badgeContainer: {
     flexDirection: "row",
@@ -543,7 +542,7 @@ const NotebookCover = ({
         return {
           container: [styles.coverContainer, styles.coverClassic],
           title: [styles.coverTitle, { color: "#78350f", fontFamily: "Roboto", fontSize: 24, textTransform: "uppercase" as const, letterSpacing: 2 }],
-          subtitle: [styles.coverSubtitle, { color: "#b45309", fontFamily: "Roboto", fontStyle: "italic" as const }],
+          subtitle: [styles.coverSubtitle, { color: "#b45309", fontFamily: "Roboto" }],
           metaBox: [styles.coverMetaBox, { borderColor: "#b45309", backgroundColor: "#fafaf9", borderStyle: "solid" as const }],
           metaText: { color: "#78350f" },
           metaLabel: [styles.coverMetaLabel, { color: "#78350f" }],
