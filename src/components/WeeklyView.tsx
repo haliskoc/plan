@@ -27,7 +27,8 @@ export function WeeklyView() {
     setSelectedDate, 
     plan, 
     updatePlanItem, 
-    removePlanItem 
+    removePlanItem,
+    selectedTrack 
   } = usePlanStore();
 
   const [isClient, setIsClient] = useState(false);
@@ -117,6 +118,7 @@ export function WeeklyView() {
                   examDateStr={plan.examDate}
                   selectedDateStr={selectedDate}
                   items={weeklyItems}
+                  selectedTrack={selectedTrack}
                 />
               }
               fileName={`haftalik-${weekStartStr}-to-${weekEndStr}.pdf`}

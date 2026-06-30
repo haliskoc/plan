@@ -41,7 +41,8 @@ export function MonthlyView() {
     setSelectedDate, 
     plan, 
     updatePlanItem, 
-    removePlanItem 
+    removePlanItem,
+    selectedTrack 
   } = usePlanStore();
 
   const [isClient, setIsClient] = useState(false);
@@ -162,6 +163,7 @@ export function MonthlyView() {
                   examDateStr={plan.examDate}
                   selectedMonthStr={selectedDate}
                   items={monthlyItems}
+                  selectedTrack={selectedTrack}
                 />
               }
               fileName={`aylik-${format(activeDate, "yyyy-MM")}.pdf`}
