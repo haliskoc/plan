@@ -33,7 +33,12 @@ import { tr } from "date-fns/locale";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { MonthlyPDF } from "./PlanPDF";
 import { getSubjectColor } from "@/utils/subjectColors";
-import confetti from "canvas-confetti";
+
+let confettiFnM: any = null;
+const loadConfetti = async () => {
+  if (!confettiFnM) { const mod = await import("canvas-confetti"); confettiFnM = mod.default; }
+  return confettiFnM;
+};
 
 export function MonthlyView() {
   const { 
@@ -95,11 +100,7 @@ export function MonthlyView() {
     updatePlanItem(id, { status: nextStatus });
 
     if (nextStatus === "tamamlandi") {
-      confetti({
-        particleCount: 40,
-        spread: 50,
-        origin: { y: 0.8 }
-      });
+      loadConfetti().then((cf) => cf({ particleCount: 40, spread: 50, origin: { y: 0.8 } }));
     }
   };
 

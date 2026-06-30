@@ -16,13 +16,19 @@ import { formatFullDate, formatMonthName } from "@/utils/dates";
 import { differenceInDays, parseISO, startOfWeek, endOfWeek, eachDayOfInterval, format } from "date-fns";
 import { tr } from "date-fns/locale";
 
-Font.register({
-  family: "Roboto",
-  fonts: [
-    { src: "/fonts/Roboto-Regular.ttf", fontWeight: "normal" },
-    { src: "/fonts/Roboto-Bold.ttf", fontWeight: "bold" }
-  ]
-});
+let fontRegistered = false;
+if (typeof window !== "undefined" && !fontRegistered) {
+  try {
+    Font.register({
+      family: "Roboto",
+      fonts: [
+        { src: "/fonts/Roboto-Regular.ttf", fontWeight: "normal" },
+        { src: "/fonts/Roboto-Bold.ttf", fontWeight: "bold" }
+      ]
+    });
+    fontRegistered = true;
+  } catch {}
+}
 
 function getSubjectColorsPDF(subject: string | undefined) {
   if (!subject) return { bg: "#f8fafc", text: "#475569", border: "#e2e8f0" };
@@ -58,22 +64,8 @@ function buildStyles(pdf: PdfSettings) {
   const bgRow = bgDark ? "rgba(255,255,255,0.04)" : "#f8f9fa";
 
   return StyleSheet.create({
-    page: {
-      fontFamily: "Roboto",
-      padding: 30,
-      backgroundColor: "#ffffff",
-      position: "relative",
-    },
-    header: {
-      borderBottomWidth: 1.5,
-      borderBottomColor: "#6366f1",
-      paddingBottom: 12,
-      marginBottom: 20,
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "flex-end",
-    },
+    page: { fontFamily: "Roboto", padding: 30, backgroundColor: "#ffffff", position: "relative" },
+    header: { borderBottomWidth: 1.5, borderBottomColor: "#6366f1", paddingBottom: 12, marginBottom: 20, display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
     title: { fontSize: 16, fontWeight: "bold", color: txt },
     subtitle: { fontSize: 9, color: txtSub, marginTop: 4 },
     countdownText: { fontSize: 9.5, color: bgDark ? "#fca5a5" : "#e11d48", fontWeight: "bold" },
@@ -111,33 +103,18 @@ function buildStyles(pdf: PdfSettings) {
   });
 }
 
-// ─── BACKGROUND IMAGE WRAPPER ───────────────────────────────────────
-
 function BackgroundLayer({ image, opacity, children }: { image: string; opacity: number; children: React.ReactNode }) {
   return (
     <View style={{ position: "relative", flex: 1 }}>
-      {image && (
-        <Image
-          src={image}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            opacity: opacity / 100,
-            objectFit: "cover",
-          }}
-        />
-      )}
-      <View style={{ flex: 1 }}>
-        {children}
-      </View>
+      {image ? (
+        <Image src={image} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: opacity / 100, objectFit: "cover" }} />
+      ) : null}
+      <View style={{ flex: 1 }}>{children}</View>
     </View>
   );
 }
 
-// ─── TOPIC CHECKLIST PAGES ──────────────────────────────────────────
+// ─── TOPIC CHECKLIST ─────────────────────────────────────────────────
 
 interface TopicChecklistPageProps {
   planTitle: string;
@@ -180,6 +157,9 @@ export function TopicChecklistPage({ planTitle, examDateStr, track, pdf }: Topic
   const aytGroups = groupTopicsBySubject(aytTopics);
   const trackLabel = getTrackLabel(track);
   const s = buildStyles(pdf);
+  const bgDark = pdf.backgroundColorAvg
+    ? (0.299 * parseInt(pdf.backgroundColorAvg.slice(1,3), 16) + 0.587 * parseInt(pdf.backgroundColorAvg.slice(3,5), 16) + 0.114 * parseInt(pdf.backgroundColorAvg.slice(5,7), 16)) / 255 < 0.5
+    : false;
 
   const renderSection = (groups: ReturnType<typeof groupTopicsBySubject>, sectionLabel: string, startIndex: number) => {
     let idx = startIndex;
@@ -222,42 +202,23 @@ export function TopicChecklistPage({ planTitle, examDateStr, track, pdf }: Topic
       <Page size="A4" orientation={orientation} style={s.page}>
         <BackgroundLayer image={pdf.backgroundImage} opacity={pdf.backgroundOpacity}>
           <View style={s.header}>
-            <View>
-              <Text style={s.title}>{planTitle}</Text>
-              <Text style={s.subtitle}>TYT Konu Takip Listesi — {trackLabel}</Text>
-            </View>
-            <View style={{ alignItems: "flex-end" }}>
-              <Text style={s.countdownText}>YKS&apos;ye {daysLeft} Gün</Text>
-              <Text style={s.subtitle}>Hedef: {examDateStr}</Text>
-            </View>
+            <View><Text style={s.title}>{planTitle}</Text><Text style={s.subtitle}>TYT Konu Takip Listesi — {trackLabel}</Text></View>
+            <View style={{ alignItems: "flex-end" }}><Text style={s.countdownText}>YKS&apos;ye {daysLeft} Gün</Text><Text style={s.subtitle}>Hedef: {examDateStr}</Text></View>
           </View>
           {renderSection(tytGroups, "TYT Konuları (Temel Yeterlilik Testi)", 0)}
           <View style={{ marginTop: 15 }}>{noteBox}</View>
-          <View style={s.footer}>
-            <Text>TYT Konu Takip Listesi • {trackLabel} Alanı</Text>
-            <Text>{tytTopics.length} konu</Text>
-          </View>
+          <View style={s.footer}><Text>TYT Konu Takip Listesi • {trackLabel} Alanı</Text><Text>{tytTopics.length} konu</Text></View>
         </BackgroundLayer>
       </Page>
-
       <Page size="A4" orientation={orientation} style={s.page}>
         <BackgroundLayer image={pdf.backgroundImage} opacity={pdf.backgroundOpacity}>
           <View style={s.header}>
-            <View>
-              <Text style={s.title}>{planTitle}</Text>
-              <Text style={s.subtitle}>AYT Konu Takip Listesi — {trackLabel}</Text>
-            </View>
-            <View style={{ alignItems: "flex-end" }}>
-              <Text style={s.countdownText}>YKS&apos;ye {daysLeft} Gün</Text>
-              <Text style={s.subtitle}>Hedef: {examDateStr}</Text>
-            </View>
+            <View><Text style={s.title}>{planTitle}</Text><Text style={s.subtitle}>AYT Konu Takip Listesi — {trackLabel}</Text></View>
+            <View style={{ alignItems: "flex-end" }}><Text style={s.countdownText}>YKS&apos;ye {daysLeft} Gün</Text><Text style={s.subtitle}>Hedef: {examDateStr}</Text></View>
           </View>
           {renderSection(aytGroups, `AYT Konuları — ${trackLabel}`, tytTopics.length)}
           <View style={{ marginTop: 15 }}>{noteBox}</View>
-          <View style={s.footer}>
-            <Text>AYT Konu Takip Listesi • {trackLabel} Alanı</Text>
-            <Text>{aytTopics.length} konu</Text>
-          </View>
+          <View style={s.footer}><Text>AYT Konu Takip Listesi • {trackLabel} Alanı</Text><Text>{aytTopics.length} konu</Text></View>
         </BackgroundLayer>
       </Page>
     </>
@@ -291,27 +252,17 @@ export function DailyPDF({ planTitle, examDateStr, dateStr, items, selectedTrack
       <Page size="A4" orientation={orientation} style={s.page}>
         <BackgroundLayer image={pdfSettings.backgroundImage} opacity={pdfSettings.backgroundOpacity}>
           <View style={s.header}>
-            <View>
-              <Text style={s.title}>{planTitle}</Text>
-              <Text style={s.subtitle}>Günlük Çalışma Planı - {formattedDate}</Text>
-            </View>
-            <View style={{ alignItems: "flex-end" }}>
-              <Text style={s.countdownText}>YKS&apos;ye {daysLeft} Gün Kaldı</Text>
-              <Text style={s.subtitle}>Sınav Tarihi: {examDateStr}</Text>
-            </View>
+            <View><Text style={s.title}>{planTitle}</Text><Text style={s.subtitle}>Günlük Çalışma Planı - {formattedDate}</Text></View>
+            <View style={{ alignItems: "flex-end" }}><Text style={s.countdownText}>YKS&apos;ye {daysLeft} Gün Kaldı</Text><Text style={s.subtitle}>Sınav: {examDateStr}</Text></View>
           </View>
-
           <Text style={s.sectionTitle}>Günün Çalışma Maddeleri</Text>
-
           {items.length === 0 ? (
-            <Text style={{ fontSize: 9.5, color: "#94a3b8", marginTop: 25, textAlign: "center" }}>
-              Bugün için planlanmış herhangi bir çalışma bulunmamaktadır.
-            </Text>
+            <Text style={{ fontSize: 9.5, color: "#94a3b8", marginTop: 25, textAlign: "center" }}>Bugün için planlanmış herhangi bir çalışma bulunmamaktadır.</Text>
           ) : (
             <View style={s.table}>
               <View style={s.tableHeader}>
                 <Text style={[s.colCheckbox, { fontWeight: "bold" }]}>Durum</Text>
-                <Text style={[s.colTopic, { fontWeight: "bold" }]}>Konu Başlığı</Text>
+                <Text style={[s.colTopic, { fontWeight: "bold" }]}>Konu</Text>
                 <Text style={[s.colSubject, { fontWeight: "bold", paddingLeft: 4 }]}>Ders</Text>
                 <Text style={[s.colDuration, { fontWeight: "bold" }]}>Süre</Text>
                 <Text style={[s.colNote, { fontWeight: "bold" }]}>Not</Text>
@@ -326,9 +277,7 @@ export function DailyPDF({ planTitle, examDateStr, dateStr, items, selectedTrack
                     <Text style={s.colCheckbox}>{isDone ? "[x]" : "[  ]"}</Text>
                     <Text style={s.colTopic}>{topic?.name || "Bilinmeyen"}</Text>
                     <View style={s.colSubject}>
-                      <Text style={{ color: subColors.text, backgroundColor: subColors.bg, paddingVertical: 2, paddingHorizontal: 6, borderRadius: 3, fontSize: 7.5, fontWeight: "bold", borderWidth: 0.5, borderColor: subColors.border, textAlign: "center" }}>
-                        {topic?.subject || "-"}
-                      </Text>
+                      <Text style={{ color: subColors.text, backgroundColor: subColors.bg, paddingVertical: 2, paddingHorizontal: 6, borderRadius: 3, fontSize: 7.5, fontWeight: "bold", borderWidth: 0.5, borderColor: subColors.border, textAlign: "center" }}>{topic?.subject || "-"}</Text>
                     </View>
                     <Text style={s.colDuration}>{item.durationMinutes} dk</Text>
                     <Text style={s.colNote}>{item.note || ""}</Text>
@@ -337,21 +286,10 @@ export function DailyPDF({ planTitle, examDateStr, dateStr, items, selectedTrack
               })}
             </View>
           )}
-
-          <View style={s.noteBox}>
-            <Text style={s.noteTitle}>Planlayıcı Tavsiyesi</Text>
-            <Text style={s.noteText}>
-              Her çalışma oturumundan sonra 10-15 dakika mola verin. Çalıştığınız konuların ardından mutlaka soru çözümü yaparak pekiştirin.
-            </Text>
-          </View>
-
-          <View style={s.footer}>
-            <Text>YKS Çalışma Planlayıcısı</Text>
-            <Text>Sayfa 1 / 3</Text>
-          </View>
+          <View style={s.noteBox}><Text style={s.noteTitle}>Planlayıcı Tavsiyesi</Text><Text style={s.noteText}>Her oturumdan sonra 10-15 dk mola verin. Konu sonrası mutlaka soru çözümü yapın.</Text></View>
+          <View style={s.footer}><Text>YKS Çalışma Planlayıcısı</Text><Text>Sayfa 1 / 3</Text></View>
         </BackgroundLayer>
       </Page>
-
       <TopicChecklistPage planTitle={planTitle} examDateStr={examDateStr} track={selectedTrack} pdf={pdfSettings} />
     </Document>
   );
@@ -370,7 +308,6 @@ export function WeeklyPDF({ planTitle, examDateStr, selectedDateStr, items, sele
   const start = startOfWeek(date, { weekStartsOn: 1 });
   const end = endOfWeek(date, { weekStartsOn: 1 });
   const days = eachDayOfInterval({ start, end });
-  const weekRangeStr = `${format(start, "d MMMM", { locale: tr })} - ${format(end, "d MMMM yyyy", { locale: tr })}`;
   const s = buildStyles(pdfSettings);
   const orientation = pdfSettings.weeklyOrientation === "landscape" ? "landscape" : "portrait";
 
@@ -379,27 +316,16 @@ export function WeeklyPDF({ planTitle, examDateStr, selectedDateStr, items, sele
       <Page size="A4" orientation={orientation} style={s.page}>
         <BackgroundLayer image={pdfSettings.backgroundImage} opacity={pdfSettings.backgroundOpacity}>
           <View style={s.header}>
-            <View>
-              <Text style={s.title}>{planTitle}</Text>
-              <Text style={s.subtitle}>Haftalık Ders Çalışma Planı ({weekRangeStr})</Text>
-            </View>
-            <View style={{ alignItems: "flex-end" }}>
-              <Text style={s.countdownText}>YKS&apos;ye {daysLeft} Gün Kaldı</Text>
-              <Text style={s.subtitle}>Hedef Sınav: {examDateStr}</Text>
-            </View>
+            <View><Text style={s.title}>{planTitle}</Text><Text style={s.subtitle}>Haftalık — {format(start, "d MMMM", { locale: tr })} - {format(end, "d MMMM yyyy", { locale: tr })}</Text></View>
+            <View style={{ alignItems: "flex-end" }}><Text style={s.countdownText}>YKS&apos;ye {daysLeft} Gün</Text><Text style={s.subtitle}>Hedef: {examDateStr}</Text></View>
           </View>
-
           <View style={s.weeklyGrid}>
             {days.map((day, idx) => {
               const dateStr = format(day, "yyyy-MM-dd");
-              const dayItems = items.filter((item) => item.date === dateStr);
-              const isLast = idx === 6;
+              const dayItems = items.filter((i) => i.date === dateStr);
               return (
-                <View key={dateStr} style={isLast ? s.weeklyColumnLast : s.weeklyColumn}>
-                  <View style={s.weeklyDayHeader}>
-                    <Text style={s.weeklyDayName}>{format(day, "EEEE", { locale: tr })}</Text>
-                    <Text style={s.weeklyDayDate}>{format(day, "d MMM", { locale: tr })}</Text>
-                  </View>
+                <View key={dateStr} style={idx === 6 ? s.weeklyColumnLast : s.weeklyColumn}>
+                  <View style={s.weeklyDayHeader}><Text style={s.weeklyDayName}>{format(day, "EEEE", { locale: tr })}</Text><Text style={s.weeklyDayDate}>{format(day, "d MMM", { locale: tr })}</Text></View>
                   <View style={s.weeklyCardList}>
                     {dayItems.map((item) => {
                       const topic = TOPICS_MAP.get(item.topicId);
@@ -412,22 +338,15 @@ export function WeeklyPDF({ planTitle, examDateStr, selectedDateStr, items, sele
                         </View>
                       );
                     })}
-                    {dayItems.length === 0 && (
-                      <Text style={{ fontSize: 7.5, color: "#94a3b8", textAlign: "center", marginTop: 25 }}>Boş</Text>
-                    )}
+                    {dayItems.length === 0 && <Text style={{ fontSize: 7.5, color: "#94a3b8", textAlign: "center", marginTop: 25 }}>Boş</Text>}
                   </View>
                 </View>
               );
             })}
           </View>
-
-          <View style={s.footer}>
-            <Text>YKS Çalışma Planlayıcısı - Haftalık Görünüm</Text>
-            <Text>Sayfa 1 / 3</Text>
-          </View>
+          <View style={s.footer}><Text>YKS Çalışma Planlayıcısı - Haftalık</Text><Text>Sayfa 1 / 3</Text></View>
         </BackgroundLayer>
       </Page>
-
       <TopicChecklistPage planTitle={planTitle} examDateStr={examDateStr} track={selectedTrack} pdf={pdfSettings} />
     </Document>
   );
@@ -445,8 +364,9 @@ export function MonthlyPDF({ planTitle, examDateStr, selectedMonthStr, items, se
   const formattedMonth = formatMonthName(selectedMonthStr);
   const s = buildStyles(pdfSettings);
   const orientation = pdfSettings.monthlyOrientation === "landscape" ? "landscape" : "portrait";
+
   const bgDark = pdfSettings.backgroundColorAvg
-    ? (0.299 * parseInt(pdfSettings.backgroundColorAvg.slice(1, 3), 16) + 0.587 * parseInt(pdfSettings.backgroundColorAvg.slice(3, 5), 16) + 0.114 * parseInt(pdfSettings.backgroundColorAvg.slice(5, 7), 16)) / 255 < 0.5
+    ? (0.299 * parseInt(pdfSettings.backgroundColorAvg.slice(1,3), 16) + 0.587 * parseInt(pdfSettings.backgroundColorAvg.slice(3,5), 16) + 0.114 * parseInt(pdfSettings.backgroundColorAvg.slice(5,7), 16)) / 255 < 0.5
     : false;
   const txtColor = bgDark ? pdfSettings.textColorLight : pdfSettings.textColorDark;
 
@@ -462,22 +382,12 @@ export function MonthlyPDF({ planTitle, examDateStr, selectedMonthStr, items, se
       <Page size="A4" orientation={orientation} style={s.page}>
         <BackgroundLayer image={pdfSettings.backgroundImage} opacity={pdfSettings.backgroundOpacity}>
           <View style={s.header}>
-            <View>
-              <Text style={s.title}>{planTitle}</Text>
-              <Text style={s.subtitle}>Aylık Çalışma Özeti - {formattedMonth}</Text>
-            </View>
-            <View style={{ alignItems: "flex-end" }}>
-              <Text style={s.countdownText}>YKS&apos;ye {daysLeft} Gün</Text>
-              <Text style={s.subtitle}>Hedef Sınav: {examDateStr}</Text>
-            </View>
+            <View><Text style={s.title}>{planTitle}</Text><Text style={s.subtitle}>Aylık Çalışma Özeti - {formattedMonth}</Text></View>
+            <View style={{ alignItems: "flex-end" }}><Text style={s.countdownText}>YKS&apos;ye {daysLeft} Gün</Text><Text style={s.subtitle}>Hedef: {examDateStr}</Text></View>
           </View>
-
           <Text style={s.sectionTitle}>Aylık Plan Listesi</Text>
-
           {sortedDates.length === 0 ? (
-            <Text style={{ fontSize: 9.5, color: "#94a3b8", marginTop: 25, textAlign: "center" }}>
-              Bu ay için planlanmış herhangi bir çalışma bulunmamaktadır.
-            </Text>
+            <Text style={{ fontSize: 9.5, color: "#94a3b8", marginTop: 25, textAlign: "center" }}>Bu ay için planlanmış herhangi bir çalışma bulunmamaktadır.</Text>
           ) : (
             <View style={s.table}>
               <View style={s.tableHeader}>
@@ -490,12 +400,8 @@ export function MonthlyPDF({ planTitle, examDateStr, selectedMonthStr, items, se
                 return (
                   <View key={dateStr} style={rowStyle}>
                     <View style={{ width: "22%", paddingLeft: 10 }}>
-                      <Text style={{ fontSize: 9, fontWeight: "bold", color: "#6366f1" }}>
-                        {format(parseISO(dateStr), "d MMMM", { locale: tr })}
-                      </Text>
-                      <Text style={{ fontSize: 7.5, color: "#94a3b8", marginTop: 2 }}>
-                        {format(parseISO(dateStr), "EEEE", { locale: tr })}
-                      </Text>
+                      <Text style={{ fontSize: 9, fontWeight: "bold", color: "#6366f1" }}>{format(parseISO(dateStr), "d MMMM", { locale: tr })}</Text>
+                      <Text style={{ fontSize: 7.5, color: "#94a3b8", marginTop: 2 }}>{format(parseISO(dateStr), "EEEE", { locale: tr })}</Text>
                     </View>
                     <View style={{ width: "78%", display: "flex", flexDirection: "column", gap: 3 }}>
                       {dayItems.map((item) => {
@@ -504,12 +410,8 @@ export function MonthlyPDF({ planTitle, examDateStr, selectedMonthStr, items, se
                         return (
                           <View key={item.id} style={{ flexDirection: "row", alignItems: "center" }}>
                             <Text style={{ fontSize: 8.5, color: txtColor }}>• </Text>
-                            <Text style={{ fontSize: 7.5, fontWeight: "bold", color: sc.text, backgroundColor: sc.bg, paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3, marginRight: 4, borderWidth: 0.5, borderColor: sc.border }}>
-                              {topic?.subject || "-"}
-                            </Text>
-                            <Text style={{ fontSize: 8, color: txtColor }}>
-                              {topic?.name || ""} ({item.durationMinutes} dk) {item.status === "tamamlandi" ? "✓" : ""}
-                            </Text>
+                            <Text style={{ fontSize: 7.5, fontWeight: "bold", color: sc.text, backgroundColor: sc.bg, paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3, marginRight: 4, borderWidth: 0.5, borderColor: sc.border }}>{topic?.subject || "-"}</Text>
+                            <Text style={{ fontSize: 8, color: txtColor }}>{topic?.name || ""} ({item.durationMinutes} dk) {item.status === "tamamlandi" ? "✓" : ""}</Text>
                           </View>
                         );
                       })}
@@ -519,14 +421,9 @@ export function MonthlyPDF({ planTitle, examDateStr, selectedMonthStr, items, se
               })}
             </View>
           )}
-
-          <View style={s.footer}>
-            <Text>YKS Çalışma Planlayıcısı - Aylık Görünüm</Text>
-            <Text>Sayfa 1 / 3</Text>
-          </View>
+          <View style={s.footer}><Text>YKS Çalışma Planlayıcısı - Aylık</Text><Text>Sayfa 1 / 3</Text></View>
         </BackgroundLayer>
       </Page>
-
       <TopicChecklistPage planTitle={planTitle} examDateStr={examDateStr} track={selectedTrack} pdf={pdfSettings} />
     </Document>
   );

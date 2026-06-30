@@ -19,7 +19,12 @@ import { tr } from "date-fns/locale";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { WeeklyPDF } from "./PlanPDF";
 import { getSubjectColor } from "@/utils/subjectColors";
-import confetti from "canvas-confetti";
+
+let confettiFnW: any = null;
+const loadConfettiW = async () => {
+  if (!confettiFnW) { const mod = await import("canvas-confetti"); confettiFnW = mod.default; }
+  return confettiFnW;
+};
 
 export function WeeklyView() {
   const { 
@@ -64,11 +69,7 @@ export function WeeklyView() {
     updatePlanItem(id, { status: nextStatus });
 
     if (nextStatus === "tamamlandi") {
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.85 }
-      });
+      loadConfettiW().then((cf) => cf({ particleCount: 50, spread: 60, origin: { y: 0.85 } }));
     }
   };
 

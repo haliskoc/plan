@@ -19,7 +19,15 @@ import {
 import { addDays, subDays, format, parseISO } from "date-fns";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { DailyPDF } from "./PlanPDF";
-import confetti from "canvas-confetti";
+
+let confettiFn: any = null;
+const loadConfetti = async () => {
+  if (!confettiFn) {
+    const mod = await import("canvas-confetti");
+    confettiFn = mod.default;
+  }
+  return confettiFn;
+};
 
 export function DailyView() {
   const { 
@@ -54,7 +62,7 @@ export function DailyView() {
     const nextStatus = currentStatus === "tamamlandi" ? "yapilacak" : "tamamlandi";
     updatePlanItem(id, { status: nextStatus });
     if (nextStatus === "tamamlandi") {
-      confetti({ particleCount: 100, spread: 70, origin: { y: 0.8 } });
+      loadConfetti().then((cf) => cf({ particleCount: 100, spread: 70, origin: { y: 0.8 } }));
     }
   };
 
