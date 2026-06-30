@@ -99,6 +99,7 @@ export interface PlanState {
   toggleRecurringItem: (id: string) => void;
   setPdfSettings: (settings: Partial<PdfSettings>) => void;
   setPdfBackgroundImage: (dataUrl: string) => void;
+  updatePlanItemNote: (id: string, note: string) => void;
 }
 
 const DEFAULT_EXAM_DATE = "2027-06-19";
@@ -113,7 +114,7 @@ const defaultPlan: Plan = {
 
 function pushUndo(state: PlanState) {
   const stack = [...state.undoStack, [...state.plan.items]];
-  if (stack.length > 50) stack.shift();
+  if (stack.length > 20) stack.shift();
   return stack;
 }
 
@@ -425,6 +426,28 @@ export const usePlanStore = create<PlanState>()(
         } catch {}
         set((s) => ({
           pdfSettings: { ...s.pdfSettings, backgroundImage: dataUrl },
+        }));
+      },
+
+      updatePlanItemNote: (id, note) => {
+        // Update note WITHOUT pushing to undo stack — note edits are too granular
+        set((state) => ({
+          plan: {
+            ...state.plan,
+            items: state.plan.items.map((item) =>
+              item.id === id ? { ...item, note } : item
+            ),
+          },
+          plans: state.plans.map((p) =>
+            p.id === state.activePlanId
+              ? {
+                  ...p,
+                  items: p.items.map((item) =>
+                    item.id === id ? { ...item, note } : item
+                  ),
+                }
+              : p
+          ),
         }));
       },
     }),

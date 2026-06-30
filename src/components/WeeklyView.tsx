@@ -16,8 +16,7 @@ import {
 } from "lucide-react";
 import { addWeeks, subWeeks, startOfWeek, endOfWeek, eachDayOfInterval, format, parseISO } from "date-fns";
 import { tr } from "date-fns/locale";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import { WeeklyPDF } from "./PlanPDF";
+import { LazyWeeklyPDF } from "./LazyPDFButton";
 import { getSubjectColor } from "@/utils/subjectColors";
 
 let confettiFnW: any = null;
@@ -101,14 +100,14 @@ export function WeeklyView() {
   const hasBg = !!pdfSettings.backgroundImage;
 
   return (
-    <div className={`flex flex-col h-full border border-neutral-900 rounded-2xl p-4 sm:p-6 shadow-xl backdrop-blur-md transition-all duration-300 ${
-      hasBg ? "bg-neutral-950/35" : "bg-neutral-950/60"
+    <div className={`flex flex-col h-full border border-neutral-900 rounded-2xl p-4 sm:p-6 shadow-xl transition-all duration-300 ${
+      hasBg ? "bg-neutral-950/80" : "bg-neutral-950/90"
     }`}>
       {/* Date Header navigation */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-b-neutral-900 pb-5 mb-5">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-indigo-400" />
-          <h2 className={`text-base font-bold text-white tracking-tight ${hasBg ? "blend-mode-difference" : ""}`}>Haftalık Çalışma Planı</h2>
+          <h2 className="text-base font-bold text-white tracking-tight">Haftalık Çalışma Planı</h2>
         </div>
         
         <div className="flex items-center justify-between sm:justify-start gap-4">
@@ -132,27 +131,16 @@ export function WeeklyView() {
 
           {/* PDF Download Link */}
           {isClient && weeklyItems.length > 0 && (
-            <PDFDownloadLink
-              document={
-                <WeeklyPDF
-                  planTitle={plan.title}
-                  examDateStr={plan.examDate}
-                  selectedDateStr={selectedDate}
-                  items={weeklyItems}
-                  selectedTrack={selectedTrack}
-                  pdfSettings={pdfSettings}
-                />
-              }
+            <LazyWeeklyPDF
+              planTitle={plan.title}
+              examDateStr={plan.examDate}
+              selectedDateStr={selectedDate}
+              items={weeklyItems}
+              selectedTrack={selectedTrack}
+              pdfSettings={pdfSettings}
               fileName={`haftalik-${weekStartStr}-to-${weekEndStr}.pdf`}
               className="text-xs font-bold px-3 py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:bg-neutral-855 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
-            >
-              {({ loading }) => (
-                <>
-                  <Download className="w-3.5 h-3.5" />
-                  <span>{loading ? "Hazırlanıyor..." : "PDF İndir"}</span>
-                </>
-              )}
-            </PDFDownloadLink>
+            />
           )}
         </div>
       </div>
@@ -185,7 +173,7 @@ export function WeeklyView() {
               >
                 {/* Day Header */}
                 <div className="text-center border-b border-neutral-900 pb-2 mb-3 shrink-0">
-                  <h3 className={`text-xs font-bold text-white mb-0.5 ${hasBg ? "blend-mode-difference" : ""}`}>
+                  <h3 className="text-xs font-bold text-white mb-0.5">
                     {format(day, "EEEE", { locale: tr })}
                   </h3>
                   <div className="flex items-center justify-center gap-1.5">
@@ -234,9 +222,7 @@ export function WeeklyView() {
                         <span className={`text-[10px] font-bold leading-tight ${
                           isCompleted 
                             ? "line-through text-neutral-500" 
-                            : hasBg 
-                              ? "text-white blend-mode-difference" 
-                              : "text-white"
+                            : "text-white"
                         }`}>
                           {topic.name}
                         </span>

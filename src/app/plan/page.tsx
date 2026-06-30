@@ -30,6 +30,12 @@ export default function PlanPage() {
     const today = new Date();
     const itemsToAdd: Parameters<typeof addPlanItems>[0] = [];
 
+    // Build a Set index for O(1) lookups instead of O(n) plan.items.some()
+    const scheduledIndex = new Set<string>();
+    for (const item of plan.items) {
+      scheduledIndex.add(`${item.date}|${item.topicId}`);
+    }
+
     for (let d = 0; d < 28; d++) {
       const date = addDays(today, d);
       const dayOfWeek = getDay(date); // 0=Sunday, 1=Monday...
@@ -38,9 +44,8 @@ export default function PlanPage() {
       recurringItems.forEach((rec) => {
         if (!rec.active) return;
         if (rec.daysOfWeek.includes(dayOfWeek)) {
-          const alreadyScheduled = plan.items.some(
-            (item) => item.date === dateStr && item.topicId === rec.topicId
-          ) || itemsToAdd.some(
+          const key = `${dateStr}|${rec.topicId}`;
+          const alreadyScheduled = scheduledIndex.has(key) || itemsToAdd.some(
             (item) => item.date === dateStr && item.topicId === rec.topicId
           );
           if (!alreadyScheduled) {
@@ -151,7 +156,7 @@ export default function PlanPage() {
           </div>
 
           <div className={`${isSidebarOpen ? "lg:col-span-3" : "lg:col-span-4"} space-y-4`}>
-            <StatsPanel />
+            {!isStatsOpen && <StatsPanel />}
           </div>
         </div>
       </main>
@@ -161,7 +166,7 @@ export default function PlanPage() {
       <PlanManager isOpen={isPlanManagerOpen} onClose={() => setIsPlanManagerOpen(false)} />
 
       {isStatsOpen && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-xs">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="w-full max-w-2xl max-h-[85vh] overflow-y-auto">
             <StatsPanel />
             <button

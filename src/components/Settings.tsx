@@ -75,7 +75,7 @@ export function Settings({ isOpen, onClose }: SettingsProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-xs">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div className="bg-neutral-950 border border-neutral-900 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl">
         <div className="px-6 py-4 bg-neutral-900/40 border-b border-neutral-900 flex items-center justify-between">
           <div className="flex items-center gap-2">

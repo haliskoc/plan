@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { usePlanStore, PlanItem } from "@/store/usePlanStore";
 import { TOPICS_MAP } from "@/data/topics";
 import { formatFullDate } from "@/utils/dates";
@@ -17,8 +17,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { addDays, subDays, format, parseISO } from "date-fns";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import { DailyPDF } from "./PlanPDF";
+import { LazyDailyPDF } from "./LazyPDFButton";
 
 let confettiFn: any = null;
 const loadConfetti = async () => {
@@ -35,6 +34,7 @@ export function DailyView() {
     setSelectedDate, 
     plan, 
     updatePlanItem, 
+    updatePlanItemNote,
     removePlanItem,
     selectedTrack,
     pdfSettings 
@@ -73,7 +73,26 @@ export function DailyView() {
   };
 
   const handleChangeNote = (id: string, note: string) => {
-    updatePlanItem(id, { note });
+    updatePlanItemNote(id, note);
+  };
+
+  // Track local note state per item to avoid store updates on every keystroke
+  const [localNotes, setLocalNotes] = useState<Record<string, string>>({});
+
+  const handleLocalNoteChange = (id: string, value: string) => {
+    setLocalNotes((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleNoteBlur = (id: string) => {
+    const localVal = localNotes[id];
+    if (localVal !== undefined) {
+      handleChangeNote(id, localVal);
+      setLocalNotes((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+    }
   };
 
   const totalMinutes = dayItems.reduce((sum, item) => sum + item.durationMinutes, 0);
@@ -81,13 +100,13 @@ export function DailyView() {
   const hasBg = !!pdfSettings.backgroundImage;
 
   return (
-    <div className={`flex flex-col h-full border border-neutral-900 rounded-2xl p-4 sm:p-6 shadow-xl backdrop-blur-md transition-all duration-300 ${
-      hasBg ? "bg-neutral-950/35" : "bg-neutral-950/60"
+    <div className={`flex flex-col h-full border border-neutral-900 rounded-2xl p-4 sm:p-6 shadow-xl transition-all duration-300 ${
+      hasBg ? "bg-neutral-950/80" : "bg-neutral-950/90"
     }`}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-neutral-900 pb-5 mb-5">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-indigo-400" />
-          <h2 className={`text-base font-bold text-white tracking-tight ${hasBg ? "blend-mode-difference" : ""}`}>Günlük Çalışma Planı</h2>
+          <h2 className="text-base font-bold text-white tracking-tight">Günlük Çalışma Planı</h2>
         </div>
         
         <div className="flex items-center justify-between sm:justify-start gap-4">
@@ -110,34 +129,23 @@ export function DailyView() {
           </div>
 
           {isClient && dayItems.length > 0 && (
-            <PDFDownloadLink
-              document={
-                <DailyPDF
-                  planTitle={plan.title}
-                  examDateStr={plan.examDate}
-                  dateStr={selectedDate}
-                  items={dayItems}
-                  selectedTrack={selectedTrack}
-                  pdfSettings={pdfSettings}
-                />
-              }
+            <LazyDailyPDF
+              planTitle={plan.title}
+              examDateStr={plan.examDate}
+              dateStr={selectedDate}
+              items={dayItems}
+              selectedTrack={selectedTrack}
+              pdfSettings={pdfSettings}
               fileName={`${selectedDate}-${plan.title.toLowerCase().replace(/\s+/g, "-")}-gunluk.pdf`}
               className="text-xs font-bold px-3 py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:bg-neutral-850 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
-            >
-              {({ loading }) => (
-                <>
-                  <Download className="w-3.5 h-3.5" />
-                  <span>{loading ? "Hazırlanıyor..." : "PDF İndir"}</span>
-                </>
-              )}
-            </PDFDownloadLink>
+            />
           )}
         </div>
       </div>
 
       <div className="flex items-center justify-between text-xs text-neutral-400 mb-4 px-1">
-        <span>Günün Ders Yükü: <strong className={`text-white ${hasBg ? "blend-mode-difference" : ""}`}>{dayItems.length} konu</strong></span>
-        <span>Planlanan Süre: <strong className={`text-indigo-400 font-mono ${hasBg ? "blend-mode-difference text-indigo-300" : ""}`}>{Math.round(totalMinutes / 60 * 10) / 10} saat</strong> ({totalMinutes} dk)</span>
+        <span>Günün Ders Yükü: <strong className="text-white">{dayItems.length} konu</strong></span>
+        <span>Planlanan Süre: <strong className="text-indigo-400 font-mono">{Math.round(totalMinutes / 60 * 10) / 10} saat</strong> ({totalMinutes} dk)</span>
       </div>
 
       <div className="flex-1 overflow-y-auto pr-1 space-y-3 max-h-[calc(100vh-390px)] scrollbar-thin scrollbar-thumb-neutral-800 scrollbar-track-transparent">
@@ -190,9 +198,7 @@ export function DailyView() {
                     <span className={`text-xs font-bold leading-normal transition-colors ${
                       isCompleted 
                         ? "text-neutral-500 line-through" 
-                        : hasBg 
-                          ? "text-white blend-mode-difference" 
-                          : "text-white"
+                        : "text-white"
                     }`}>
                       {topic.name}
                     </span>
@@ -202,8 +208,9 @@ export function DailyView() {
                       <input
                         type="text"
                         placeholder="Not ekleyin (örn: Limit testi çözülecek...)"
-                        value={item.note || ""}
-                        onChange={(e) => handleChangeNote(item.id, e.target.value)}
+                        value={localNotes[item.id] !== undefined ? localNotes[item.id] : (item.note || "")}
+                        onChange={(e) => handleLocalNoteChange(item.id, e.target.value)}
+                        onBlur={() => handleNoteBlur(item.id)}
                         className="bg-transparent text-[11px] placeholder-neutral-600 border-b border-transparent focus:border-neutral-800 focus:outline-hidden py-0.5 w-full text-neutral-300"
                       />
                     </div>

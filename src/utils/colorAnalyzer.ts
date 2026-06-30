@@ -67,9 +67,39 @@ export function analyzeImageColor(dataUrl: string): Promise<ImageAnalysis> {
 export function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
+    reader.onload = () => {
+      // Resize to max 1200x800 to prevent huge memory usage
+      resizeDataUrl(reader.result as string, 1200, 800)
+        .then(resolve)
+        .catch(() => resolve(reader.result as string));
+    };
     reader.onerror = reject;
     reader.readAsDataURL(file);
+  });
+}
+
+/** Resize a data URL image to fit within maxWidth×maxHeight, JPEG 70% quality */
+function resizeDataUrl(dataUrl: string, maxWidth: number, maxHeight: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let { naturalWidth: w, naturalHeight: h } = img;
+      if (w <= maxWidth && h <= maxHeight) {
+        resolve(dataUrl); // Already small enough
+        return;
+      }
+      const ratio = Math.min(maxWidth / w, maxHeight / h);
+      w = Math.round(w * ratio);
+      h = Math.round(h * ratio);
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL("image/jpeg", 0.7));
+    };
+    img.onerror = () => reject(new Error("Resize failed"));
+    img.src = dataUrl;
   });
 }
 
@@ -92,12 +122,22 @@ export function urlToDataUrl(url: string): Promise<string> {
     img.crossOrigin = "anonymous";
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
+      // Constrain to max 1200×800 to prevent huge memory usage
+      const maxW = 1200;
+      const maxH = 800;
+      let w = img.naturalWidth;
+      let h = img.naturalHeight;
+      if (w > maxW || h > maxH) {
+        const ratio = Math.min(maxW / w, maxH / h);
+        w = Math.round(w * ratio);
+        h = Math.round(h * ratio);
+      }
+      canvas.width = w;
+      canvas.height = h;
       const ctx = canvas.getContext("2d")!;
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, w, h);
       try {
-        resolve(canvas.toDataURL("image/jpeg", 0.85));
+        resolve(canvas.toDataURL("image/jpeg", 0.7));
       } catch {
         reject(new Error("Resim CORS nedeniyle okunamadı. Farklı bir URL deneyin."));
       }

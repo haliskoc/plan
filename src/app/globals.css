@@ -100,12 +100,15 @@ html.light .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   animation: shimmer 6s linear infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .animate-shimmer {
+    animation: none;
+  }
+}
+
 /* Print styles */
 @media print {
   body { background: white !important; color: black !important; }
   .no-print { display: none !important; }
 }
 
-.blend-mode-difference {
-  mix-blend-mode: difference;
-}

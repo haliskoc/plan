@@ -30,8 +30,7 @@ import {
   isSameMonth
 } from "date-fns";
 import { tr } from "date-fns/locale";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import { MonthlyPDF } from "./PlanPDF";
+import { LazyMonthlyPDF } from "./LazyPDFButton";
 import { getSubjectColor } from "@/utils/subjectColors";
 
 let confettiFnM: any = null;
@@ -46,6 +45,7 @@ export function MonthlyView() {
     setSelectedDate, 
     plan, 
     updatePlanItem, 
+    updatePlanItemNote,
     removePlanItem,
     selectedTrack,
     pdfSettings 
@@ -113,7 +113,26 @@ export function MonthlyView() {
 
   // Notes editor inside popover
   const handleChangeNote = (id: string, note: string) => {
-    updatePlanItem(id, { note });
+    updatePlanItemNote(id, note);
+  };
+
+  // Track local note state per item to avoid store updates on every keystroke
+  const [localNotes, setLocalNotes] = useState<Record<string, string>>({});
+
+  const handleLocalNoteChange = (id: string, value: string) => {
+    setLocalNotes((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleNoteBlur = (id: string) => {
+    const localVal = localNotes[id];
+    if (localVal !== undefined) {
+      handleChangeNote(id, localVal);
+      setLocalNotes((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+    }
   };
 
   // Pre-compute items by date for O(1) lookups
@@ -142,7 +161,7 @@ export function MonthlyView() {
     : [];
 
   return (
-    <div className="flex flex-col h-full bg-neutral-950/60 border border-neutral-900 rounded-2xl p-4 sm:p-6 shadow-xl backdrop-blur-md relative">
+    <div className="flex flex-col h-full bg-neutral-950/90 border border-neutral-900 rounded-2xl p-4 sm:p-6 shadow-xl relative">
       {/* Date Header navigation */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-b-neutral-900 pb-5 mb-5">
         <div className="flex items-center gap-2">
@@ -171,27 +190,16 @@ export function MonthlyView() {
 
           {/* PDF Download Link */}
           {isClient && monthlyItems.length > 0 && (
-            <PDFDownloadLink
-              document={
-                <MonthlyPDF
-                  planTitle={plan.title}
-                  examDateStr={plan.examDate}
-                  selectedMonthStr={selectedDate}
-                  items={monthlyItems}
-                  selectedTrack={selectedTrack}
-                  pdfSettings={pdfSettings}
-                />
-              }
+            <LazyMonthlyPDF
+              planTitle={plan.title}
+              examDateStr={plan.examDate}
+              selectedMonthStr={selectedDate}
+              items={monthlyItems}
+              selectedTrack={selectedTrack}
+              pdfSettings={pdfSettings}
               fileName={`aylik-${format(activeDate, "yyyy-MM")}.pdf`}
               className="text-xs font-bold px-3 py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:bg-neutral-850 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
-            >
-              {({ loading }) => (
-                <>
-                  <Download className="w-3.5 h-3.5" />
-                  <span>{loading ? "Hazırlanıyor..." : "PDF İndir"}</span>
-                </>
-              )}
-            </PDFDownloadLink>
+            />
           )}
         </div>
       </div>
@@ -278,7 +286,7 @@ export function MonthlyView() {
 
       {/* Popover / Modal detailed view of a selected day */}
       {popoverDate && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-xs">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <div
             ref={popoverRef}
             className="w-full max-w-lg bg-neutral-950 border border-neutral-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
@@ -367,8 +375,9 @@ export function MonthlyView() {
                         <input
                           type="text"
                           placeholder="Not ekleyin..."
-                          value={item.note || ""}
-                          onChange={(e) => handleChangeNote(item.id, e.target.value)}
+                          value={localNotes[item.id] !== undefined ? localNotes[item.id] : (item.note || "")}
+                          onChange={(e) => handleLocalNoteChange(item.id, e.target.value)}
+                          onBlur={() => handleNoteBlur(item.id)}
                           className="bg-transparent text-[10px] text-neutral-300 placeholder-neutral-700 border-b border-transparent focus:border-neutral-800 focus:outline-hidden py-0.5 w-full"
                         />
                       </div>

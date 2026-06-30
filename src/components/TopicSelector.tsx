@@ -102,7 +102,7 @@ export function TopicSelector() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-neutral-950/60 border border-neutral-900 rounded-2xl p-4 sm:p-5 shadow-xl backdrop-blur-md">
+    <div className="flex flex-col h-full bg-neutral-950/90 border border-neutral-900 rounded-2xl p-4 sm:p-5 shadow-xl">
       <div className="mb-4">
         <h2 className="text-sm font-bold text-white uppercase tracking-wider mb-3">
           Konu Kütüphanesi

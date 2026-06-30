@@ -19,7 +19,7 @@ export function PlannerViews() {
   return (
     <div className="flex flex-col h-full gap-4">
       <div className="flex items-center justify-between gap-4 shrink-0">
-        <div className="flex p-1 bg-neutral-950/80 border border-neutral-900 rounded-2xl w-max backdrop-blur-md">
+        <div className="flex p-1 bg-neutral-950/90 border border-neutral-900 rounded-2xl w-max">
           {tabs.map((tab) => {
             const isActive = viewMode === tab.id;
             const Icon = tab.icon;
@@ -42,7 +42,7 @@ export function PlannerViews() {
 
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl bg-neutral-950/80 border border-neutral-900 text-neutral-400 hover:text-neutral-200 hover:border-neutral-850 transition-all cursor-pointer backdrop-blur-md shadow-xs select-none"
+          className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl bg-neutral-950/90 border border-neutral-900 text-neutral-400 hover:text-neutral-200 hover:border-neutral-850 transition-all cursor-pointer shadow-xs select-none"
           title={isSidebarOpen ? "Konu Kütüphanesini Kapat" : "Konu Kütüphanesini Aç"}
         >
           {isSidebarOpen ? (

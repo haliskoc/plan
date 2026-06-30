@@ -21,7 +21,23 @@ export function PomodoroTimer() {
     } else {
       clearTimer();
     }
-    return clearTimer;
+
+    // Stop timer when tab is hidden to save CPU
+    const handleVisibility = () => {
+      if (document.hidden) {
+        clearTimer();
+      } else if (pomodoro.isRunning) {
+        if (!intervalRef.current) {
+          intervalRef.current = setInterval(tickPomodoro, 1000);
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      clearTimer();
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, [pomodoro.isRunning, tickPomodoro, clearTimer]);
 
   const formatTime = () => {
@@ -33,7 +49,7 @@ export function PomodoroTimer() {
   const sessionOptions = [25, 30, 45, 50, 60];
 
   return (
-    <div className="bg-neutral-950/60 border border-neutral-900 rounded-2xl p-5 shadow-xl backdrop-blur-md">
+    <div className="bg-neutral-950/90 border border-neutral-900 rounded-2xl p-5 shadow-xl">
       <h2 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
         <Clock className="w-4 h-4 text-indigo-400" />
         Pomodoro Sayacı

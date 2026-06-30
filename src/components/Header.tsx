@@ -194,7 +194,7 @@ export function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpe
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 sm:gap-4 bg-neutral-900/40 border border-neutral-800/80 px-3 py-2 rounded-xl backdrop-blur-xs max-w-md">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 bg-neutral-900/40 border border-neutral-800/80 px-3 py-2 rounded-xl max-w-md">
           <div className="flex flex-col items-center justify-center px-2">
             <div className="flex items-center gap-1 text-[10px] sm:text-xs font-medium text-neutral-400 mb-0.5">
               <Layers className="w-3.5 h-3.5 text-indigo-400" />
