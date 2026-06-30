@@ -13,12 +13,14 @@ export function TopicSelector() {
     selectedExamType,
     setSelectedExamType,
     selectedTrack,
-    setSelectedTrack
+    setSelectedTrack,
+    selectedSubject,
+    setSelectedSubject
   } = usePlanStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedSubjects, setExpandedSubjects] = useState<Record<string, boolean>>({
-    "Matematik": true, // Default open Matematik for convenience
+    "Matematik": true,
   });
 
   const toggleSubject = (subjectName: string) => {
@@ -28,28 +30,21 @@ export function TopicSelector() {
     }));
   };
 
-  // Filter YKS topics based on active exam type, track, and search query
   const filteredTopics = useMemo(() => {
     return YKS_TOPICS.filter((topic) => {
-      // 1. Filter by Exam Type (TYT or AYT)
       if (topic.examType !== selectedExamType) return false;
+      if (selectedSubject && topic.subject !== selectedSubject) return false;
 
-      // 2. Filter by Track (SAY, EA, SOZ) - applicable to AYT only
       if (selectedExamType === "AYT") {
         if (selectedTrack === "SAY") {
-          // Sayısal: AYT Fizik, Kimya, Biyoloji (SAY track) + AYT Matematik, Geometri (ORTAK track)
           if (topic.track !== "SAY" && topic.track !== "ORTAK") return false;
         } else if (selectedTrack === "EA") {
-          // Eşit Ağırlık: AYT Edebiyat, Tarih-1, Coğrafya-1 (EA track) + AYT Matematik, Geometri (ORTAK track)
           if (topic.track !== "EA" && topic.track !== "ORTAK") return false;
         } else if (selectedTrack === "SOZ") {
-          // Sözel: AYT Edebiyat, Tarih-1, Coğrafya-1 (EA track) + AYT Tarih-2, Coğrafya-2, Felsefe Grubu, Din Kültürü (SOZ track)
-          // (No Matematik/Geometri)
           if (topic.track !== "SOZ" && topic.track !== "EA") return false;
         }
       }
 
-      // 3. Filter by Search Query
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
         const matchesName = topic.name.toLowerCase().includes(query);
@@ -59,9 +54,8 @@ export function TopicSelector() {
 
       return true;
     });
-  }, [selectedExamType, selectedTrack, searchQuery]);
+  }, [selectedExamType, selectedTrack, selectedSubject, searchQuery]);
 
-  // Group topics by Subject name
   const groupedTopics = useMemo(() => {
     const groups: Record<string, typeof YKS_TOPICS> = {};
     filteredTopics.forEach((topic) => {
@@ -73,7 +67,6 @@ export function TopicSelector() {
     return groups;
   }, [filteredTopics]);
 
-  // Count how many times each topic has been scheduled in the plan
   const topicScheduleCount = useMemo(() => {
     const counts: Record<string, number> = {};
     plan.items.forEach((item) => {
@@ -82,12 +75,27 @@ export function TopicSelector() {
     return counts;
   }, [plan.items]);
 
-  // Add topic to the active date
-  const handleAddTopic = (topicId: string, topicName: string) => {
+  const allSubjects = useMemo(() => {
+    const set = new Set<string>();
+    YKS_TOPICS.forEach((t) => {
+      if (t.examType === selectedExamType) {
+        if (selectedExamType === "AYT") {
+          if (selectedTrack === "SAY" && (t.track === "SAY" || t.track === "ORTAK")) set.add(t.subject);
+          else if (selectedTrack === "EA" && (t.track === "EA" || t.track === "ORTAK")) set.add(t.subject);
+          else if (selectedTrack === "SOZ" && (t.track === "SOZ" || t.track === "EA")) set.add(t.subject);
+        } else {
+          set.add(t.subject);
+        }
+      }
+    });
+    return Array.from(set).sort();
+  }, [selectedExamType, selectedTrack]);
+
+  const handleAddTopic = (topicId: string) => {
     addPlanItem({
       date: selectedDate,
       topicId,
-      durationMinutes: 90, // Default duration: 90 minutes
+      durationMinutes: 90,
       status: "yapilacak",
       note: "Konu çalışması ve soru çözümü.",
     });
@@ -95,13 +103,11 @@ export function TopicSelector() {
 
   return (
     <div className="flex flex-col h-full bg-neutral-950/60 border border-neutral-900 rounded-2xl p-4 sm:p-5 shadow-xl backdrop-blur-md">
-      {/* Selector Heading */}
       <div className="mb-4">
         <h2 className="text-sm font-bold text-white uppercase tracking-wider mb-3">
           Konu Kütüphanesi
         </h2>
 
-        {/* TYT / AYT tabs */}
         <div className="grid grid-cols-2 p-1 bg-neutral-900 border border-neutral-800 rounded-xl mb-3">
           <button
             onClick={() => setSelectedExamType("TYT")}
@@ -125,7 +131,6 @@ export function TopicSelector() {
           </button>
         </div>
 
-        {/* Track selector for AYT */}
         {selectedExamType === "AYT" && (
           <div className="grid grid-cols-3 p-1 bg-neutral-900 border border-neutral-800 rounded-xl mb-3">
             <button
@@ -161,7 +166,32 @@ export function TopicSelector() {
           </div>
         )}
 
-        {/* Search Input */}
+        <div className="flex flex-wrap gap-1.5 mb-2">
+          <button
+            onClick={() => setSelectedSubject("")}
+            className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+              !selectedSubject
+                ? "bg-indigo-600 text-white"
+                : "bg-neutral-900 text-neutral-400 hover:text-neutral-200"
+            }`}
+          >
+            Tümü
+          </button>
+          {allSubjects.map((sub) => (
+            <button
+              key={sub}
+              onClick={() => setSelectedSubject(selectedSubject === sub ? "" : sub)}
+              className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                selectedSubject === sub
+                  ? "bg-indigo-600 text-white"
+                  : "bg-neutral-900 text-neutral-400 hover:text-neutral-200"
+              }`}
+            >
+              {sub}
+            </button>
+          ))}
+        </div>
+
         <div className="relative">
           <Search className="absolute left-3 top-2.5 w-4 h-4 text-neutral-500" />
           <input
@@ -174,15 +204,13 @@ export function TopicSelector() {
         </div>
       </div>
 
-      {/* Info helper */}
       <div className="flex items-start gap-2 bg-indigo-500/5 border border-indigo-500/10 rounded-xl p-3 mb-4 text-neutral-400">
         <Info className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
         <p className="text-[10px] leading-relaxed">
-          Bir konuyu plana eklemek için yanındaki <span className="font-semibold text-neutral-200">Ekle (+)</span> butonuna tıklamanız yeterlidir. Konu, sağ panelde seçili olan tarihe eklenecektir.
+          Bir konuyu plana eklemek için yanındaki <span className="font-semibold text-neutral-200">Ekle (+)</span> butonuna tıklayın. Konu, sağ panelde seçili olan tarihe eklenecektir.
         </p>
       </div>
 
-      {/* Topic List Accordion */}
       <div className="flex-1 overflow-y-auto pr-1 space-y-2 max-h-[calc(100vh-390px)] scrollbar-thin scrollbar-thumb-neutral-800 scrollbar-track-transparent">
         {Object.keys(groupedTopics).length === 0 ? (
           <div className="text-center py-8 text-neutral-500 text-xs">
@@ -190,7 +218,7 @@ export function TopicSelector() {
           </div>
         ) : (
           Object.keys(groupedTopics).sort().map((subjectName) => {
-            const isExpanded = expandedSubjects[subjectName] || searchQuery.trim() !== "";
+            const isExpanded = expandedSubjects[subjectName] || searchQuery.trim() !== "" || !!selectedSubject;
             const topicsInGroup = groupedTopics[subjectName];
 
             return (
@@ -198,7 +226,6 @@ export function TopicSelector() {
                 key={subjectName}
                 className="border border-neutral-900 rounded-xl bg-neutral-900/10 overflow-hidden"
               >
-                {/* Accordion header */}
                 <button
                   onClick={() => toggleSubject(subjectName)}
                   className="w-full flex items-center justify-between px-4 py-3 bg-neutral-900/30 hover:bg-neutral-900/50 transition-colors text-left cursor-pointer"
@@ -218,7 +245,6 @@ export function TopicSelector() {
                   </span>
                 </button>
 
-                {/* Accordion body */}
                 {isExpanded && (
                   <div className="divide-y divide-neutral-900/50 bg-neutral-950/20 max-h-80 overflow-y-auto">
                     {topicsInGroup.map((topic) => {
@@ -241,7 +267,7 @@ export function TopicSelector() {
                           </div>
                           
                           <button
-                            onClick={() => handleAddTopic(topic.id, topic.name)}
+                            onClick={() => handleAddTopic(topic.id)}
                             className="p-1 rounded-md bg-neutral-900 hover:bg-indigo-600 text-neutral-400 hover:text-white border border-neutral-800 hover:border-indigo-500 cursor-pointer shadow-xs transition-all shrink-0"
                             title="Tarihe Ekle"
                           >

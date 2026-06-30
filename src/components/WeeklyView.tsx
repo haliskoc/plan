@@ -18,7 +18,7 @@ import { addWeeks, subWeeks, startOfWeek, endOfWeek, eachDayOfInterval, format, 
 import { tr } from "date-fns/locale";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { WeeklyPDF } from "./PlanPDF";
-import { getSubjectColor } from "./DailyView";
+import { getSubjectColor } from "@/utils/subjectColors";
 import confetti from "canvas-confetti";
 
 export function WeeklyView() {
@@ -135,7 +135,7 @@ export function WeeklyView() {
 
       {/* Grid columns */}
       <div className="flex-1 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-neutral-800 scrollbar-track-transparent">
-        <div className="grid grid-cols-7 gap-3 min-w-[840px] h-[calc(100vh-340px)]">
+        <div className="grid grid-cols-7 gap-2 sm:gap-3 min-w-[740px] sm:min-w-[840px] h-[calc(100vh-340px)]">
           {daysOfWeek.map((day) => {
             const dateStr = format(day, "yyyy-MM-dd");
             const dayItems = plan.items.filter((item) => item.date === dateStr);

@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { usePlanStore, PlanItem } from "@/store/usePlanStore";
 import { YKS_TOPICS } from "@/data/topics";
 import { formatFullDate } from "@/utils/dates";
+import { getSubjectColor } from "@/utils/subjectColors";
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -19,27 +20,6 @@ import { addDays, subDays, format, parseISO } from "date-fns";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { DailyPDF } from "./PlanPDF";
 import confetti from "canvas-confetti";
-
-export function getSubjectColor(subject: string) {
-  const colors: Record<string, string> = {
-    Matematik: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-    Geometri: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
-    Fizik: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
-    Kimya: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-    Biyoloji: "bg-green-500/10 text-green-400 border-green-500/20",
-    Türkçe: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-    Edebiyat: "bg-orange-500/10 text-orange-400 border-orange-500/20",
-    Tarih: "bg-rose-500/10 text-rose-400 border-rose-500/20",
-    "Tarih-2": "bg-red-500/10 text-red-400 border-red-500/20",
-    Coğrafya: "bg-teal-500/10 text-teal-400 border-teal-500/20",
-    "Coğrafya-2": "bg-sky-500/10 text-sky-400 border-sky-500/20",
-    Felsefe: "bg-violet-500/10 text-violet-400 border-violet-500/20",
-    "Felsefe Grubu": "bg-purple-500/10 text-purple-400 border-purple-500/20",
-    "Din Kültürü": "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-    "Din Kültürü (AYT)": "bg-lime-500/10 text-lime-400 border-lime-500/20"
-  };
-  return colors[subject] || "bg-neutral-500/10 text-neutral-400 border-neutral-500/20";
-}
 
 export function DailyView() {
   const { 
@@ -58,52 +38,38 @@ export function DailyView() {
 
   const activeDate = parseISO(selectedDate);
 
-  const handlePrevDay = () => {
-    const prevDay = subDays(activeDate, 1);
-    setSelectedDate(format(prevDay, "yyyy-MM-dd"));
-  };
+  const handlePrevDay = useCallback(() => {
+    setSelectedDate(format(subDays(activeDate, 1), "yyyy-MM-dd"));
+  }, [activeDate, setSelectedDate]);
 
-  const handleNextDay = () => {
-    const nextDay = addDays(activeDate, 1);
-    setSelectedDate(format(nextDay, "yyyy-MM-dd"));
-  };
+  const handleNextDay = useCallback(() => {
+    setSelectedDate(format(addDays(activeDate, 1), "yyyy-MM-dd"));
+  }, [activeDate, setSelectedDate]);
 
-  // Filter scheduled items for the active date
   const dayItems = plan.items.filter((item) => item.date === selectedDate);
 
-  // Toggle check/uncheck status
   const handleToggleStatus = (id: string, currentStatus: string) => {
     const nextStatus = currentStatus === "tamamlandi" ? "yapilacak" : "tamamlandi";
     updatePlanItem(id, { status: nextStatus });
-
     if (nextStatus === "tamamlandi") {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.8 }
-      });
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.8 } });
     }
   };
 
-  // Edit duration
   const handleChangeDuration = (id: string, amount: number) => {
     const item = plan.items.find((i) => i.id === id);
     if (!item) return;
-    const newDuration = Math.max(15, item.durationMinutes + amount);
-    updatePlanItem(id, { durationMinutes: newDuration });
+    updatePlanItem(id, { durationMinutes: Math.max(15, item.durationMinutes + amount) });
   };
 
-  // Edit notes
   const handleChangeNote = (id: string, note: string) => {
     updatePlanItem(id, { note });
   };
 
-  // Total study time for the day
   const totalMinutes = dayItems.reduce((sum, item) => sum + item.durationMinutes, 0);
 
   return (
     <div className="flex flex-col h-full bg-neutral-950/60 border border-neutral-900 rounded-2xl p-4 sm:p-6 shadow-xl backdrop-blur-md">
-      {/* Date Header navigation */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-neutral-900 pb-5 mb-5">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-indigo-400" />
@@ -129,7 +95,6 @@ export function DailyView() {
             </button>
           </div>
 
-          {/* PDF Download Link */}
           {isClient && dayItems.length > 0 && (
             <PDFDownloadLink
               document={
@@ -154,13 +119,11 @@ export function DailyView() {
         </div>
       </div>
 
-      {/* Stats Summary */}
       <div className="flex items-center justify-between text-xs text-neutral-400 mb-4 px-1">
         <span>Günün Ders Yükü: <strong className="text-white">{dayItems.length} konu</strong></span>
         <span>Planlanan Süre: <strong className="text-indigo-400 font-mono">{Math.round(totalMinutes / 60 * 10) / 10} saat</strong> ({totalMinutes} dk)</span>
       </div>
 
-      {/* Main List Area */}
       <div className="flex-1 overflow-y-auto pr-1 space-y-3 max-h-[calc(100vh-390px)] scrollbar-thin scrollbar-thumb-neutral-800 scrollbar-track-transparent">
         {dayItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 border border-dashed border-neutral-850 rounded-2xl p-6 text-center">
@@ -185,7 +148,6 @@ export function DailyView() {
                     : "bg-neutral-900/30 border-neutral-850 hover:border-neutral-800"
                 }`}
               >
-                {/* Left Section: Checkbox + Topic Details */}
                 <div className="flex items-start gap-3.5 flex-1">
                   <button
                     onClick={() => handleToggleStatus(item.id, item.status)}
@@ -213,7 +175,6 @@ export function DailyView() {
                       {topic.name}
                     </span>
                     
-                    {/* Inline note field */}
                     <div className="flex items-center gap-1.5 mt-2 text-neutral-400 focus-within:text-white transition-colors">
                       <FileText className="w-3 h-3 text-neutral-500" />
                       <input
@@ -227,9 +188,7 @@ export function DailyView() {
                   </div>
                 </div>
 
-                {/* Right Section: Time adjusters + Delete button */}
                 <div className="flex items-center justify-between md:justify-end gap-4 border-t border-neutral-900 md:border-t-0 pt-3 md:pt-0 shrink-0">
-                  {/* Study Time Incrementor */}
                   <div className="flex items-center gap-1.5 bg-neutral-900/60 border border-neutral-800 rounded-lg p-0.5">
                     <button
                       onClick={() => handleChangeDuration(item.id, -15)}
@@ -251,7 +210,6 @@ export function DailyView() {
                     </button>
                   </div>
 
-                  {/* Delete Item */}
                   <button
                     onClick={() => removePlanItem(item.id)}
                     className="p-1.5 rounded-lg text-neutral-500 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 transition-all cursor-pointer"

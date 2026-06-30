@@ -1,47 +1,159 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Header } from "@/components/Header";
 import { Countdown } from "@/components/Countdown";
 import { TopicSelector } from "@/components/TopicSelector";
 import { PlannerViews } from "@/components/PlannerViews";
 import { TemplateLoader } from "@/components/TemplateLoader";
+import { Settings } from "@/components/Settings";
+import { StatsPanel } from "@/components/StatsPanel";
+import { PomodoroTimer } from "@/components/PomodoroTimer";
+import { RecurringItems } from "@/components/RecurringItems";
+import { PlanManager } from "@/components/PlanManager";
 import { usePlanStore } from "@/store/usePlanStore";
+import { addDays, format, getDay } from "date-fns";
+import { requestNotificationPermission, sendStudyReminder, registerServiceWorker } from "@/utils/notifications";
 
 export default function PlanPage() {
-  const { plan, hasHydrated, isSidebarOpen } = usePlanStore();
+  const { plan, hasHydrated, isSidebarOpen, theme, recurringItems, addPlanItem } = usePlanStore();
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isStatsOpen, setIsStatsOpen] = useState(false);
+  const [isPlanManagerOpen, setIsPlanManagerOpen] = useState(false);
+  const [activePanel, setActivePanel] = useState<"pomodoro" | "recurring" | null>(null);
+  const recurringAppliedRef = useRef(false);
+
+  const processRecurringItems = useCallback(() => {
+    if (!hasHydrated || recurringAppliedRef.current) return;
+    recurringAppliedRef.current = true;
+    const today = new Date();
+    for (let d = 0; d < 28; d++) {
+      const date = addDays(today, d);
+      const dayOfWeek = getDay(date); // 0=Sunday, 1=Monday...
+      const dateStr = format(date, "yyyy-MM-dd");
+
+      recurringItems.forEach((rec) => {
+        if (!rec.active) return;
+        if (rec.daysOfWeek.includes(dayOfWeek)) {
+          const alreadyScheduled = plan.items.some(
+            (item) => item.date === dateStr && item.topicId === rec.topicId
+          );
+          if (!alreadyScheduled) {
+            addPlanItem({
+              date: dateStr,
+              topicId: rec.topicId,
+              durationMinutes: rec.durationMinutes,
+              status: "yapilacak",
+              note: rec.note || "Tekrarlayan oturum",
+            });
+          }
+        }
+      });
+    }
+  }, [hasHydrated, recurringItems, plan.items, addPlanItem]);
+
+  useEffect(() => {
+    const timer = setTimeout(processRecurringItems, 1000);
+    return () => clearTimeout(timer);
+  }, [processRecurringItems]);
+
+  // PWA + Notifications
+  useEffect(() => {
+    registerServiceWorker();
+    requestNotificationPermission();
+    const reminderInterval = setInterval(sendStudyReminder, 60000);
+    return () => clearInterval(reminderInterval);
+  }, []);
+
+  // Theme class management
+  useEffect(() => {
+    document.documentElement.classList.remove("dark", "light");
+    document.documentElement.classList.add(theme);
+    document.documentElement.style.colorScheme = theme;
+  }, [theme]);
+
+  // Keyboard shortcut: / = focus search, 1-3 = switch view, s = toggle sidebar
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
+
+      if (e.key === "Escape") {
+        setIsStatsOpen(false);
+        setIsSettingsOpen(false);
+        setIsPlanManagerOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-neutral-200 flex flex-col selection:bg-indigo-500/30 selection:text-white">
-      {/* Navigation Header */}
-      <Header onOpenTemplateModal={() => setIsTemplateModalOpen(true)} />
+      <Header
+        onOpenTemplateModal={() => setIsTemplateModalOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenStats={() => setIsStatsOpen(true)}
+        onOpenPlanManager={() => setIsPlanManagerOpen(true)}
+      />
 
-      {/* Main Workspace Container */}
       <main className="flex-1 max-w-[1600px] w-full mx-auto p-4 sm:p-6 flex flex-col gap-6">
-        
-        {/* Countdown Banner */}
         <Countdown targetDateStr={hasHydrated ? plan.examDate : "2027-06-19"} />
 
-        {/* Dashboard Panels */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Panel: Topic selector (accordion bank) */}
-          <div className={`${isSidebarOpen ? "lg:col-span-3 block" : "hidden"} w-full h-full`}>
-            <TopicSelector />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {isSidebarOpen && (
+            <div className="lg:col-span-3 space-y-4">
+              <TopicSelector />
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setActivePanel(activePanel === "pomodoro" ? null : "pomodoro")}
+                  className={`flex-1 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer ${
+                    activePanel === "pomodoro" ? "bg-indigo-600 text-white" : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-neutral-200"
+                  }`}
+                >
+                  🍅 Pomodoro
+                </button>
+                <button
+                  onClick={() => setActivePanel(activePanel === "recurring" ? null : "recurring")}
+                  className={`flex-1 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer ${
+                    activePanel === "recurring" ? "bg-indigo-600 text-white" : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-neutral-200"
+                  }`}
+                >
+                  🔁 Tekrar
+                </button>
+              </div>
+              {activePanel === "pomodoro" && <PomodoroTimer />}
+              {activePanel === "recurring" && <RecurringItems />}
+            </div>
+          )}
+
+          <div className={`${isSidebarOpen ? "lg:col-span-6" : "lg:col-span-8"} w-full h-full flex flex-col gap-4`}>
+            <PlannerViews />
           </div>
 
-          {/* Right Panel: Daily/Weekly/Monthly calendar views */}
-          <div className={`${isSidebarOpen ? "lg:col-span-9" : "lg:col-span-12"} w-full h-full`}>
-            <PlannerViews />
+          <div className={`${isSidebarOpen ? "lg:col-span-3" : "lg:col-span-4"} space-y-4`}>
+            <StatsPanel />
           </div>
         </div>
       </main>
 
-      {/* Overlay Modals */}
-      <TemplateLoader 
-        isOpen={isTemplateModalOpen} 
-        onClose={() => setIsTemplateModalOpen(false)} 
-      />
+      <TemplateLoader isOpen={isTemplateModalOpen} onClose={() => setIsTemplateModalOpen(false)} />
+      <Settings isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+      <PlanManager isOpen={isPlanManagerOpen} onClose={() => setIsPlanManagerOpen(false)} />
+
+      {isStatsOpen && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-2xl max-h-[85vh] overflow-y-auto">
+            <StatsPanel />
+            <button
+              onClick={() => setIsStatsOpen(false)}
+              className="mt-4 w-full py-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-sm text-neutral-400 hover:text-white transition-all cursor-pointer"
+            >
+              Kapat
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

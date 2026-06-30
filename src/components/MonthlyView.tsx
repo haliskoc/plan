@@ -32,7 +32,7 @@ import {
 import { tr } from "date-fns/locale";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { MonthlyPDF } from "./PlanPDF";
-import { getSubjectColor } from "./DailyView";
+import { getSubjectColor } from "@/utils/subjectColors";
 import confetti from "canvas-confetti";
 
 export function MonthlyView() {

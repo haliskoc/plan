@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { usePlanStore } from "@/store/usePlanStore";
-import { YKS_TOPICS } from "@/data/topics";
 import { 
   BookOpen, 
   Trash2, 
@@ -13,15 +12,35 @@ import {
   Clock, 
   CheckCircle,
   Layers,
-  FileJson
+  Undo2,
+  Redo2,
+  SettingsIcon,
+  BarChart3
 } from "lucide-react";
 
 interface HeaderProps {
   onOpenTemplateModal: () => void;
+  onOpenSettings: () => void;
+  onOpenStats: () => void;
+  onOpenPlanManager: () => void;
 }
 
-export function Header({ onOpenTemplateModal }: HeaderProps) {
-  const { plan, setPlanTitle, clearPlan, hasHydrated } = usePlanStore();
+function validatePlan(data: unknown): boolean {
+  if (!data || typeof data !== "object") return false;
+  const d = data as Record<string, unknown>;
+  if (typeof d.id !== "string") return false;
+  if (typeof d.title !== "string") return false;
+  if (!Array.isArray(d.items)) return false;
+  for (const item of d.items) {
+    if (!item || typeof item !== "object") return false;
+    const i = item as Record<string, unknown>;
+    if (typeof i.id !== "string" || typeof i.date !== "string" || typeof i.topicId !== "string") return false;
+  }
+  return true;
+}
+
+export function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpenPlanManager }: HeaderProps) {
+  const { plan, setPlanTitle, clearPlan, hasHydrated, undo, redo, undoStack, redoStack } = usePlanStore();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [tempTitle, setTempTitle] = useState(plan.title);
   const [mounted, setMounted] = useState(false);
@@ -41,12 +60,11 @@ export function Header({ onOpenTemplateModal }: HeaderProps) {
   };
 
   const handleClearPlan = () => {
-    if (confirm("Tüm planınızı sıfırlamak istediğinize emin misiniz? Bu işlem geri alınamaz.")) {
+    if (confirm("Tüm planınızı sıfırlamak istediğinize emin misiniz? Bu işlem geri alınabilir.")) {
       clearPlan();
     }
   };
 
-  // Export plan as JSON
   const handleExportPlan = () => {
     const dataStr = JSON.stringify(plan, null, 2);
     const dataBlob = new Blob([dataStr], { type: "application/json" });
@@ -60,7 +78,6 @@ export function Header({ onOpenTemplateModal }: HeaderProps) {
     URL.revokeObjectURL(url);
   };
 
-  // Import plan from JSON
   const handleImportPlan = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -69,21 +86,43 @@ export function Header({ onOpenTemplateModal }: HeaderProps) {
     reader.onload = (event) => {
       try {
         const importedData = JSON.parse(event.target?.result as string);
-        if (importedData && Array.isArray(importedData.items)) {
-          // Merge or replace
-          if (confirm("Bu yedek dosyasını yüklemek mevcut planınızı silecektir. Devam etmek istiyor musunuz?")) {
-            usePlanStore.setState({ plan: importedData });
-            alert("Plan başarıyla yüklendi!");
-          }
-        } else {
-          alert("Geçersiz dosya formatı. Lütfen doğru bir plan yedek dosyası seçin.");
+        if (!validatePlan(importedData)) {
+          alert("Geçersiz dosya formatı. Plan şeması uygun değil (id, title, items gereklidir).");
+          return;
         }
-      } catch (err) {
-        alert("Dosya okunurken bir hata oluştu.");
+        if (confirm("Bu yedek dosyasını yüklemek mevcut planınızı silecektir. Devam etmek istiyor musunuz?")) {
+          usePlanStore.setState({ plan: importedData });
+          alert("Plan başarıyla yüklendi!");
+        }
+      } catch {
+        alert("Dosya okunurken bir hata oluştu. Lütfen geçerli bir JSON dosyası seçin.");
       }
     };
     reader.readAsText(file);
+    e.target.value = "";
   };
+
+  // Keyboard shortcuts
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
+
+      if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+        e.preventDefault();
+        if (e.shiftKey) redo();
+        else undo();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === "y") {
+        e.preventDefault();
+        redo();
+      }
+    },
+    [undo, redo]
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
 
   if (!mounted || !hasHydrated) {
     return (
@@ -96,7 +135,6 @@ export function Header({ onOpenTemplateModal }: HeaderProps) {
     );
   }
 
-  // Calculate statistics
   const totalItems = plan.items.length;
   const completedItems = plan.items.filter(item => item.status === "tamamlandi").length;
   const totalMinutes = plan.items.reduce((sum, item) => sum + item.durationMinutes, 0);
@@ -106,7 +144,6 @@ export function Header({ onOpenTemplateModal }: HeaderProps) {
   return (
     <header className="w-full bg-neutral-950/80 border-b border-neutral-900 sticky top-0 z-50 backdrop-blur-md px-4 sm:px-6 py-4 shadow-sm">
       <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        {/* Left Side: Brand and Title */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-linear-to-tr from-indigo-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-indigo-500/10">
             <BookOpen className="w-5 h-5 text-white" />
@@ -125,7 +162,7 @@ export function Header({ onOpenTemplateModal }: HeaderProps) {
                   />
                   <button 
                     onClick={handleSaveTitle}
-                    className="p-1 rounded-md bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 transition-colors"
+                    className="p-1 rounded-md bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 transition-colors cursor-pointer"
                   >
                     <Check className="w-4 h-4" />
                   </button>
@@ -137,7 +174,7 @@ export function Header({ onOpenTemplateModal }: HeaderProps) {
                   </h1>
                   <button
                     onClick={() => setIsEditingTitle(true)}
-                    className="p-1 rounded-md text-neutral-500 hover:text-neutral-300 hover:bg-neutral-950/50 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+                    className="p-1 rounded-md text-neutral-500 hover:text-neutral-300 hover:bg-neutral-950/50 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
@@ -148,7 +185,6 @@ export function Header({ onOpenTemplateModal }: HeaderProps) {
           </div>
         </div>
 
-        {/* Middle: Statistics summary */}
         <div className="grid grid-cols-3 gap-2 sm:gap-4 bg-neutral-900/40 border border-neutral-800/80 px-3 py-2 rounded-xl backdrop-blur-xs max-w-md">
           <div className="flex flex-col items-center justify-center px-2">
             <div className="flex items-center gap-1 text-[10px] sm:text-xs font-medium text-neutral-400 mb-0.5">
@@ -181,9 +217,48 @@ export function Header({ onOpenTemplateModal }: HeaderProps) {
           </div>
         </div>
 
-        {/* Right Side: Actions */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Load template */}
+          <button
+            onClick={undo}
+            disabled={undoStack.length === 0}
+            className="p-1.5 rounded-lg border border-neutral-800 bg-neutral-900/40 text-neutral-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+            title="Geri Al (Ctrl+Z)"
+          >
+            <Undo2 className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={redo}
+            disabled={redoStack.length === 0}
+            className="p-1.5 rounded-lg border border-neutral-800 bg-neutral-900/40 text-neutral-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+            title="İleri Al (Ctrl+Y)"
+          >
+            <Redo2 className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            onClick={onOpenPlanManager}
+            className="p-1.5 rounded-lg border border-neutral-800 bg-neutral-900/40 text-neutral-400 hover:text-white transition-all cursor-pointer"
+            title="Plan Yöneticisi"
+          >
+            <Layers className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            onClick={onOpenStats}
+            className="p-1.5 rounded-lg border border-neutral-800 bg-neutral-900/40 text-neutral-400 hover:text-white transition-all cursor-pointer"
+            title="İstatistikler"
+          >
+            <BarChart3 className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            onClick={onOpenSettings}
+            className="p-1.5 rounded-lg border border-neutral-800 bg-neutral-900/40 text-neutral-400 hover:text-white transition-all cursor-pointer"
+            title="Ayarlar"
+          >
+            <SettingsIcon className="w-3.5 h-3.5" />
+          </button>
+
           <button
             onClick={onOpenTemplateModal}
             className="text-xs font-semibold px-3 py-1.5 sm:py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 shadow-md shadow-indigo-600/10 hover:shadow-indigo-600/25 transition-all cursor-pointer flex items-center gap-1"
@@ -191,7 +266,6 @@ export function Header({ onOpenTemplateModal }: HeaderProps) {
             <span>Şablon Yükle</span>
           </button>
 
-          {/* Backup Action Group */}
           <div className="flex items-center border border-neutral-800 rounded-lg bg-neutral-900/40">
             <button
               onClick={handleExportPlan}
@@ -214,7 +288,6 @@ export function Header({ onOpenTemplateModal }: HeaderProps) {
             </label>
           </div>
 
-          {/* Clear Plan */}
           <button
             onClick={handleClearPlan}
             title="Planı Temizle"

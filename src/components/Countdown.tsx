@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { differenceInSeconds, parseISO } from "date-fns";
+import { differenceInSeconds, differenceInDays, parseISO } from "date-fns";
 
 interface CountdownProps {
   targetDateStr: string;
+  startDateStr?: string;
 }
 
-export function Countdown({ targetDateStr }: CountdownProps) {
+export function Countdown({ targetDateStr, startDateStr }: CountdownProps) {
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
     hours: number;
@@ -41,7 +42,6 @@ export function Countdown({ targetDateStr }: CountdownProps) {
 
     calculateTimeLeft();
     const interval = setInterval(calculateTimeLeft, 1000);
-
     return () => clearInterval(interval);
   }, [targetDateStr]);
 
@@ -51,14 +51,14 @@ export function Countdown({ targetDateStr }: CountdownProps) {
     );
   }
 
-  // Calculate percentage of time elapsed (assuming 1 year preparation, 365 days total)
-  const totalDays = 365;
-  const daysPassed = Math.max(0, totalDays - timeLeft.days);
+  const targetDate = parseISO(targetDateStr);
+  const startDate = startDateStr ? parseISO(startDateStr) : new Date();
+  const totalDays = Math.max(1, differenceInDays(targetDate, startDate) + 1);
+  const daysPassed = Math.max(0, differenceInDays(new Date(), startDate));
   const percentagePassed = Math.min(100, Math.round((daysPassed / totalDays) * 100));
 
   return (
     <div className="relative overflow-hidden w-full bg-linear-to-r from-neutral-900/90 to-neutral-950/90 border border-neutral-800 rounded-2xl p-6 shadow-xl backdrop-blur-md">
-      {/* Background soft glow */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
 
@@ -118,7 +118,6 @@ export function Countdown({ targetDateStr }: CountdownProps) {
         )}
       </div>
 
-      {/* Preparation progress bar */}
       <div className="mt-6">
         <div className="flex justify-between text-xs font-medium text-neutral-400 mb-1.5">
           <span>Hazırlık Süreci İlerlemesi</span>
