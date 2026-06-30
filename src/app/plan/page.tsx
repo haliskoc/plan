@@ -16,7 +16,7 @@ import { addDays, format, getDay } from "date-fns";
 import { requestNotificationPermission, sendStudyReminder, registerServiceWorker } from "@/utils/notifications";
 
 export default function PlanPage() {
-  const { plan, hasHydrated, isSidebarOpen, theme, recurringItems, addPlanItem } = usePlanStore();
+  const { plan, hasHydrated, isSidebarOpen, theme, recurringItems, addPlanItems } = usePlanStore();
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
@@ -28,6 +28,8 @@ export default function PlanPage() {
     if (!hasHydrated || recurringAppliedRef.current) return;
     recurringAppliedRef.current = true;
     const today = new Date();
+    const itemsToAdd: Parameters<typeof addPlanItems>[0] = [];
+
     for (let d = 0; d < 28; d++) {
       const date = addDays(today, d);
       const dayOfWeek = getDay(date); // 0=Sunday, 1=Monday...
@@ -38,9 +40,11 @@ export default function PlanPage() {
         if (rec.daysOfWeek.includes(dayOfWeek)) {
           const alreadyScheduled = plan.items.some(
             (item) => item.date === dateStr && item.topicId === rec.topicId
+          ) || itemsToAdd.some(
+            (item) => item.date === dateStr && item.topicId === rec.topicId
           );
           if (!alreadyScheduled) {
-            addPlanItem({
+            itemsToAdd.push({
               date: dateStr,
               topicId: rec.topicId,
               durationMinutes: rec.durationMinutes,
@@ -51,7 +55,11 @@ export default function PlanPage() {
         }
       });
     }
-  }, [hasHydrated, recurringItems, plan.items, addPlanItem]);
+
+    if (itemsToAdd.length > 0) {
+      addPlanItems(itemsToAdd);
+    }
+  }, [hasHydrated, recurringItems, plan.items, addPlanItems]);
 
   useEffect(() => {
     const timer = setTimeout(processRecurringItems, 1000);

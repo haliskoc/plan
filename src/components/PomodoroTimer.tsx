@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useRef, useCallback } from "react";
-import { usePlanStore } from "@/store/usePlanStore";
+import { usePomodoroStore } from "@/store/usePomodoroStore";
 import { Play, Pause, RotateCcw, Clock, Coffee, SettingsIcon } from "lucide-react";
 
 export function PomodoroTimer() {
-  const { pomodoro, startPomodoro, pausePomodoro, resetPomodoro, tickPomodoro, setPomodoroSession } = usePlanStore();
+  const { pomodoro, startPomodoro, pausePomodoro, resetPomodoro, tickPomodoro, setPomodoroSession } = usePomodoroStore();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const clearTimer = useCallback(() => {

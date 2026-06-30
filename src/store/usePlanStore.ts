@@ -69,19 +69,12 @@ export interface PlanState {
   goals: StudyGoal;
   recurringItems: RecurringItem[];
   pdfSettings: PdfSettings;
-  pomodoro: {
-    minutes: number;
-    seconds: number;
-    isRunning: boolean;
-    isBreak: boolean;
-    totalSessions: number;
-    sessionMinutes: number;
-  };
   undoStack: PlanItem[][];
   redoStack: PlanItem[][];
 
   setHasHydrated: (state: boolean) => void;
   addPlanItem: (item: Omit<PlanItem, "id">) => void;
+  addPlanItems: (items: Omit<PlanItem, "id">[]) => void;
   removePlanItem: (id: string) => void;
   updatePlanItem: (id: string, updates: Partial<PlanItem>) => void;
   setExamDate: (date: string) => void;
@@ -104,11 +97,6 @@ export interface PlanState {
   addRecurringItem: (item: Omit<RecurringItem, "id">) => void;
   removeRecurringItem: (id: string) => void;
   toggleRecurringItem: (id: string) => void;
-  startPomodoro: () => void;
-  pausePomodoro: () => void;
-  resetPomodoro: () => void;
-  tickPomodoro: () => void;
-  setPomodoroSession: (minutes: number) => void;
   setPdfSettings: (settings: Partial<PdfSettings>) => void;
   setPdfBackgroundImage: (dataUrl: string) => void;
 }
@@ -165,7 +153,6 @@ export const usePlanStore = create<PlanState>()(
       activePlanId: defaultPlan.id,
       goals: { dailyMinutes: 180, weeklyMinutes: 900 },
       recurringItems: [],
-      pomodoro: { minutes: 25, seconds: 0, isRunning: false, isBreak: false, totalSessions: 0, sessionMinutes: 25 },
       pdfSettings: {
         dailyOrientation: "portrait",
         weeklyOrientation: "landscape",
@@ -207,6 +194,26 @@ export const usePlanStore = create<PlanState>()(
           plans: state.plans.map((p) =>
             p.id === state.activePlanId
               ? { ...p, items: [...p.items, newItem] }
+              : p
+          ),
+        }));
+      },
+
+      addPlanItems: (items) => {
+        const newItems = items.map((item) => ({
+          ...item,
+          id: `plan-item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${Math.random().toString(36).substr(2, 5)}`,
+        }));
+        set((state) => ({
+          undoStack: pushUndo(state),
+          redoStack: [],
+          plan: {
+            ...state.plan,
+            items: [...state.plan.items, ...newItems],
+          },
+          plans: state.plans.map((p) =>
+            p.id === state.activePlanId
+              ? { ...p, items: [...p.items, ...newItems] }
               : p
           ),
         }));
@@ -406,75 +413,6 @@ export const usePlanStore = create<PlanState>()(
         }));
       },
 
-      startPomodoro: () => {
-        const state = get();
-        set({
-          pomodoro: {
-            ...state.pomodoro,
-            isRunning: true,
-            minutes: state.pomodoro.sessionMinutes,
-            seconds: 0,
-          },
-        });
-      },
-
-      pausePomodoro: () => {
-        set((s) => ({
-          pomodoro: { ...s.pomodoro, isRunning: false },
-        }));
-      },
-
-      resetPomodoro: () => {
-        set((s) => ({
-          pomodoro: {
-            ...s.pomodoro,
-            isRunning: false,
-            isBreak: false,
-            minutes: s.pomodoro.sessionMinutes,
-            seconds: 0,
-          },
-        }));
-      },
-
-      tickPomodoro: () => {
-        set((s) => {
-          const p = { ...s.pomodoro };
-          if (!p.isRunning) return { pomodoro: p };
-
-          if (p.seconds > 0) {
-            p.seconds -= 1;
-          } else if (p.minutes > 0) {
-            p.minutes -= 1;
-            p.seconds = 59;
-          } else {
-            if (!p.isBreak) {
-              p.totalSessions += 1;
-              p.isBreak = true;
-              p.minutes = 5;
-              p.seconds = 0;
-            } else {
-              p.isBreak = false;
-              p.minutes = p.sessionMinutes;
-              p.seconds = 0;
-            }
-          }
-          return { pomodoro: p };
-        });
-      },
-
-      setPomodoroSession: (minutes) => {
-        set((s) => ({
-          pomodoro: {
-            ...s.pomodoro,
-            isRunning: false,
-            isBreak: false,
-            sessionMinutes: minutes,
-            minutes,
-            seconds: 0,
-          },
-        }));
-      },
-
       setPdfSettings: (settings) => {
         set((s) => ({
           pdfSettings: { ...s.pdfSettings, ...settings },
@@ -492,6 +430,17 @@ export const usePlanStore = create<PlanState>()(
     }),
     {
       name: "yks-planner-storage",
+      partialize: (state) => {
+        // Exclude undoStack, redoStack, and pdfSettings.backgroundImage from localStorage
+        const { undoStack, redoStack, pdfSettings, ...rest } = state;
+        return {
+          ...rest,
+          pdfSettings: {
+            ...pdfSettings,
+            backgroundImage: "", // Excluded from yks-planner-storage
+          },
+        };
+      },
       onRehydrateStorage: () => (state, error) => {
         if (error || !state) {
           console.warn("localStorage bozuk, varsayılan değerlerle başlatılıyor.");
@@ -511,9 +460,6 @@ export const usePlanStore = create<PlanState>()(
           if (!state.theme) {
             state.theme = "dark";
           }
-          if (!state.pomodoro) {
-            state.pomodoro = { minutes: 25, seconds: 0, isRunning: false, isBreak: false, totalSessions: 0, sessionMinutes: 25 };
-          }
           if (!state.recurringItems) {
             state.recurringItems = [];
           }
@@ -529,8 +475,8 @@ export const usePlanStore = create<PlanState>()(
               textColorDark: "#0f172a",
             };
           }
-          if (!state.undoStack) state.undoStack = [];
-          if (!state.redoStack) state.redoStack = [];
+          state.undoStack = [];
+          state.redoStack = [];
           try {
             const bg = localStorage.getItem("yks-planner-bg");
             if (bg) {
