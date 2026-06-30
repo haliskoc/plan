@@ -505,89 +505,185 @@ const OPTICAL_SUBJECTS = [
 // Cover page rendering subcomponent
 // ─── COVER PAGE BACKGROUNDS ──────────────────────────────────────────
 
-const BlueprintBackground = () => (
-  <View style={{ position: "absolute", left: 0, top: 0, width: 595.28, height: 841.89, zIndex: -10, overflow: "hidden", backgroundColor: "#0b1a2d" }} fixed>
-    <Svg style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }}>
-      {/* Minor grid lines (every 10px) */}
-      {Array.from({ length: 85 }).map((_, i) => (
-        <Line key={`min-h-${i}`} x1={0} y1={i * 10} x2={595.28} y2={i * 10} stroke="#38bdf8" strokeWidth={0.3} opacity={0.06} />
-      ))}
-      {Array.from({ length: 60 }).map((_, i) => (
-        <Line key={`min-v-${i}`} x1={i * 10} y1={0} x2={i * 10} y2={841.89} stroke="#38bdf8" strokeWidth={0.3} opacity={0.06} />
-      ))}
+const BlueprintBackground = ({ ownerName }: { ownerName: string }) => {
+  const cleanName = (ownerName || "DEFTER").trim().toUpperCase().replace(/\s+/g, "");
+  const N = cleanName.length;
 
-      {/* Major grid lines (every 50px) */}
-      {Array.from({ length: 17 }).map((_, i) => (
-        <Line key={`maj-h-${i}`} x1={0} y1={i * 50} x2={595.28} y2={i * 50} stroke="#38bdf8" strokeWidth={0.7} opacity={0.15} />
-      ))}
-      {Array.from({ length: 12 }).map((_, i) => (
-        <Line key={`maj-v-${i}`} x1={i * 50} y1={0} x2={i * 50} y2={841.89} stroke="#38bdf8" strokeWidth={0.7} opacity={0.15} />
-      ))}
+  // Calculate coordinates for dynamic graph plotting
+  const points = Array.from({ length: N }).map((_, i) => {
+    // Distribute X from 140 to 455 (leaving space on left/right for axes labels)
+    const x = N > 1 ? 140 + (i * 315) / (N - 1) : 297.64;
+    // Stagger Y using a sine wave to simulate experimental data points
+    const y = 125 + Math.sin(i * 1.9) * 32;
+    return { x, y, char: cleanName[i] };
+  });
 
-      {/* Outer border coordinate framing */}
-      <Rect x={20} y={20} width={555.28} height={801.89} stroke="#38bdf8" strokeWidth={1.2} opacity={0.4} fill="transparent" />
-      <Rect x={25} y={25} width={545.28} height={791.89} stroke="#38bdf8" strokeWidth={0.5} opacity={0.2} fill="transparent" />
+  return (
+    <View style={{ position: "absolute", left: 0, top: 0, width: 595.28, height: 841.89, zIndex: -10, overflow: "hidden", backgroundColor: "#0b1a2d" }} fixed>
+      <Svg style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }}>
+        {/* Minor grid lines (every 10px) */}
+        {Array.from({ length: 85 }).map((_, i) => (
+          <Line key={`min-h-${i}`} x1={0} y1={i * 10} x2={595.28} y2={i * 10} stroke="#38bdf8" strokeWidth={0.3} opacity={0.06} />
+        ))}
+        {Array.from({ length: 60 }).map((_, i) => (
+          <Line key={`min-v-${i}`} x1={i * 10} y1={0} x2={i * 10} y2={841.89} stroke="#38bdf8" strokeWidth={0.3} opacity={0.06} />
+        ))}
 
-      {/* Engineering Drawing Details: Gears and Math arcs in the center-left background */}
-      {/* Gear 1 (Main) */}
-      <Circle cx={200} cy={350} r={70} stroke="#00f5ff" strokeWidth={0.8} strokeDasharray="3, 3" opacity={0.25} fill="transparent" />
-      <Circle cx={200} cy={350} r={55} stroke="#38bdf8" strokeWidth={1.0} opacity={0.3} fill="transparent" />
-      <Circle cx={200} cy={350} r={15} stroke="#38bdf8" strokeWidth={0.8} opacity={0.3} fill="transparent" />
-      {/* Gear teeth representations */}
-      {Array.from({ length: 12 }).map((_, i) => {
-        const angle = (i * 30 * Math.PI) / 180;
-        const x1 = 200 + Math.cos(angle) * 55;
-        const y1 = 350 + Math.sin(angle) * 55;
-        const x2 = 200 + Math.cos(angle) * 78;
-        const y2 = 350 + Math.sin(angle) * 78;
-        return (
-          <Line key={`tooth-${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#38bdf8" strokeWidth={1.5} opacity={0.25} />
-        );
-      })}
+        {/* Major grid lines (every 50px) */}
+        {Array.from({ length: 17 }).map((_, i) => (
+          <Line key={`maj-h-${i}`} x1={0} y1={i * 50} x2={595.28} y2={i * 50} stroke="#38bdf8" strokeWidth={0.7} opacity={0.15} />
+        ))}
+        {Array.from({ length: 12 }).map((_, i) => (
+          <Line key={`maj-v-${i}`} x1={i * 50} y1={0} x2={i * 50} y2={841.89} stroke="#38bdf8" strokeWidth={0.7} opacity={0.15} />
+        ))}
 
-      {/* Gear 2 (Interlocking smaller) */}
-      <Circle cx={315} cy={275} r={40} stroke="#38bdf8" strokeWidth={0.8} strokeDasharray="2, 2" opacity={0.2} fill="transparent" />
-      <Circle cx={315} cy={275} r={30} stroke="#00f5ff" strokeWidth={1.0} opacity={0.3} fill="transparent" />
-      <Circle cx={315} cy={275} r={8} stroke="#38bdf8" strokeWidth={0.8} opacity={0.3} fill="transparent" />
-      {Array.from({ length: 8 }).map((_, i) => {
-        const angle = (i * 45 * Math.PI) / 180;
-        const x1 = 315 + Math.cos(angle) * 30;
-        const y1 = 275 + Math.sin(angle) * 30;
-        const x2 = 315 + Math.cos(angle) * 46;
-        const y2 = 275 + Math.sin(angle) * 46;
-        return (
-          <Line key={`stooth-${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#38bdf8" strokeWidth={1.2} opacity={0.2} />
-        );
-      })}
+        {/* Outer border coordinate framing */}
+        <Rect x={20} y={20} width={555.28} height={801.89} stroke="#38bdf8" strokeWidth={1.2} opacity={0.4} fill="transparent" />
+        <Rect x={25} y={25} width={545.28} height={791.89} stroke="#38bdf8" strokeWidth={0.5} opacity={0.2} fill="transparent" />
 
-      {/* Dimensioning lines and angles */}
-      <Line x1={100} y1={350} x2={350} y2={350} stroke="#38bdf8" strokeWidth={0.6} strokeDasharray="5, 5" opacity={0.25} />
-      <Line x1={200} y1={250} x2={200} y2={500} stroke="#38bdf8" strokeWidth={0.6} strokeDasharray="5, 5" opacity={0.25} />
-      
-      {/* Dimension arrow indicators */}
-      <Line x1={200} y1={350} x2={200 + 49.5} y2={350 - 49.5} stroke="#00f5ff" strokeWidth={0.8} opacity={0.35} />
-      <Circle cx={200 + 49.5} cy={350 - 49.5} r={2} fill="#00f5ff" opacity={0.4} />
-      {/* 45 degree arc marker */}
-      <Path d="M 245 350 A 45 45 0 0 0 231.8 318.2" stroke="#38bdf8" strokeWidth={0.8} fill="transparent" opacity={0.3} />
+        {/* ─── DYNAMIC CARTESIAN GRAPH FOR NAME PLOTTING ─── */}
+        {/* Y Axis line */}
+        <Line x1={110} y1={70} x2={110} y2={185} stroke="#38bdf8" strokeWidth={1.0} opacity={0.6} />
+        {/* Y Axis Arrow */}
+        <Path d="M 107 74 L 110 67 L 113 74 Z" fill="#38bdf8" opacity={0.7} />
+        <Text x={100} y={70} style={{ fontFamily: "Roboto", fontSize: 6, fill: "#38bdf8", fontWeight: "bold" }}>y</Text>
+        
+        {/* X Axis line */}
+        <Line x1={110} y1={185} x2={490} y2={185} stroke="#38bdf8" strokeWidth={1.0} opacity={0.6} />
+        {/* X Axis Arrow */}
+        <Path d="M 483 182 L 490 185 L 483 188 Z" fill="#38bdf8" opacity={0.7} />
+        <Text x={493} y={188} style={{ fontFamily: "Roboto", fontSize: 6, fill: "#38bdf8", fontWeight: "bold" }}>x</Text>
 
-      {/* Technical Title Block (Antet) in bottom right corner */}
-      {/* Outline */}
-      <Rect x={315} y={690} width={250} height={120} stroke="#38bdf8" strokeWidth={1.2} opacity={0.5} fill="#0b1a2d" />
-      {/* Grid lines in Antet */}
-      <Line x1={315} y1={720} x2={565} y2={720} stroke="#38bdf8" strokeWidth={0.8} opacity={0.4} />
-      <Line x1={315} y1={750} x2={565} y2={750} stroke="#38bdf8" strokeWidth={0.8} opacity={0.4} />
-      <Line x1={315} y1={780} x2={565} y2={780} stroke="#38bdf8" strokeWidth={0.8} opacity={0.4} />
-      
-      <Line x1={435} y1={720} x2={435} y2={810} stroke="#38bdf8" strokeWidth={0.8} opacity={0.4} />
+        {/* Y Ticks & Labels */}
+        {Array.from({ length: 4 }).map((_, i) => {
+          const y = 85 + i * 30;
+          const val = 120 - i * 30;
+          return (
+            <React.Fragment key={`ytick-${i}`}>
+              <Line x1={107} y1={y} x2={110} y2={y} stroke="#38bdf8" strokeWidth={0.8} opacity={0.6} />
+              <Text x={96} y={y + 2} style={{ fontFamily: "Roboto", fontSize: 5, fill: "#38bdf8", opacity: 0.7 }}>{val}</Text>
+            </React.Fragment>
+          );
+        })}
 
-      {/* Grid coordinate markers on margin (A, B, C, D, 1, 2, 3, 4) */}
-      <Line x1={20} y1={50} x2={30} y2={50} stroke="#38bdf8" strokeWidth={0.5} opacity={0.2} />
-      <Line x1={50} y1={20} x2={50} y2={30} stroke="#38bdf8" strokeWidth={0.5} opacity={0.2} />
-      <Line x1={565} y1={50} x2={575} y2={50} stroke="#38bdf8" strokeWidth={0.5} opacity={0.2} />
-      <Line x1={545} y1={20} x2={545} y2={30} stroke="#38bdf8" strokeWidth={0.5} opacity={0.2} />
-    </Svg>
-  </View>
-);
+        {/* X Ticks & Labels */}
+        {Array.from({ length: 6 }).map((_, i) => {
+          const x = 140 + i * 60;
+          const val = (i + 1) * 10;
+          return (
+            <React.Fragment key={`xtick-${i}`}>
+              <Line x1={x} y1={185} x2={x} y2={188} stroke="#38bdf8" strokeWidth={0.8} opacity={0.6} />
+              <Text x={x - 2} y={196} style={{ fontFamily: "Roboto", fontSize: 5, fill: "#38bdf8", opacity: 0.7 }}>{val}</Text>
+            </React.Fragment>
+          );
+        })}
+
+        {/* Plotted letters, points, drop lines, and connections */}
+        {points.map((pt, idx) => (
+          <React.Fragment key={`gstar-${idx}`}>
+            {/* Connection to next point */}
+            {idx < N - 1 && (
+              <Line
+                x1={pt.x}
+                y1={pt.y}
+                x2={points[idx + 1].x}
+                y2={points[idx + 1].y}
+                stroke="#00f5ff"
+                strokeWidth={1.0}
+                opacity={0.6}
+              />
+            )}
+
+            {/* Drop lines to axes */}
+            {/* Drop to X-axis */}
+            <Line x1={pt.x} y1={pt.y} x2={pt.x} y2={185} stroke="#38bdf8" strokeWidth={0.5} strokeDasharray="3, 3" opacity={0.25} />
+            {/* Drop to Y-axis */}
+            <Line x1={pt.x} y1={pt.y} x2={110} y2={pt.y} stroke="#38bdf8" strokeWidth={0.5} strokeDasharray="3, 3" opacity={0.25} />
+
+            {/* Square point node (crosshair) */}
+            <Rect x={pt.x - 2} y={pt.y - 2} width={4} height={4} stroke="#00f5ff" strokeWidth={0.8} fill="#0b1a2d" />
+
+            {/* Letter label */}
+            <Text
+              x={pt.x - 3}
+              y={pt.y - 8}
+              style={{ fontFamily: "Roboto", fontSize: 8.5, fontWeight: "bold", fill: "#ffffff" }}
+            >
+              {pt.char}
+            </Text>
+          </React.Fragment>
+        ))}
+
+        {/* Figure caption underneath the plot */}
+        <Text
+          x={297.64}
+          y={215}
+          style={{ fontFamily: "Roboto", fontSize: 6, fill: "#38bdf8", fontWeight: "bold", textAnchor: "middle" as const, letterSpacing: 1.5 }}
+        >
+          {`FIG. 1.1 - COORDINATE RELATION GRAPH OF DESIGNER [ID: ${cleanName}]`}
+        </Text>
+
+        {/* Engineering Drawing Details: Gears and Math arcs in the center-left background */}
+        {/* Gear 1 (Main) */}
+        <Circle cx={200} cy={420} r={70} stroke="#00f5ff" strokeWidth={0.8} strokeDasharray="3, 3" opacity={0.25} fill="transparent" />
+        <Circle cx={200} cy={420} r={55} stroke="#38bdf8" strokeWidth={1.0} opacity={0.3} fill="transparent" />
+        <Circle cx={200} cy={420} r={15} stroke="#38bdf8" strokeWidth={0.8} opacity={0.3} fill="transparent" />
+        {/* Gear teeth representations */}
+        {Array.from({ length: 12 }).map((_, i) => {
+          const angle = (i * 30 * Math.PI) / 180;
+          const x1 = 200 + Math.cos(angle) * 55;
+          const y1 = 420 + Math.sin(angle) * 55;
+          const x2 = 200 + Math.cos(angle) * 78;
+          const y2 = 420 + Math.sin(angle) * 78;
+          return (
+            <Line key={`tooth-${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#38bdf8" strokeWidth={1.5} opacity={0.25} />
+          );
+        })}
+
+        {/* Gear 2 (Interlocking smaller) */}
+        <Circle cx={315} cy={345} r={40} stroke="#38bdf8" strokeWidth={0.8} strokeDasharray="2, 2" opacity={0.2} fill="transparent" />
+        <Circle cx={315} cy={345} r={30} stroke="#00f5ff" strokeWidth={1.0} opacity={0.3} fill="transparent" />
+        <Circle cx={315} cy={345} r={8} stroke="#38bdf8" strokeWidth={0.8} opacity={0.3} fill="transparent" />
+        {Array.from({ length: 8 }).map((_, i) => {
+          const angle = (i * 45 * Math.PI) / 180;
+          const x1 = 315 + Math.cos(angle) * 30;
+          const y1 = 345 + Math.sin(angle) * 30;
+          const x2 = 315 + Math.cos(angle) * 46;
+          const y2 = 345 + Math.sin(angle) * 46;
+          return (
+            <Line key={`stooth-${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#38bdf8" strokeWidth={1.2} opacity={0.2} />
+          );
+        })}
+
+        {/* Dimensioning lines and angles */}
+        <Line x1={100} y1={420} x2={350} y2={420} stroke="#38bdf8" strokeWidth={0.6} strokeDasharray="5, 5" opacity={0.25} />
+        <Line x1={200} y1={320} x2={200} y2={570} stroke="#38bdf8" strokeWidth={0.6} strokeDasharray="5, 5" opacity={0.25} />
+        
+        {/* Dimension arrow indicators */}
+        <Line x1={200} y1={420} x2={200 + 49.5} y2={420 - 49.5} stroke="#00f5ff" strokeWidth={0.8} opacity={0.35} />
+        <Circle cx={200 + 49.5} cy={420 - 49.5} r={2} fill="#00f5ff" opacity={0.4} />
+        {/* 45 degree arc marker */}
+        <Path d="M 245 420 A 45 45 0 0 0 231.8 388.2" stroke="#38bdf8" strokeWidth={0.8} fill="transparent" opacity={0.3} />
+
+        {/* Technical Title Block (Antet) in bottom right corner */}
+        {/* Outline */}
+        <Rect x={315} y={690} width={250} height={120} stroke="#38bdf8" strokeWidth={1.2} opacity={0.5} fill="#0b1a2d" />
+        {/* Grid lines in Antet */}
+        <Line x1={315} y1={720} x2={565} y2={720} stroke="#38bdf8" strokeWidth={0.8} opacity={0.4} />
+        <Line x1={315} y1={750} x2={565} y2={750} stroke="#38bdf8" strokeWidth={0.8} opacity={0.4} />
+        <Line x1={315} y1={780} x2={565} y2={780} stroke="#38bdf8" strokeWidth={0.8} opacity={0.4} />
+        
+        <Line x1={435} y1={720} x2={435} y2={810} stroke="#38bdf8" strokeWidth={0.8} opacity={0.4} />
+
+        {/* Grid coordinate markers on margin (A, B, C, D, 1, 2, 3, 4) */}
+        <Line x1={20} y1={50} x2={30} y2={50} stroke="#38bdf8" strokeWidth={0.5} opacity={0.2} />
+        <Line x1={50} y1={20} x2={50} y2={30} stroke="#38bdf8" strokeWidth={0.5} opacity={0.2} />
+        <Line x1={565} y1={50} x2={575} y2={50} stroke="#38bdf8" strokeWidth={0.5} opacity={0.2} />
+        <Line x1={545} y1={20} x2={545} y2={30} stroke="#38bdf8" strokeWidth={0.5} opacity={0.2} />
+      </Svg>
+    </View>
+  );
+};
 
 const SpaceOdysseyBackground = ({ ownerName }: { ownerName: string }) => {
   const cleanName = (ownerName || "DEFTER").trim().toUpperCase().replace(/\s+/g, "");
@@ -891,7 +987,7 @@ const NotebookCover = ({
       case "modern-indigo":
         return (
           <>
-            <BlueprintBackground />
+            <BlueprintBackground ownerName={ownerName} />
             <View style={[styles.indigoTitleCard, { borderColor: "#38bdf8", backgroundColor: "rgba(11, 26, 45, 0.85)" }]}>
               <Text style={{ fontSize: 8, color: "#00f5ff", fontWeight: "bold", letterSpacing: 2.5, marginBottom: 8, textTransform: "uppercase" }}>
                 TECHNICAL SPECIFICATION // BLUEPRINT
@@ -905,13 +1001,15 @@ const NotebookCover = ({
               
               <View style={[styles.coverMetaBox, { borderColor: "rgba(56, 189, 248, 0.35)", backgroundColor: "rgba(11, 26, 45, 0.7)", width: "100%" }]}>
                 <View style={styles.coverMetaRow}>
-                  <Text style={[styles.coverMetaLabel, { color: "#38bdf8" }]}>ÇİZEN / DRAWN BY:</Text>
-                  <Text style={{ color: "#ffffff", fontWeight: "bold", fontSize: 9 }}>{ownerName.toUpperCase() || "MÜHENDİS ADAYI"}</Text>
-                </View>
-                <View style={styles.coverMetaRow}>
                   <Text style={[styles.coverMetaLabel, { color: "#38bdf8" }]}>TARİH / DATE:</Text>
                   <Text style={{ color: "#cbd5e1", fontSize: 9 }}>{dateStr}</Text>
                 </View>
+                {subjects.length > 0 && (
+                  <View style={[styles.coverMetaRow, { marginTop: 4 }]}>
+                    <Text style={[styles.coverMetaLabel, { color: "#38bdf8" }]}>KAPSAM / SCOPE:</Text>
+                    <Text style={{ color: "#cbd5e1", fontSize: 9 }}>{subjects.length} Ders Planı</Text>
+                  </View>
+                )}
               </View>
 
               {subjects.length > 0 && (
