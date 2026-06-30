@@ -493,9 +493,14 @@ export const usePlanStore = create<PlanState>()(
     {
       name: "yks-planner-storage",
       partialize: (state) => {
-        const { pomodoro, undoStack, redoStack, ...rest } = state;
-        const { backgroundImage, ...pdf } = rest.pdfSettings;
-        return { ...rest, pdfSettings: { ...pdf, backgroundImage: "" } };
+        try {
+          const { pomodoro, undoStack, redoStack, ...rest } = state;
+          const pdf = rest.pdfSettings || {};
+          const { backgroundImage, ...pdfRest } = pdf;
+          return { ...rest, pdfSettings: { ...pdfRest, backgroundImage: "" } };
+        } catch {
+          return state;
+        }
       },
       onRehydrateStorage: () => (state, error) => {
         if (error || !state) {

@@ -445,6 +445,10 @@ export function MonthlyPDF({ planTitle, examDateStr, selectedMonthStr, items, se
   const formattedMonth = formatMonthName(selectedMonthStr);
   const s = buildStyles(pdfSettings);
   const orientation = pdfSettings.monthlyOrientation === "landscape" ? "landscape" : "portrait";
+  const bgDark = pdfSettings.backgroundColorAvg
+    ? (0.299 * parseInt(pdfSettings.backgroundColorAvg.slice(1, 3), 16) + 0.587 * parseInt(pdfSettings.backgroundColorAvg.slice(3, 5), 16) + 0.114 * parseInt(pdfSettings.backgroundColorAvg.slice(5, 7), 16)) / 255 < 0.5
+    : false;
+  const txtColor = bgDark ? pdfSettings.textColorLight : pdfSettings.textColorDark;
 
   const itemsByDate: Record<string, PlanItem[]> = {};
   items.forEach((item) => {
@@ -477,8 +481,8 @@ export function MonthlyPDF({ planTitle, examDateStr, selectedMonthStr, items, se
           ) : (
             <View style={s.table}>
               <View style={s.tableHeader}>
-                <Text style={{ width: "22%", paddingLeft: 10, fontSize: 9.5, fontWeight: "bold", color: s.title.color }}>Tarih</Text>
-                <Text style={{ width: "78%", fontSize: 9.5, fontWeight: "bold", color: s.title.color }}>Planlanan Çalışmalar ve Süreler</Text>
+                <Text style={{ width: "22%", paddingLeft: 10, fontSize: 9.5, fontWeight: "bold", color: txtColor }}>Tarih</Text>
+                <Text style={{ width: "78%", fontSize: 9.5, fontWeight: "bold", color: txtColor }}>Planlanan Çalışmalar ve Süreler</Text>
               </View>
               {sortedDates.map((dateStr, index) => {
                 const dayItems = itemsByDate[dateStr];
@@ -499,11 +503,11 @@ export function MonthlyPDF({ planTitle, examDateStr, selectedMonthStr, items, se
                         const sc = getSubjectColorsPDF(topic?.subject);
                         return (
                           <View key={item.id} style={{ flexDirection: "row", alignItems: "center" }}>
-                            <Text style={{ fontSize: 8.5, color: s.title.color }}>• </Text>
+                            <Text style={{ fontSize: 8.5, color: txtColor }}>• </Text>
                             <Text style={{ fontSize: 7.5, fontWeight: "bold", color: sc.text, backgroundColor: sc.bg, paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3, marginRight: 4, borderWidth: 0.5, borderColor: sc.border }}>
                               {topic?.subject || "-"}
                             </Text>
-                            <Text style={{ fontSize: 8, color: s.title.color }}>
+                            <Text style={{ fontSize: 8, color: txtColor }}>
                               {topic?.name || ""} ({item.durationMinutes} dk) {item.status === "tamamlandi" ? "✓" : ""}
                             </Text>
                           </View>
