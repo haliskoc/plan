@@ -24,20 +24,25 @@ import {
   BookOpen
 } from "lucide-react";
 
-const SUBJECT_AESTHETICS: Record<string, { gradient: string; border: string; text: string; bg: string; icon: React.ComponentType<any> }> = {
-  "Matematik": { gradient: "from-blue-500 to-indigo-500", border: "border-t-blue-500", text: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20", icon: Compass },
-  "Geometri": { gradient: "from-cyan-500 to-teal-500", border: "border-t-cyan-500", text: "text-cyan-400", bg: "bg-cyan-500/10 border-cyan-500/20", icon: Layers },
-  "Türkçe": { gradient: "from-amber-500 to-orange-500", border: "border-t-amber-500", text: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20", icon: PenTool },
-  "Fizik": { gradient: "from-violet-500 to-purple-500", border: "border-t-violet-500", text: "text-violet-400", bg: "bg-violet-500/10 border-violet-500/20", icon: Zap },
-  "Kimya": { gradient: "from-emerald-500 to-green-500", border: "border-t-emerald-500", text: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", icon: FlaskConical },
-  "Biyoloji": { gradient: "from-rose-500 to-pink-500", border: "border-t-rose-500", text: "text-rose-400", bg: "bg-rose-500/10 border-rose-500/20", icon: Heart },
-  "Tarih": { gradient: "from-red-500 to-rose-600", border: "border-t-red-500", text: "text-red-400", bg: "bg-red-500/10 border-red-500/20", icon: Globe },
-  "Coğrafya": { gradient: "from-green-500 to-emerald-600", border: "border-t-green-500", text: "text-green-400", bg: "bg-green-500/10 border-green-500/20", icon: Map },
-  "Felsefe": { gradient: "from-fuchsia-500 to-purple-600", border: "border-t-fuchsia-500", text: "text-fuchsia-400", bg: "bg-fuchsia-500/10 border-fuchsia-500/20", icon: HelpCircle },
-  "Din Kültürü": { gradient: "from-yellow-500 to-amber-600", border: "border-t-yellow-500", text: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/20", icon: Star }
+const SUBJECT_AESTHETICS: Record<string, { color: string; bg: string; progressBar: string; icon: React.ComponentType<any> }> = {
+  "Matematik": { color: "text-blue-400", bg: "bg-blue-500/10", progressBar: "bg-blue-500", icon: Compass },
+  "Geometri": { color: "text-cyan-400", bg: "bg-cyan-500/10", progressBar: "bg-cyan-500", icon: Layers },
+  "Türkçe": { color: "text-amber-400", bg: "bg-amber-500/10", progressBar: "bg-amber-500", icon: PenTool },
+  "Edebiyat": { color: "text-orange-400", bg: "bg-orange-500/10", progressBar: "bg-orange-500", icon: PenTool },
+  "Fizik": { color: "text-violet-400", bg: "bg-violet-500/10", progressBar: "bg-violet-500", icon: Zap },
+  "Kimya": { color: "text-emerald-400", bg: "bg-emerald-500/10", progressBar: "bg-emerald-500", icon: FlaskConical },
+  "Biyoloji": { color: "text-rose-400", bg: "bg-rose-500/10", progressBar: "bg-rose-500", icon: Heart },
+  "Tarih": { color: "text-red-400", bg: "bg-red-500/10", progressBar: "bg-red-500", icon: Globe },
+  "Tarih-2": { color: "text-red-400", bg: "bg-red-500/10", progressBar: "bg-red-500", icon: Globe },
+  "Coğrafya": { color: "text-green-400", bg: "bg-green-500/10", progressBar: "bg-green-500", icon: Map },
+  "Coğrafya-2": { color: "text-green-400", bg: "bg-green-500/10", progressBar: "bg-green-500", icon: Map },
+  "Felsefe": { color: "text-fuchsia-400", bg: "bg-fuchsia-500/10", progressBar: "bg-fuchsia-500", icon: HelpCircle },
+  "Felsefe Grubu": { color: "text-fuchsia-400", bg: "bg-fuchsia-500/10", progressBar: "bg-fuchsia-500", icon: HelpCircle },
+  "Din Kültürü": { color: "text-yellow-400", bg: "bg-yellow-500/10", progressBar: "bg-yellow-500", icon: Star },
+  "Din Kültürü (AYT)": { color: "text-yellow-400", bg: "bg-yellow-500/10", progressBar: "bg-yellow-500", icon: Star }
 };
 
-const DEFAULT_AESTHETIC = { gradient: "from-neutral-500 to-neutral-600", border: "border-t-neutral-500", text: "text-neutral-400", bg: "bg-neutral-500/10 border-neutral-500/20", icon: BookOpen };
+const DEFAULT_AESTHETIC = { color: "text-neutral-400", bg: "bg-neutral-500/10", progressBar: "bg-neutral-500", icon: BookOpen };
 
 export const TopicSelector = React.memo(function TopicSelector() {
   const selectedDate = usePlanStore((s) => s.selectedDate);
@@ -176,13 +181,13 @@ export const TopicSelector = React.memo(function TopicSelector() {
         <div className="grid grid-cols-2 p-1 bg-neutral-900 border border-neutral-850 rounded-xl">
           <button 
             onClick={() => setSelectedExamType("TYT")} 
-            className={`py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${selectedExamType === "TYT" ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10" : "text-neutral-500 hover:text-neutral-300"}`}
+            className={`py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${selectedExamType === "TYT" ? "bg-neutral-800 text-white border border-neutral-700/50 shadow-xs" : "text-neutral-500 hover:text-neutral-300"}`}
           >
             TYT Konuları
           </button>
           <button 
             onClick={() => setSelectedExamType("AYT")} 
-            className={`py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${selectedExamType === "AYT" ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10" : "text-neutral-500 hover:text-neutral-300"}`}
+            className={`py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${selectedExamType === "AYT" ? "bg-neutral-800 text-white border border-neutral-700/50 shadow-xs" : "text-neutral-500 hover:text-neutral-300"}`}
           >
             AYT Konuları
           </button>
@@ -207,10 +212,10 @@ export const TopicSelector = React.memo(function TopicSelector() {
         <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-none select-none -mx-1 px-1">
           <button 
             onClick={() => setSelectedSubject("")} 
-            className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all cursor-pointer shrink-0 border ${
+            className={`px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all cursor-pointer shrink-0 border ${
               !selectedSubject 
-                ? "bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-600/10" 
-                : "bg-neutral-900 text-neutral-400 hover:text-neutral-200 border-neutral-850"
+                ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-400 shadow-xs" 
+                : "bg-neutral-900/50 text-neutral-400 hover:text-neutral-200 border-neutral-850/50"
             }`}
           >
             Tümü
@@ -219,10 +224,10 @@ export const TopicSelector = React.memo(function TopicSelector() {
             <button 
               key={sub} 
               onClick={() => setSelectedSubject(selectedSubject === sub ? "" : sub)} 
-              className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all cursor-pointer shrink-0 border ${
+              className={`px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all cursor-pointer shrink-0 border ${
                 selectedSubject === sub 
-                  ? "bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-600/10" 
-                  : "bg-neutral-900 text-neutral-400 hover:text-neutral-200 border-neutral-850"
+                  ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-400 shadow-xs" 
+                  : "bg-neutral-900/50 text-neutral-400 hover:text-neutral-200 border-neutral-850/50"
               }`}
             >
               {sub}
@@ -238,7 +243,7 @@ export const TopicSelector = React.memo(function TopicSelector() {
             placeholder="Ders veya konu ara..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-neutral-900/60 border border-neutral-850 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-neutral-500 focus:outline-hidden focus:border-indigo-500 focus:bg-neutral-900 transition-all"
+            className="w-full bg-neutral-900/40 border border-neutral-850 hover:border-neutral-805 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-neutral-500 focus:outline-hidden focus:border-indigo-500 focus:bg-neutral-900 transition-all"
           />
         </div>
       </div>
@@ -308,22 +313,22 @@ export const TopicSelector = React.memo(function TopicSelector() {
               return (
                 <div 
                   key={subjectName} 
-                  className={`border border-neutral-900 rounded-2xl bg-neutral-950/40 hover:bg-neutral-950/70 overflow-hidden transition-all duration-300 border-t-4 ${aes.border}`}
+                  className="border border-neutral-900 rounded-2xl bg-neutral-950/20 hover:bg-neutral-900/30 overflow-hidden transition-all duration-300 shadow-xs hover:shadow-md"
                 >
                   {/* Subject card header */}
                   <button 
                     onClick={() => toggleSubject(subjectName)} 
-                    className="w-full flex flex-col p-4 bg-neutral-900/10 hover:bg-neutral-900/20 transition-colors text-left cursor-pointer"
+                    className="w-full flex flex-col p-3.5 bg-neutral-950/10 hover:bg-neutral-900/20 transition-colors text-left cursor-pointer"
                   >
-                    <div className="flex items-center justify-between w-full mb-2">
+                    <div className="flex items-center justify-between w-full mb-3">
                       <div className="flex items-center gap-2.5">
-                        <div className={`p-1.5 rounded-lg bg-linear-to-tr ${aes.gradient} text-white`}>
-                          <Icon className="w-4 h-4" />
+                        <div className={`w-8 h-8 rounded-lg ${aes.bg} ${aes.color} flex items-center justify-center transition-colors duration-300`}>
+                          <Icon className="w-4.5 h-4.5" />
                         </div>
-                        <span className="text-xs sm:text-sm font-bold text-neutral-200">{subjectName}</span>
+                        <span className="text-xs sm:text-sm font-semibold text-neutral-200">{subjectName}</span>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-[9px] text-neutral-400 font-bold bg-neutral-900 border border-neutral-850 px-2 py-0.5 rounded-md font-mono">
+                        <span className="text-[10px] text-neutral-400 font-medium bg-neutral-900 border border-neutral-850 px-2 py-0.5 rounded-md font-mono">
                           {stats.scheduled}/{stats.total} Konu
                         </span>
                         {isExpanded ? <ChevronDown className="w-4 h-4 text-neutral-500" /> : <ChevronRight className="w-4 h-4 text-neutral-500" />}
@@ -332,19 +337,19 @@ export const TopicSelector = React.memo(function TopicSelector() {
                     
                     {/* Completion progress bar */}
                     <div className="w-full">
-                      <div className="flex items-center justify-between text-[9px] text-neutral-500 font-bold mb-1">
+                      <div className="flex items-center justify-between text-[9px] text-neutral-500 font-medium mb-1">
                         <span>Konu İlerlemesi</span>
-                        <span className={`${aes.text}`}>{stats.percentage}%</span>
+                        <span className={`${aes.color} font-semibold`}>{stats.percentage}%</span>
                       </div>
-                      <div className="w-full bg-neutral-900 h-1 rounded-full overflow-hidden border border-neutral-850/55">
-                        <div className={`h-full bg-linear-to-r ${aes.gradient}`} style={{ width: `${stats.percentage}%` }} />
+                      <div className="w-full bg-neutral-900 h-1.5 rounded-full overflow-hidden">
+                        <div className={`h-full ${aes.progressBar} transition-all duration-500`} style={{ width: `${stats.percentage}%` }} />
                       </div>
                     </div>
                   </button>
 
                   {/* Accordion topics list */}
                   {isExpanded && (
-                    <div className="divide-y divide-neutral-900/50 bg-neutral-950/30 max-h-80 overflow-y-auto pr-0.5 scrollbar-thin scrollbar-thumb-neutral-800">
+                    <div className="divide-y divide-neutral-900/30 bg-neutral-950/10 max-h-80 overflow-y-auto pr-0.5 scrollbar-thin scrollbar-thumb-neutral-800">
                       {topicsInGroup.map((topic) => {
                         const count = topicScheduleCount[topic.id] || 0;
                         return (
@@ -354,10 +359,10 @@ export const TopicSelector = React.memo(function TopicSelector() {
                             </span>
                             <button 
                               onClick={() => handleAddTopic(topic.id)} 
-                              className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold transition-all cursor-pointer flex items-center gap-1 shrink-0 border ${
+                              className={`px-3 py-1.5 rounded-lg text-[10px] font-semibold transition-all cursor-pointer flex items-center gap-1 shrink-0 border ${
                                 count > 0 
                                   ? "bg-emerald-600/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-600/20" 
-                                  : "bg-neutral-900 border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700 hover:scale-[1.02]"
+                                  : "bg-neutral-900 border-neutral-850 text-neutral-300 hover:bg-neutral-900 hover:border-neutral-700 hover:text-white transition-all"
                               }`}
                             >
                               {count > 0 ? (
