@@ -178,12 +178,12 @@ function buildStyles(pdf: PdfSettings, orientation: "portrait" | "landscape" = "
     checklistCard: {
       width: orientation === "landscape" ? "24%" : "32%",
       borderWidth: 1,
-      borderRadius: 5,
-      padding: 5,
+      borderRadius: 6,
+      padding: 6,
       display: "flex",
       flexDirection: "column",
       justifyContent: "space-between",
-      minHeight: 55,
+      minHeight: 75,
     },
     checklistCardHeader: {
       flexDirection: "row",
