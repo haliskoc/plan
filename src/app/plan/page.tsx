@@ -280,12 +280,13 @@ export default function PlanPage() {
               }`}
             >
               <Calendar className="w-4 h-4 shrink-0" />
-              <span>Çalışma Planım</span>
+              <span>Çalışma Planlayıcı</span>
             </button>
 
+            {/* Desktop link to separate Ders / Konu Ekle is removed because it is side-by-side in plan page */}
             <button
               onClick={() => setMobileTab("library")}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`w-full lg:hidden flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 mobileTab === "library"
                   ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/15"
                   : "text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900/40"
@@ -421,7 +422,7 @@ export default function PlanPage() {
         />
 
         {/* Content Container */}
-        <main className="flex-1 max-w-[1200px] w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
+        <main className="flex-1 max-w-[1600px] w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
           
           {/* Countdown - Show only in "Planım" Tab to reduce clutter */}
           {mobileTab === "plan" && (
@@ -430,31 +431,44 @@ export default function PlanPage() {
 
           {/* Segmented Main Views */}
           <div className="w-full pb-20 lg:pb-0">
-            {/* 1. Plan Tab (Daily/Weekly/Monthly Calendars) */}
+            {/* 1. Plan Tab (Daily/Weekly/Monthly Calendars + Topic Selector side-by-side on desktop) */}
             <div className={mobileTab === "plan" ? "block" : "hidden"}>
-              <PlannerViews />
-            </div>
-
-            {/* 2. Library Tab (Topic Selectors + Recurring items) */}
-            <div className={mobileTab === "library" ? "block" : "hidden"}>
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div className="lg:col-span-8">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                {/* Left Column: Topic Selector on Desktop only */}
+                <div className="hidden lg:block lg:col-span-4 xl:col-span-3.5 space-y-4">
                   <TopicSelector />
-                </div>
-                <div className="lg:col-span-4 space-y-4">
                   <button
                     onClick={() => setActivePanel(activePanel === "recurring" ? null : "recurring")}
-                    className={`w-full text-xs font-bold py-3.5 rounded-2xl transition-all cursor-pointer ${
+                    className={`w-full text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer ${
                       activePanel === "recurring"
                         ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10"
-                        : "bg-neutral-900 border border-neutral-850 text-neutral-400 hover:text-neutral-200"
+                        : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-neutral-200"
                     }`}
                   >
                     {activePanel === "recurring" ? "🔁 Tekrarlayanları Gizle" : "🔁 Tekrarlayan Çalışmalar"}
                   </button>
                   {activePanel === "recurring" && <RecurringItems />}
                 </div>
+
+                {/* Right Column: Planner Views */}
+                <div className="lg:col-span-8 xl:col-span-8.5 w-full h-full flex flex-col gap-4">
+                  <PlannerViews />
+                </div>
+
               </div>
+            </div>
+
+            {/* 2. Library Tab (Topic Selectors + Recurring items) - Mobile Only */}
+            <div className={`w-full space-y-4 lg:hidden ${mobileTab === "library" ? "block" : "hidden"}`}>
+              <TopicSelector />
+              <button
+                onClick={() => setActivePanel(activePanel === "recurring" ? null : "recurring")}
+                className={`w-full text-xs font-bold py-3.5 bg-neutral-900 border border-neutral-850 rounded-2xl text-neutral-400 hover:text-white transition-all cursor-pointer`}
+              >
+                {activePanel === "recurring" ? "🔁 Tekrarlayanları Gizle" : "🔁 Tekrarlayan Çalışmalar"}
+              </button>
+              {activePanel === "recurring" && <RecurringItems />}
             </div>
 
             {/* 3. Stats Tab */}
