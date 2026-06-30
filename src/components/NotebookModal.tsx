@@ -191,12 +191,8 @@ export const NotebookModal = React.memo(function NotebookModal({ isOpen, onClose
     setPageCount(clamped);
   };
 
-  // Build the dynamic PDF filename based on subjects
+  // Build the dynamic PDF filename based on the notebook title
   const getPdfFileName = () => {
-    if (selectedSubjects.length > 0) {
-      const subjectSlug = selectedSubjects.map(s => slugify(s)).join("-");
-      return `${subjectSlug}-defteri.pdf`;
-    }
     return `${slugify(title || "defter")}.pdf`;
   };
 
