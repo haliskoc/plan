@@ -52,7 +52,60 @@ function getSubjectColorsPDF(subject: string | undefined) {
   return colors[subject] || { bg: "#f8fafc", text: "#475569", border: "#e2e8f0" };
 }
 
-function buildStyles(pdf: PdfSettings) {
+function getSubjectColorsForTheme(subject: string | undefined, bgDark: boolean) {
+  if (!subject) {
+    return bgDark 
+      ? { bg: "rgba(30, 41, 59, 0.6)", text: "#fde68a", border: "#475569", noteLine: "#334155" }
+      : { bg: "#f8fafc", text: "#475569", border: "#e2e8f0", noteLine: "#cbd5e1" };
+  }
+
+  // Base colors for light theme (high contrast dark text, soft background, solid border)
+  const lightColors: Record<string, { bg: string; text: string; border: string; noteLine: string }> = {
+    Matematik: { bg: "#eff6ff", text: "#1d4ed8", border: "#3b82f6", noteLine: "#93c5fd" },
+    Geometri: { bg: "#ecfeff", text: "#0e7490", border: "#06b6d4", noteLine: "#a5f3fc" },
+    Fizik: { bg: "#e0e7ff", text: "#4338ca", border: "#6366f1", noteLine: "#c7d2fe" },
+    Kimya: { bg: "#ecfdf5", text: "#047857", border: "#10b981", noteLine: "#a7f3d0" },
+    Biyoloji: { bg: "#f0fdf4", text: "#15803d", border: "#22c55e", noteLine: "#bbf7d0" },
+    Türkçe: { bg: "#fffbeb", text: "#b45309", border: "#f59e0b", noteLine: "#fde68a" },
+    Edebiyat: { bg: "#fff7ed", text: "#c2410c", border: "#f97316", noteLine: "#ffedd5" },
+    Tarih: { bg: "#fff5f5", text: "#b91c1c", border: "#f43f5e", noteLine: "#fecdd3" },
+    "Tarih-2": { bg: "#fef2f2", text: "#dc2626", border: "#ef4444", noteLine: "#fecdd3" },
+    Coğrafya: { bg: "#f0fdfa", text: "#0f766e", border: "#14b8a6", noteLine: "#99f6e4" },
+    "Coğrafya-2": { bg: "#f0f9ff", text: "#0369a1", border: "#0ea5e9", noteLine: "#bae6fd" },
+    Felsefe: { bg: "#f5f3ff", text: "#6d28d9", border: "#8b5cf6", noteLine: "#ddd6fe" },
+    "Felsefe Grubu": { bg: "#faf5ff", text: "#7e22ce", border: "#a855f7", noteLine: "#e9d5ff" },
+    "Din Kültürü": { bg: "#fefce8", text: "#a16207", border: "#eab308", noteLine: "#fef08a" },
+    "Din Kültürü (AYT)": { bg: "#f7fee7", text: "#4d7c0f", border: "#84cc16", noteLine: "#d9f99d" },
+  };
+
+  // Base colors for dark theme (neon-like borders, dark slate card backgrounds, light yellow or white text)
+  const darkColors: Record<string, { bg: string; text: string; border: string; noteLine: string }> = {
+    Matematik: { bg: "rgba(15, 23, 42, 0.75)", text: "#fde68a", border: "#3b82f6", noteLine: "#2563eb" },
+    Geometri: { bg: "rgba(15, 23, 42, 0.75)", text: "#fde68a", border: "#06b6d4", noteLine: "#0891b2" },
+    Fizik: { bg: "rgba(15, 23, 42, 0.75)", text: "#fde68a", border: "#6366f1", noteLine: "#4f46e5" },
+    Kimya: { bg: "rgba(15, 23, 42, 0.75)", text: "#fde68a", border: "#10b981", noteLine: "#059669" },
+    Biyoloji: { bg: "rgba(15, 23, 42, 0.75)", text: "#fde68a", border: "#22c55e", noteLine: "#16a34a" },
+    Türkçe: { bg: "rgba(15, 23, 42, 0.75)", text: "#ffffff", border: "#f59e0b", noteLine: "#d97706" },
+    Edebiyat: { bg: "rgba(15, 23, 42, 0.75)", text: "#ffffff", border: "#f97316", noteLine: "#ea580c" },
+    Tarih: { bg: "rgba(15, 23, 42, 0.75)", text: "#ffffff", border: "#f43f5e", noteLine: "#e11d48" },
+    "Tarih-2": { bg: "rgba(15, 23, 42, 0.75)", text: "#ffffff", border: "#ef4444", noteLine: "#dc2626" },
+    Coğrafya: { bg: "rgba(15, 23, 42, 0.75)", text: "#ffffff", border: "#14b8a6", noteLine: "#0d9488" },
+    "Coğrafya-2": { bg: "rgba(15, 23, 42, 0.75)", text: "#ffffff", border: "#0ea5e9", noteLine: "#2563eb" },
+    Felsefe: { bg: "rgba(15, 23, 42, 0.75)", text: "#fde68a", border: "#8b5cf6", noteLine: "#7c3aed" },
+    "Felsefe Grubu": { bg: "rgba(15, 23, 42, 0.75)", text: "#fde68a", border: "#a855f7", noteLine: "#9333ea" },
+    "Din Kültürü": { bg: "rgba(15, 23, 42, 0.75)", text: "#ffffff", border: "#eab308", noteLine: "#ca8a04" },
+    "Din Kültürü (AYT)": { bg: "rgba(15, 23, 42, 0.75)", text: "#ffffff", border: "#84cc16", noteLine: "#65a30d" },
+  };
+
+  const selectedSet = bgDark ? darkColors : lightColors;
+  const fallback = bgDark 
+    ? { bg: "rgba(15, 23, 42, 0.75)", text: "#ffffff", border: "#94a3b8", noteLine: "#475569" }
+    : { bg: "#f8fafc", text: "#475569", border: "#e2e8f0", noteLine: "#cbd5e1" };
+
+  return selectedSet[subject] || fallback;
+}
+
+function buildStyles(pdf: PdfSettings, orientation: "portrait" | "landscape" = "portrait") {
   const bgDark = pdf.backgroundColorAvg 
     ? (0.299 * parseInt(pdf.backgroundColorAvg.slice(1,3), 16) + 0.587 * parseInt(pdf.backgroundColorAvg.slice(3,5), 16) + 0.114 * parseInt(pdf.backgroundColorAvg.slice(5,7), 16)) / 255 < 0.5
     : false;
@@ -94,12 +147,91 @@ function buildStyles(pdf: PdfSettings) {
     weeklyCardText: { fontSize: 8, fontWeight: "bold", color: txt, lineHeight: 1.2 },
     weeklyCardSub: { fontSize: 7, fontWeight: "bold", marginTop: 2 },
     weeklyCardDuration: { fontSize: 7, color: txtSub, marginTop: 2, fontWeight: "bold" },
+    
+    // Modern Checklist Styles
     checklistSectionTitle: { fontSize: 12, fontWeight: "bold", color: txt, marginBottom: 6, marginTop: 8, borderBottomWidth: 1.5, borderBottomColor: "#6366f1", paddingBottom: 4 },
-    checklistSubjectTitle: { fontSize: 9, fontWeight: "bold", color: txt, marginTop: 6, marginBottom: 3, paddingVertical: 3, paddingHorizontal: 8, backgroundColor: bgLight, borderRadius: 3 },
-    checklistRow: { flexDirection: "row", alignItems: "center", paddingVertical: 1.5, paddingHorizontal: 4, borderBottomWidth: 0.5, borderBottomColor: borderCol },
-    checklistCheckbox: { width: 10, height: 10, borderWidth: 1, borderColor: txtMuted, borderRadius: 2 },
-    checklistTopicName: { fontSize: 8, color: txt, flex: 1 },
-    checklistNumber: { fontSize: 7, color: txtMuted, width: 18, textAlign: "right", marginRight: 6 },
+    checklistSubjectHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: 5,
+      paddingHorizontal: 8,
+      borderRadius: 5,
+      borderWidth: 1,
+      marginTop: 10,
+      marginBottom: 6,
+    },
+    checklistSubjectTitle: {
+      fontSize: 9,
+      fontWeight: "bold",
+    },
+    checklistSubjectCount: {
+      fontSize: 8,
+      fontWeight: "bold",
+    },
+    checklistGrid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 10,
+      marginBottom: 10,
+    },
+    checklistCard: {
+      width: orientation === "landscape" ? "24%" : "32%",
+      borderWidth: 1,
+      borderRadius: 5,
+      padding: 5,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      minHeight: 55,
+    },
+    checklistCardHeader: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      marginBottom: 3,
+    },
+    checklistCardNumber: {
+      fontSize: 7,
+      fontWeight: "bold",
+      marginRight: 3,
+    },
+    checklistCardTopicName: {
+      fontSize: 7.5,
+      fontWeight: "bold",
+      flex: 1,
+      lineHeight: 1.1,
+    },
+    checklistCardDetails: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      marginTop: 3,
+    },
+    checklistCardCheckboxGroup: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    checklistCardCheckbox: {
+      width: 7,
+      height: 7,
+      borderWidth: 0.8,
+      borderRadius: 1.5,
+      marginRight: 2,
+    },
+    checklistCardCheckboxLabel: {
+      fontSize: 6.5,
+    },
+    checklistCardNoteLine: {
+      borderBottomWidth: 0.6,
+      marginTop: 4,
+      paddingBottom: 1,
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    checklistCardNoteLabel: {
+      fontSize: 6,
+      fontWeight: "bold",
+    },
   });
 }
 
@@ -109,6 +241,7 @@ function BackgroundLayer({ image, opacity, children }: { image: string; opacity:
       {image ? (
         <Image 
           src={image} 
+          fixed
           style={{ 
             position: "absolute", 
             top: 0, 
@@ -170,7 +303,8 @@ export function TopicChecklistPage({ planTitle, examDateStr, track, pdf }: Topic
   const tytGroups = groupTopicsBySubject(tytTopics);
   const aytGroups = groupTopicsBySubject(aytTopics);
   const trackLabel = getTrackLabel(track);
-  const s = buildStyles(pdf);
+  const orientation = pdf.monthlyOrientation === "landscape" ? "landscape" : "portrait";
+  const s = buildStyles(pdf, orientation);
   const bgDark = pdf.backgroundColorAvg
     ? (0.299 * parseInt(pdf.backgroundColorAvg.slice(1,3), 16) + 0.587 * parseInt(pdf.backgroundColorAvg.slice(3,5), 16) + 0.114 * parseInt(pdf.backgroundColorAvg.slice(5,7), 16)) / 255 < 0.5
     : false;
@@ -180,24 +314,49 @@ export function TopicChecklistPage({ planTitle, examDateStr, track, pdf }: Topic
     return (
       <View>
         <Text style={s.checklistSectionTitle}>{sectionLabel}</Text>
-        {groups.map((group) => (
-          <View key={group.subject}>
-            <Text style={s.checklistSubjectTitle}>{group.subject} ({group.topics.length} konu)</Text>
-            {group.topics.map((topic) => {
-              idx++;
-              return (
-                <View key={topic.id} style={s.checklistRow} wrap={false}>
-                  <Text style={s.checklistNumber}>{idx}.</Text>
-                  <View style={s.checklistCheckbox} />
-                  <Text style={{ fontSize: 7, color: "#94a3b8", width: 18, textAlign: "center" }}>ög</Text>
-                  <View style={s.checklistCheckbox} />
-                  <Text style={{ fontSize: 7, color: "#94a3b8", width: 18, textAlign: "center" }}>sç</Text>
-                  <Text style={s.checklistTopicName}>{topic.name}</Text>
-                </View>
-              );
-            })}
-          </View>
-        ))}
+        {groups.map((group) => {
+          const subjectColors = getSubjectColorsForTheme(group.subject, bgDark);
+          return (
+            <View key={group.subject} style={{ marginBottom: 12 }}>
+              <View style={[s.checklistSubjectHeader, { backgroundColor: subjectColors.bg, borderColor: subjectColors.border }]}>
+                <Text style={[s.checklistSubjectTitle, { color: subjectColors.text }]}>
+                  {group.subject}
+                </Text>
+                <Text style={[s.checklistSubjectCount, { color: subjectColors.text }]}>
+                  {group.topics.length} Konu
+                </Text>
+              </View>
+              <View style={s.checklistGrid}>
+                {group.topics.map((topic) => {
+                  idx++;
+                  return (
+                    <View key={topic.id} style={[s.checklistCard, { backgroundColor: subjectColors.bg, borderColor: subjectColors.border }]} wrap={false}>
+                      <View style={s.checklistCardHeader}>
+                        <Text style={[s.checklistCardNumber, { color: bgDark ? "#94a3b8" : "#64748b" }]}>{idx}.</Text>
+                        <Text style={[s.checklistCardTopicName, { color: bgDark ? "#ffffff" : "#1e293b" }]}>{topic.name}</Text>
+                      </View>
+                      
+                      <View style={s.checklistCardDetails}>
+                        <View style={s.checklistCardCheckboxGroup}>
+                          <View style={[s.checklistCardCheckbox, { borderColor: subjectColors.border }]} />
+                          <Text style={[s.checklistCardCheckboxLabel, { color: bgDark ? "#cbd5e1" : "#64748b" }]}>Öğ</Text>
+                        </View>
+                        <View style={s.checklistCardCheckboxGroup}>
+                          <View style={[s.checklistCardCheckbox, { borderColor: subjectColors.border }]} />
+                          <Text style={[s.checklistCardCheckboxLabel, { color: bgDark ? "#cbd5e1" : "#64748b" }]}>Sç</Text>
+                        </View>
+                      </View>
+
+                      <View style={[s.checklistCardNoteLine, { borderBottomColor: subjectColors.noteLine }]}>
+                        <Text style={[s.checklistCardNoteLabel, { color: bgDark ? "#cbd5e1" : "#64748b" }]}>Not:</Text>
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+          );
+        })}
       </View>
     );
   };
@@ -209,8 +368,6 @@ export function TopicChecklistPage({ planTitle, examDateStr, track, pdf }: Topic
     </View>
   );
 
-  const orientation = pdf.monthlyOrientation === "landscape" ? "landscape" : "portrait";
-
   return (
     <>
       <Page size="A4" orientation={orientation} style={s.page}>
@@ -220,8 +377,8 @@ export function TopicChecklistPage({ planTitle, examDateStr, track, pdf }: Topic
             <View style={{ alignItems: "flex-end" }}><Text style={s.countdownText}>YKS&apos;ye {daysLeft} Gün</Text><Text style={s.subtitle}>Hedef: {examDateStr}</Text></View>
           </View>
           {renderSection(tytGroups, "TYT Konuları (Temel Yeterlilik Testi)", 0)}
-          <View style={{ marginTop: 15 }}>{noteBox}</View>
-          <View style={s.footer}><Text>TYT Konu Takip Listesi • {trackLabel} Alanı</Text><Text>{tytTopics.length} konu</Text></View>
+          <View style={{ marginTop: 15 }} wrap={false}>{noteBox}</View>
+          <View style={s.footer} fixed><Text>TYT Konu Takip Listesi • {trackLabel} Alanı</Text><Text>{tytTopics.length} konu</Text></View>
         </BackgroundLayer>
       </Page>
       <Page size="A4" orientation={orientation} style={s.page}>
@@ -231,8 +388,8 @@ export function TopicChecklistPage({ planTitle, examDateStr, track, pdf }: Topic
             <View style={{ alignItems: "flex-end" }}><Text style={s.countdownText}>YKS&apos;ye {daysLeft} Gün</Text><Text style={s.subtitle}>Hedef: {examDateStr}</Text></View>
           </View>
           {renderSection(aytGroups, `AYT Konuları — ${trackLabel}`, tytTopics.length)}
-          <View style={{ marginTop: 15 }}>{noteBox}</View>
-          <View style={s.footer}><Text>AYT Konu Takip Listesi • {trackLabel} Alanı</Text><Text>{aytTopics.length} konu</Text></View>
+          <View style={{ marginTop: 15 }} wrap={false}>{noteBox}</View>
+          <View style={s.footer} fixed><Text>AYT Konu Takip Listesi • {trackLabel} Alanı</Text><Text>{aytTopics.length} konu</Text></View>
         </BackgroundLayer>
       </Page>
     </>
@@ -258,8 +415,8 @@ interface DailyPDFProps extends BasePDFProps {
 export function DailyPDF({ planTitle, examDateStr, dateStr, items, selectedTrack, pdfSettings }: DailyPDFProps) {
   const daysLeft = Math.max(0, differenceInDays(parseISO(examDateStr), new Date()));
   const formattedDate = formatFullDate(dateStr);
-  const s = buildStyles(pdfSettings);
   const orientation = pdfSettings.dailyOrientation === "landscape" ? "landscape" : "portrait";
+  const s = buildStyles(pdfSettings, orientation);
 
   return (
     <Document>
@@ -322,8 +479,8 @@ export function WeeklyPDF({ planTitle, examDateStr, selectedDateStr, items, sele
   const start = startOfWeek(date, { weekStartsOn: 1 });
   const end = endOfWeek(date, { weekStartsOn: 1 });
   const days = eachDayOfInterval({ start, end });
-  const s = buildStyles(pdfSettings);
   const orientation = pdfSettings.weeklyOrientation === "landscape" ? "landscape" : "portrait";
+  const s = buildStyles(pdfSettings, orientation);
 
   return (
     <Document>
@@ -376,8 +533,8 @@ interface MonthlyPDFProps extends BasePDFProps {
 export function MonthlyPDF({ planTitle, examDateStr, selectedMonthStr, items, selectedTrack, pdfSettings }: MonthlyPDFProps) {
   const daysLeft = Math.max(0, differenceInDays(parseISO(examDateStr), new Date()));
   const formattedMonth = formatMonthName(selectedMonthStr);
-  const s = buildStyles(pdfSettings);
   const orientation = pdfSettings.monthlyOrientation === "landscape" ? "landscape" : "portrait";
+  const s = buildStyles(pdfSettings, orientation);
 
   const bgDark = pdfSettings.backgroundColorAvg
     ? (0.299 * parseInt(pdfSettings.backgroundColorAvg.slice(1,3), 16) + 0.587 * parseInt(pdfSettings.backgroundColorAvg.slice(3,5), 16) + 0.114 * parseInt(pdfSettings.backgroundColorAvg.slice(5,7), 16)) / 255 < 0.5
