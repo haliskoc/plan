@@ -59,12 +59,6 @@ export function Countdown({ targetDateStr, startDateStr }: CountdownProps) {
     return () => { stopInterval(); document.removeEventListener("visibilitychange", handleVisibility); };
   }, [targetDateStr]);
 
-  if (!mounted) {
-    return (
-      <div className="w-full h-24 bg-neutral-900/40 border border-neutral-800 rounded-2xl animate-pulse" />
-    );
-  }
-
   const { targetDate, startDate, totalDays } = useMemo(() => {
     const td = parseISO(targetDateStr);
     const sd = startDateStr ? parseISO(startDateStr) : new Date();
@@ -74,6 +68,12 @@ export function Countdown({ targetDateStr, startDateStr }: CountdownProps) {
       totalDays: Math.max(1, differenceInDays(td, sd) + 1),
     };
   }, [targetDateStr, startDateStr]);
+
+  if (!mounted) {
+    return (
+      <div className="w-full h-24 bg-neutral-900/40 border border-neutral-800 rounded-2xl animate-pulse" />
+    );
+  }
 
   const daysPassed = Math.max(0, differenceInDays(new Date(), startDate));
   const percentagePassed = Math.min(100, Math.round((daysPassed / totalDays) * 100));
