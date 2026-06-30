@@ -81,6 +81,13 @@ export function urlToDataUrl(url: string): Promise<string> {
       reject(new Error("Geçersiz URL"));
       return;
     }
+
+    const isLocal = url.startsWith("/") || 
+                    url.startsWith("data:") || 
+                    (typeof window !== "undefined" && url.startsWith(window.location.origin));
+
+    const finalUrl = isLocal ? url : `/api/proxy-image?url=${encodeURIComponent(url)}`;
+
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
@@ -96,6 +103,6 @@ export function urlToDataUrl(url: string): Promise<string> {
       }
     };
     img.onerror = () => reject(new Error("Resim yüklenemedi. URL'yi kontrol edin."));
-    img.src = url;
+    img.src = finalUrl;
   });
 }
