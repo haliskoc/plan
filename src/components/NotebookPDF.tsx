@@ -11,6 +11,7 @@ import {
   Svg,
   Line,
   Circle,
+  Rect,
 } from "@react-pdf/renderer";
 
 // Register Roboto font if not registered
@@ -288,64 +289,89 @@ const styles = StyleSheet.create({
   },
 
   // COVERS STYLING DETAIL
-  // 1. Modern Indigo
-  coverIndigo: {
-    backgroundColor: "#0a0d16",
-    color: "#ffffff",
+  indigoTitleCard: {
+    backgroundColor: "rgba(10, 13, 24, 0.85)",
+    borderWidth: 1.5,
+    borderColor: "#6366f1",
+    borderRadius: 12,
+    padding: 28,
+    width: "85%",
+    alignItems: "center",
+    zIndex: 10,
   },
-  // 2. Creative Sunset
-  coverSunset: {
-    backgroundColor: "#0b0813",
-    color: "#ffffff",
-  },
-  glowCircle1: {
-    position: "absolute",
-    top: 80,
-    right: 40,
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    backgroundColor: "#f97316",
-    opacity: 0.15,
-  },
-  glowCircle2: {
-    position: "absolute",
-    bottom: 80,
-    left: 40,
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    backgroundColor: "#ec4899",
-    opacity: 0.15,
-  },
-  // 3. Minimalist Slate
-  coverSlate: {
-    backgroundColor: "#f8fafc",
-    color: "#0f172a",
-    borderWidth: 8,
-    borderColor: "#475569",
-  },
-  // 4. Academic Classic
-  coverClassic: {
-    backgroundColor: "#fbf9f4",
-    color: "#1e1b4b",
+  sunsetTitleCard: {
+    backgroundColor: "rgba(8, 5, 14, 0.75)",
     borderWidth: 1,
-    borderColor: "#78350f",
-    margin: 15,
+    borderColor: "rgba(255, 255, 255, 0.15)",
+    borderRadius: 16,
+    padding: 28,
+    width: "85%",
+    alignItems: "center",
+    zIndex: 10,
+  },
+  classicTitleCard: {
+    backgroundColor: "#faf8f2",
+    borderWidth: 1.5,
+    borderColor: "#d97706",
+    borderRadius: 0,
+    padding: 25,
+    width: "85%",
+    alignItems: "center",
+    zIndex: 10,
   },
   classicInnerBorder: {
-    borderWidth: 2,
-    borderColor: "#78350f",
-    padding: 30,
+    borderWidth: 1,
+    borderColor: "#d97706",
+    padding: 20,
     width: "100%",
-    height: "100%",
-    justifyContent: "center",
     alignItems: "center",
   },
-  // 5. Optical Clean
-  coverOptical: {
+  opticalTitleCard: {
     backgroundColor: "#ffffff",
-    color: "#000000",
+    borderWidth: 1.8,
+    borderColor: "#000000",
+    borderRadius: 4,
+    padding: 20,
+    width: "85%",
+    zIndex: 10,
+  },
+  zenContainer: {
+    width: "100%",
+    height: "100%",
+    position: "relative",
+    paddingTop: 100,
+    paddingBottom: 100,
+    paddingLeft: 60,
+    paddingRight: 60,
+    justifyContent: "space-between",
+  },
+  zenTitleSection: {
+    width: "100%",
+  },
+  zenTitle: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#1c1917",
+    letterSpacing: 4,
+  },
+  zenSubtitle: {
+    fontSize: 9,
+    color: "#6b6661",
+    marginTop: 6,
+    letterSpacing: 1.5,
+  },
+  zenMetaSection: {
+    borderLeftWidth: 1.5,
+    borderLeftColor: "#991b1b",
+    paddingLeft: 12,
+    alignSelf: "flex-end",
+    marginTop: 180,
+  },
+  zenMetaText: {
+    fontSize: 8.5,
+    color: "#44403c",
+    marginBottom: 4,
+    letterSpacing: 1,
   },
 });
 
@@ -476,6 +502,115 @@ const OPTICAL_SUBJECTS = [
 ];
 
 // Cover page rendering subcomponent
+// ─── COVER PAGE BACKGROUNDS ──────────────────────────────────────────
+
+const CyberpunkGridBackground = () => (
+  <View style={{ position: "absolute", left: 0, top: 0, width: 595.28, height: 841.89, zIndex: -10 }} fixed>
+    <Svg style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }}>
+      <Rect x={0} y={0} width={595.28} height={841.89} fill="#05070f" />
+      {Array.from({ length: 35 }).map((_, i) => (
+        <Line key={`h-${i}`} x1={0} y1={i * 25} x2={595.28} y2={i * 25} stroke="#1e1b4b" strokeWidth={0.8} opacity={0.4} />
+      ))}
+      {Array.from({ length: 25 }).map((_, i) => (
+        <Line key={`v-${i}`} x1={i * 25} y1={0} x2={i * 25} y2={841.89} stroke="#1e1b4b" strokeWidth={0.8} opacity={0.4} />
+      ))}
+      {/* Neon glowing line accents */}
+      <Line x1={20} y1={20} x2={60} y2={20} stroke="#6366f1" strokeWidth={2.5} />
+      <Line x1={20} y1={20} x2={20} y2={60} stroke="#6366f1" strokeWidth={2.5} />
+      <Line x1={575.28} y1={20} x2={535.28} y2={20} stroke="#06b6d4" strokeWidth={2.5} />
+      <Line x1={575.28} y1={20} x2={575.28} y2={60} stroke="#06b6d4" strokeWidth={2.5} />
+      <Line x1={20} y1={821.89} x2={60} y2={821.89} stroke="#06b6d4" strokeWidth={2.5} />
+      <Line x1={20} y1={821.89} x2={20} y2={781.89} stroke="#06b6d4" strokeWidth={2.5} />
+      <Line x1={575.28} y1={821.89} x2={535.28} y2={821.89} stroke="#6366f1" strokeWidth={2.5} />
+      <Line x1={575.28} y1={821.89} x2={575.28} y2={781.89} stroke="#6366f1" strokeWidth={2.5} />
+    </Svg>
+  </View>
+);
+
+const SunsetOrbitsBackground = () => (
+  <View style={{ position: "absolute", left: 0, top: 0, width: 595.28, height: 841.89, zIndex: -10, overflow: "hidden", backgroundColor: "#06040a" }} fixed>
+    {/* Colorful glow circles */}
+    <View style={{ position: "absolute", top: 80, left: -80, width: 340, height: 340, borderRadius: 170, backgroundColor: "#d946ef", opacity: 0.14 }} />
+    <View style={{ position: "absolute", bottom: 80, right: -80, width: 360, height: 360, borderRadius: 180, backgroundColor: "#06b6d4", opacity: 0.12 }} />
+    <View style={{ position: "absolute", top: 320, left: 160, width: 240, height: 240, borderRadius: 120, backgroundColor: "#f97316", opacity: 0.08 }} />
+    
+    <Svg style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }}>
+      <Circle cx={297.64} cy={420.94} r={140} stroke="#475569" strokeWidth={0.8} strokeDasharray="4, 4" opacity={0.25} />
+      <Circle cx={297.64} cy={420.94} r={220} stroke="#475569" strokeWidth={0.8} strokeDasharray="6, 6" opacity={0.2} />
+      <Circle cx={297.64} cy={420.94} r={310} stroke="#475569" strokeWidth={0.8} strokeDasharray="3, 5" opacity={0.15} />
+      <Circle cx={297.64 + 99} cy={420.94 - 99} r={5} fill="#f97316" opacity={0.6} />
+      <Circle cx={297.64 - 195} cy={420.94 + 102} r={8} fill="#06b6d4" opacity={0.5} />
+    </Svg>
+  </View>
+);
+
+const ZenWabiSabiBackground = () => (
+  <View style={{ position: "absolute", left: 0, top: 0, width: 595.28, height: 841.89, zIndex: -10, backgroundColor: "#f4f1ea" }} fixed>
+    <Svg style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }}>
+      {/* Zen red sun */}
+      <Circle cx={297.64} cy={310} r={85} fill="#991b1b" opacity={0.9} />
+      {/* Thin line grid */}
+      <Line x1={297.64} y1={60} x2={297.64} y2={780} stroke="#44403c" strokeWidth={0.5} opacity={0.3} />
+      <Line x1={60} y1={520} x2={535} y2={520} stroke="#44403c" strokeWidth={0.8} opacity={0.3} />
+      <Rect x={287.64} y={510} width={20} height={20} fill="#44403c" opacity={0.9} />
+    </Svg>
+  </View>
+);
+
+const VintageGoldFrameBackground = () => (
+  <View style={{ position: "absolute", left: 0, top: 0, width: 595.28, height: 841.89, zIndex: -10, backgroundColor: "#250910", borderStyle: "solid", borderLeftWidth: 15, borderRightWidth: 15, borderTopWidth: 15, borderBottomWidth: 15, borderColor: "#1c060c" }} fixed>
+    <Svg style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }}>
+      {/* Outer gold line */}
+      <Rect x={8} y={8} width={549.28} height={795.89} stroke="#d97706" strokeWidth={2.2} fill="transparent" />
+      {/* Inner gold line */}
+      <Rect x={13} y={13} width={539.28} height={785.89} stroke="#d97706" strokeWidth={0.8} fill="transparent" />
+      
+      {/* Vintage corner boxes */}
+      <Rect x={8} y={8} width={18} height={18} fill="#d97706" />
+      <Rect x={539.28} y={8} width={18} height={18} fill="#d97706" />
+      <Rect x={8} y={785.89} width={18} height={18} fill="#d97706" />
+      <Rect x={539.28} y={785.89} width={18} height={18} fill="#d97706" />
+      
+      <Circle cx={30} cy={30} r={6} stroke="#d97706" strokeWidth={0.8} fill="transparent" />
+      <Circle cx={535.28} cy={30} r={6} stroke="#d97706" strokeWidth={0.8} fill="transparent" />
+      <Circle cx={30} cy={781.89} r={6} stroke="#d97706" strokeWidth={0.8} fill="transparent" />
+      <Circle cx={535.28} cy={781.89} r={6} stroke="#d97706" strokeWidth={0.8} fill="transparent" />
+    </Svg>
+  </View>
+);
+
+const OpticalTechnicalBackground = () => (
+  <View style={{ position: "absolute", left: 0, top: 0, width: 595.28, height: 841.89, zIndex: -10, backgroundColor: "#ffffff" }} fixed>
+    <Svg style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }}>
+      {/* Faint technical coordinate grid */}
+      {Array.from({ length: 42 }).map((_, i) => (
+        <Line key={`h-${i}`} x1={0} y1={i * 20} x2={595.28} y2={i * 20} stroke="#f1f5f9" strokeWidth={0.6} />
+      ))}
+      {Array.from({ length: 30 }).map((_, i) => (
+        <Line key={`v-${i}`} x1={i * 20} y1={0} x2={i * 20} y2={841.89} stroke="#f1f5f9" strokeWidth={0.6} />
+      ))}
+      
+      {/* Timing Tracks on margins */}
+      {Array.from({ length: 40 }).map((_, i) => (
+        <React.Fragment key={i}>
+          <Rect x={15} y={i * 20 + 20} width={10} height={7} fill="#000000" />
+          <Rect x={570} y={i * 20 + 20} width={10} height={7} fill="#000000" />
+        </React.Fragment>
+      ))}
+
+      {/* Aesthetic matrix in center bottom */}
+      {Array.from({ length: 8 }).map((_, r) => (
+        <React.Fragment key={r}>
+          {Array.from({ length: 16 }).map((_, c) => (
+            <Circle key={`${r}-${c}`} cx={155 + c * 19} cy={560 + r * 15} r={4} stroke="#475569" strokeWidth={0.8} fill="transparent" />
+          ))}
+        </React.Fragment>
+      ))}
+    </Svg>
+  </View>
+);
+
+// Cover page rendering subcomponent
 const NotebookCover = ({
   title,
   ownerName,
@@ -495,146 +630,210 @@ const NotebookCover = ({
     day: "numeric",
   });
 
-  const getCoverStyles = () => {
+  const renderCoverContent = () => {
     switch (coverStyle) {
       case "modern-indigo":
-        return {
-          container: [styles.coverContainer, styles.coverIndigo],
-          title: [styles.coverTitle, { color: "#818cf8" }],
-          subtitle: [styles.coverSubtitle, { color: "#94a3b8" }],
-          metaBox: [styles.coverMetaBox, { borderColor: "#312e81", backgroundColor: "#111827" }],
-          metaText: { color: "#cbd5e1" },
-          metaLabel: [styles.coverMetaLabel, { color: "#a5b4fc" }],
-          badgeBg: "#312e81",
-          badgeText: "#c7d2fe",
-          decorations: null,
-        };
-      case "creative-sunset":
-        return {
-          container: [styles.coverContainer, styles.coverSunset],
-          title: [styles.coverTitle, { color: "#ffffff" }],
-          subtitle: [styles.coverSubtitle, { color: "#cbd5e1" }],
-          metaBox: [styles.coverMetaBox, { borderColor: "#3f3f46", backgroundColor: "rgba(24, 24, 27, 0.7)" }],
-          metaText: { color: "#e4e4e7" },
-          metaLabel: [styles.coverMetaLabel, { color: "#fdba74" }],
-          badgeBg: "#7c2d12",
-          badgeText: "#ffedd5",
-          decorations: (
-            <>
-              <View style={styles.glowCircle1} />
-              <View style={styles.glowCircle2} />
-            </>
-          ),
-        };
-      case "minimalist-slate":
-        return {
-          container: [styles.coverContainer, styles.coverSlate],
-          title: [styles.coverTitle, { color: "#0f172a" }],
-          subtitle: [styles.coverSubtitle, { color: "#475569" }],
-          metaBox: [styles.coverMetaBox, { borderColor: "#cbd5e1", backgroundColor: "#f8fafc" }],
-          metaText: { color: "#334155" },
-          metaLabel: [styles.coverMetaLabel, { color: "#475569" }],
-          badgeBg: "#e2e8f0",
-          badgeText: "#475569",
-          decorations: null,
-        };
-      case "academic-classic":
-        return {
-          container: [styles.coverContainer, styles.coverClassic],
-          title: [styles.coverTitle, { color: "#78350f", fontFamily: "Roboto", fontSize: 24, textTransform: "uppercase" as const, letterSpacing: 2 }],
-          subtitle: [styles.coverSubtitle, { color: "#b45309", fontFamily: "Roboto" }],
-          metaBox: [styles.coverMetaBox, { borderColor: "#b45309", backgroundColor: "#fafaf9", borderStyle: "solid" as const }],
-          metaText: { color: "#78350f" },
-          metaLabel: [styles.coverMetaLabel, { color: "#78350f" }],
-          badgeBg: "#fef3c7",
-          badgeText: "#92400e",
-          decorations: null,
-        };
-      case "optical-clean":
-      default:
-        return {
-          container: [styles.coverContainer, styles.coverOptical],
-          title: [styles.coverTitle, { color: "#000000", letterSpacing: 1 }],
-          subtitle: [styles.coverSubtitle, { color: "#475569" }],
-          metaBox: [styles.coverMetaBox, { borderColor: "#000000", borderStyle: "solid" as const, borderWidth: 1.5, backgroundColor: "#ffffff" }],
-          metaText: { color: "#000000" },
-          metaLabel: [styles.coverMetaLabel, { color: "#000000" }],
-          badgeBg: "#f1f5f9",
-          badgeText: "#0f172a",
-          decorations: (
-            <View style={{ position: "absolute", top: 40, bottom: 40, right: 20, width: 10 }}>
-              <TimingTracks />
-            </View>
-          ),
-        };
-    }
-  };
-
-  const currentTheme = getCoverStyles();
-
-  return (
-    <Page size="A4" style={[styles.page, { padding: 0 }]}>
-      <View style={currentTheme.container}>
-        {currentTheme.decorations}
-        {coverStyle === "academic-classic" ? (
-          <View style={styles.classicInnerBorder}>
-            <Text style={currentTheme.title}>{title || "DERS NOTLARIM"}</Text>
-            <Text style={currentTheme.subtitle}>Kişisel Konu ve Cornell Çalışma Defteri</Text>
-            
-            <View style={currentTheme.metaBox}>
-              <View style={styles.coverMetaRow}>
-                <Text style={currentTheme.metaLabel}>AD SOYAD:</Text>
-                <Text style={[styles.coverMetaValue, currentTheme.metaText]}>{ownerName || "__________________"}</Text>
-              </View>
-              <View style={styles.coverMetaRow}>
-                <Text style={currentTheme.metaLabel}>OLUŞTURMA TARİHİ:</Text>
-                <Text style={[styles.coverMetaValue, currentTheme.metaText]}>{dateStr}</Text>
-              </View>
-            </View>
-
-            {subjects.length > 0 && (
-              <View style={styles.badgeContainer}>
-                {subjects.map((sub, idx) => (
-                  <Text key={idx} style={[styles.badge, { backgroundColor: currentTheme.badgeBg, color: currentTheme.badgeText }]}>
-                    {sub}
-                  </Text>
-                ))}
-              </View>
-            )}
-          </View>
-        ) : (
+        return (
           <>
-            <Text style={currentTheme.title}>{title || "DERS NOTLARIM"}</Text>
-            <Text style={currentTheme.subtitle}>Kişisel Konu ve Defter Notları</Text>
-            
-            <View style={currentTheme.metaBox}>
-              <View style={styles.coverMetaRow}>
-                <Text style={currentTheme.metaLabel}>ÖĞRENCİ ADI:</Text>
-                <Text style={[styles.coverMetaValue, currentTheme.metaText]}>{ownerName || "__________________"}</Text>
+            <CyberpunkGridBackground />
+            <View style={styles.indigoTitleCard}>
+              <Text style={{ fontSize: 8, color: "#06b6d4", fontWeight: "bold", letterSpacing: 2, marginBottom: 8, textTransform: "uppercase" }}>
+                // YKS 2027 DIGITAL SYSTEM
+              </Text>
+              <Text style={[styles.coverTitle, { color: "#ffffff", fontSize: 24, marginBottom: 12 }]}>
+                {title.toUpperCase() || "ÇALIŞMA DEFTERİ"}
+              </Text>
+              <Text style={[styles.coverSubtitle, { color: "#818cf8", fontSize: 9, marginBottom: 25, letterSpacing: 1 }]}>
+                Kişisel Ders Takip ve Cornell Notları
+              </Text>
+              
+              <View style={[styles.coverMetaBox, { borderColor: "#312e81", backgroundColor: "rgba(17, 24, 39, 0.7)", width: "100%" }]}>
+                <View style={styles.coverMetaRow}>
+                  <Text style={[styles.coverMetaLabel, { color: "#818cf8" }]}>ÖĞRENCİ:</Text>
+                  <Text style={{ color: "#ffffff", fontWeight: "bold", fontSize: 9 }}>{ownerName.toUpperCase() || "ÖĞRENCİ KODLANMADI"}</Text>
+                </View>
+                <View style={styles.coverMetaRow}>
+                  <Text style={[styles.coverMetaLabel, { color: "#818cf8" }]}>TARİH:</Text>
+                  <Text style={{ color: "#cbd5e1", fontSize: 9 }}>{dateStr}</Text>
+                </View>
               </View>
-              <View style={styles.coverMetaRow}>
-                <Text style={currentTheme.metaLabel}>TARİH:</Text>
-                <Text style={[styles.coverMetaValue, currentTheme.metaText]}>{dateStr}</Text>
-              </View>
+
               {subjects.length > 0 && (
-                <View style={[styles.coverMetaRow, { marginTop: 4 }]}>
-                  <Text style={currentTheme.metaLabel}>KAPSAM:</Text>
-                  <Text style={currentTheme.metaText}>{subjects.length} Ders</Text>
+                <View style={styles.badgeContainer}>
+                  {subjects.map((sub, idx) => (
+                    <Text key={idx} style={[styles.badge, { backgroundColor: "#312e81", color: "#c7d2fe" }]}>
+                      {sub}
+                    </Text>
+                  ))}
+                </View>
+              )}
+            </View>
+          </>
+        );
+
+      case "creative-sunset":
+        return (
+          <>
+            <SunsetOrbitsBackground />
+            <View style={styles.sunsetTitleCard}>
+              <Text style={{ fontSize: 8, color: "#f97316", fontWeight: "bold", letterSpacing: 3, marginBottom: 8 }}>
+                ASTRONOMİ & METODOLOJİ
+              </Text>
+              <Text style={[styles.coverTitle, { color: "#ffffff", fontSize: 24, marginBottom: 12 }]}>
+                {title.toUpperCase() || "DERS NOTLARIM"}
+              </Text>
+              <Text style={[styles.coverSubtitle, { color: "#cbd5e1", fontSize: 9, marginBottom: 25, letterSpacing: 1.2 }]}>
+                Zaman ve Odak Odaklı Çalışma Kılavuzu
+              </Text>
+              
+              <View style={[styles.coverMetaBox, { borderColor: "rgba(255, 255, 255, 0.15)", backgroundColor: "rgba(10, 7, 20, 0.5)", width: "100%" }]}>
+                <View style={styles.coverMetaRow}>
+                  <Text style={[styles.coverMetaLabel, { color: "#f97316" }]}>AD SOYAD:</Text>
+                  <Text style={{ color: "#ffffff", fontWeight: "bold", fontSize: 9 }}>{ownerName.toUpperCase() || "____________________"}</Text>
+                </View>
+                <View style={styles.coverMetaRow}>
+                  <Text style={[styles.coverMetaLabel, { color: "#f97316" }]}>TARİH:</Text>
+                  <Text style={{ color: "#cbd5e1", fontSize: 9 }}>{dateStr}</Text>
+                </View>
+              </View>
+
+              {subjects.length > 0 && (
+                <View style={styles.badgeContainer}>
+                  {subjects.map((sub, idx) => (
+                    <Text key={idx} style={[styles.badge, { backgroundColor: "#7c2d12", color: "#ffedd5" }]}>
+                      {sub}
+                    </Text>
+                  ))}
+                </View>
+              )}
+            </View>
+          </>
+        );
+
+      case "minimalist-slate":
+        return (
+          <View style={styles.zenContainer}>
+            <ZenWabiSabiBackground />
+            <View style={styles.zenTitleSection}>
+              <Text style={styles.zenTitle}>{title.toUpperCase() || "DERS DEFTERİ"}</Text>
+              <Text style={styles.zenSubtitle}>KİŞİSEL ÇALIŞMA NOTLARI VE ANALİZLERİ</Text>
+              {subjects.length > 0 && (
+                <View style={[styles.badgeContainer, { justifyContent: "flex-start", marginTop: 15 }]}>
+                  {subjects.map((sub, idx) => (
+                    <Text key={idx} style={[styles.badge, { backgroundColor: "#e4e2db", color: "#44403c", borderWidth: 0.5, borderColor: "#cbd5e1" }]}>
+                      {sub}
+                    </Text>
+                  ))}
                 </View>
               )}
             </View>
 
-            {subjects.length > 0 && (
-              <View style={styles.badgeContainer}>
-                {subjects.map((sub, idx) => (
-                  <Text key={idx} style={[styles.badge, { backgroundColor: currentTheme.badgeBg, color: currentTheme.badgeText }]}>
-                    {sub}
-                  </Text>
-                ))}
+            <View style={styles.zenMetaSection}>
+              <Text style={styles.zenMetaText}>YAZAR: {ownerName.toUpperCase() || "BİLİNMEYEN ÖĞRENCİ"}</Text>
+              <Text style={styles.zenMetaText}>TARİH: {dateStr}</Text>
+              <Text style={[styles.zenMetaText, { color: "#78716c", fontSize: 7.5, marginTop: 4 }]}>
+                YKS ÇALIŞMA ODASI TARAFINDAN OLUŞTURULDU
+              </Text>
+            </View>
+          </View>
+        );
+
+      case "academic-classic":
+        return (
+          <>
+            <VintageGoldFrameBackground />
+            <View style={styles.classicTitleCard}>
+              <View style={styles.classicInnerBorder}>
+                <Text style={{ fontSize: 9, color: "#d97706", fontWeight: "bold", letterSpacing: 4, marginBottom: 15, textTransform: "uppercase" }}>
+                  COLLEGII STUDIORUM
+                </Text>
+                
+                <Text style={[styles.coverTitle, { color: "#78350f", fontSize: 20, textTransform: "uppercase" as const, letterSpacing: 2, marginBottom: 15 }]}>
+                  {title || "DERS NOTLARIM"}
+                </Text>
+                
+                <Text style={{ fontSize: 8, color: "#b45309", marginBottom: 30, letterSpacing: 1.5 }}>
+                  YKS Sınavına Hazırlık Ders Defteri
+                </Text>
+
+                <View style={[styles.coverMetaBox, { borderColor: "#d97706", backgroundColor: "#fdfbf7", width: "100%", borderWidth: 1, padding: 12 }]}>
+                  <View style={[styles.coverMetaRow, { marginBottom: 6 }]}>
+                    <Text style={{ fontWeight: "bold", color: "#78350f", fontSize: 8 }}>ÖĞRENCİ ADI:</Text>
+                    <Text style={{ color: "#78350f", fontSize: 8, fontWeight: "bold" }}>{ownerName.toUpperCase() || "____________________"}</Text>
+                  </View>
+                  <View style={styles.coverMetaRow}>
+                    <Text style={{ fontWeight: "bold", color: "#78350f", fontSize: 8 }}>TARİH:</Text>
+                    <Text style={{ color: "#78350f", fontSize: 8 }}>{dateStr}</Text>
+                  </View>
+                </View>
+
+                {subjects.length > 0 && (
+                  <View style={styles.badgeContainer}>
+                    {subjects.map((sub, idx) => (
+                      <Text key={idx} style={[styles.badge, { backgroundColor: "#fef3c7", color: "#92400e", borderWidth: 0.5, borderColor: "#f59e0b" }]}>
+                        {sub}
+                      </Text>
+                    ))}
+                  </View>
+                )}
               </View>
-            )}
+            </View>
           </>
-        )}
+        );
+
+      case "optical-clean":
+      default:
+        return (
+          <>
+            <OpticalTechnicalBackground />
+            <View style={styles.opticalTitleCard}>
+              <View style={{ borderBottomWidth: 1.8, borderBottomColor: "#000000", paddingBottom: 8, marginBottom: 12, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <Text style={{ fontSize: 10, fontWeight: "bold", color: "#000000", letterSpacing: 1.5 }}>
+                  OPTİK NOT DEFTERİ
+                </Text>
+                <Text style={{ fontSize: 7, fontWeight: "bold", color: "#ffffff", backgroundColor: "#000000", paddingHorizontal: 4, paddingVertical: 1 }}>
+                  FORM: YKS-2027
+                </Text>
+              </View>
+
+              <Text style={[styles.coverTitle, { color: "#000000", fontSize: 20, textAlign: "left", marginBottom: 8 }]}>
+                {title.toUpperCase() || "DERS ÇALIŞMA DEFTERİ"}
+              </Text>
+              
+              <Text style={{ fontSize: 8, color: "#475569", marginBottom: 20, lineHeight: 1.3 }}>
+                Bu defter optik okuyucu düzenine göre tasarlanmış not şablonları içermektedir. Lütfen kurşun kalem kullanınız.
+              </Text>
+
+              <View style={[styles.coverMetaBox, { borderColor: "#000000", borderWidth: 1.2, padding: 12, width: "100%" }]}>
+                <View style={[styles.coverMetaRow, { marginBottom: 6 }]}>
+                  <Text style={{ fontWeight: "bold", color: "#000000", fontSize: 8 }}>AD SOYAD:</Text>
+                  <Text style={{ color: "#000000", fontSize: 8, fontWeight: "bold" }}>{ownerName.toUpperCase() || "____________________"}</Text>
+                </View>
+                <View style={styles.coverMetaRow}>
+                  <Text style={{ fontWeight: "bold", color: "#000000", fontSize: 8 }}>TARİH:</Text>
+                  <Text style={{ color: "#000000", fontSize: 8 }}>{dateStr}</Text>
+                </View>
+              </View>
+
+              {subjects.length > 0 && (
+                <View style={[styles.badgeContainer, { justifyContent: "flex-start", marginTop: 12 }]}>
+                  {subjects.map((sub, idx) => (
+                    <Text key={idx} style={[styles.badge, { backgroundColor: "#000000", color: "#ffffff", borderRadius: 2 }]}>
+                      {sub.toUpperCase()}
+                    </Text>
+                  ))}
+                </View>
+              )}
+            </View>
+          </>
+        );
+    }
+  };
+
+  return (
+    <Page size="A4" style={[styles.page, { padding: 0 }]}>
+      <View style={styles.coverContainer}>
+        {renderCoverContent()}
       </View>
     </Page>
   );
