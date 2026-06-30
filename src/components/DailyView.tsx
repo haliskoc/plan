@@ -28,7 +28,8 @@ export function DailyView() {
     plan, 
     updatePlanItem, 
     removePlanItem,
-    selectedTrack 
+    selectedTrack,
+    pdfSettings 
   } = usePlanStore();
 
   const [isClient, setIsClient] = useState(false);
@@ -105,6 +106,7 @@ export function DailyView() {
                   dateStr={selectedDate}
                   items={dayItems}
                   selectedTrack={selectedTrack}
+                  pdfSettings={pdfSettings}
                 />
               }
               fileName={`${selectedDate}-${plan.title.toLowerCase().replace(/\s+/g, "-")}-gunluk.pdf`}

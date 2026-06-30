@@ -43,6 +43,17 @@ export interface StudyGoal {
   weeklyMinutes: number;
 }
 
+export interface PdfSettings {
+  dailyOrientation: "portrait" | "landscape";
+  weeklyOrientation: "portrait" | "landscape";
+  monthlyOrientation: "portrait" | "landscape";
+  backgroundImage: string; // base64 data URL, empty if none
+  backgroundOpacity: number; // 0-100, 100 = full, 0 = invisible
+  backgroundColorAvg: string; // analyzed dominant color hex
+  textColorLight: string; // recommended text color on dark bg
+  textColorDark: string; // recommended text color on light bg
+}
+
 export interface PlanState {
   plan: Plan;
   selectedDate: string;
@@ -57,6 +68,7 @@ export interface PlanState {
   activePlanId: string;
   goals: StudyGoal;
   recurringItems: RecurringItem[];
+  pdfSettings: PdfSettings;
   pomodoro: {
     minutes: number;
     seconds: number;
@@ -97,6 +109,8 @@ export interface PlanState {
   resetPomodoro: () => void;
   tickPomodoro: () => void;
   setPomodoroSession: (minutes: number) => void;
+  setPdfSettings: (settings: Partial<PdfSettings>) => void;
+  setPdfBackgroundImage: (dataUrl: string) => void;
 }
 
 const DEFAULT_EXAM_DATE = "2027-06-19";
@@ -152,6 +166,16 @@ export const usePlanStore = create<PlanState>()(
       goals: { dailyMinutes: 180, weeklyMinutes: 900 },
       recurringItems: [],
       pomodoro: { minutes: 25, seconds: 0, isRunning: false, isBreak: false, totalSessions: 0, sessionMinutes: 25 },
+      pdfSettings: {
+        dailyOrientation: "portrait",
+        weeklyOrientation: "landscape",
+        monthlyOrientation: "portrait",
+        backgroundImage: "",
+        backgroundOpacity: 15,
+        backgroundColorAvg: "#ffffff",
+        textColorLight: "#ffffff",
+        textColorDark: "#0f172a",
+      },
       undoStack: [],
       redoStack: [],
 
@@ -450,6 +474,18 @@ export const usePlanStore = create<PlanState>()(
           },
         }));
       },
+
+      setPdfSettings: (settings) => {
+        set((s) => ({
+          pdfSettings: { ...s.pdfSettings, ...settings },
+        }));
+      },
+
+      setPdfBackgroundImage: (dataUrl) => {
+        set((s) => ({
+          pdfSettings: { ...s.pdfSettings, backgroundImage: dataUrl },
+        }));
+      },
     }),
     {
       name: "yks-planner-storage",
@@ -477,6 +513,18 @@ export const usePlanStore = create<PlanState>()(
           }
           if (!state.recurringItems) {
             state.recurringItems = [];
+          }
+          if (!state.pdfSettings) {
+            state.pdfSettings = {
+              dailyOrientation: "portrait",
+              weeklyOrientation: "landscape",
+              monthlyOrientation: "portrait",
+              backgroundImage: "",
+              backgroundOpacity: 15,
+              backgroundColorAvg: "#ffffff",
+              textColorLight: "#ffffff",
+              textColorDark: "#0f172a",
+            };
           }
           if (!state.undoStack) state.undoStack = [];
           if (!state.redoStack) state.redoStack = [];
