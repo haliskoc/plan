@@ -492,16 +492,6 @@ export const usePlanStore = create<PlanState>()(
     }),
     {
       name: "yks-planner-storage",
-      partialize: (state) => {
-        try {
-          const { pomodoro, undoStack, redoStack, ...rest } = state;
-          const pdf = rest.pdfSettings || {};
-          const { backgroundImage, ...pdfRest } = pdf;
-          return { ...rest, pdfSettings: { ...pdfRest, backgroundImage: "" } };
-        } catch {
-          return state;
-        }
-      },
       onRehydrateStorage: () => (state, error) => {
         if (error || !state) {
           console.warn("localStorage bozuk, varsayılan değerlerle başlatılıyor.");
