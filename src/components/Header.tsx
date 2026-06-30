@@ -23,6 +23,7 @@ interface HeaderProps {
   onOpenSettings: () => void;
   onOpenStats: () => void;
   onOpenPlanManager: () => void;
+  onOpenNotebookModal: () => void;
 }
 
 function validatePlan(data: unknown): boolean {
@@ -39,7 +40,7 @@ function validatePlan(data: unknown): boolean {
   return true;
 }
 
-export const Header = React.memo(function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpenPlanManager }: HeaderProps) {
+export const Header = React.memo(function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpenPlanManager, onOpenNotebookModal }: HeaderProps) {
   const plan = useActivePlan();
   const setPlanTitle = usePlanStore((s) => s.setPlanTitle);
   const clearPlan = usePlanStore((s) => s.clearPlan);
@@ -281,9 +282,18 @@ export const Header = React.memo(function Header({ onOpenTemplateModal, onOpenSe
 
           <button
             onClick={onOpenTemplateModal}
-            className="text-xs font-semibold px-3 py-1.5 sm:py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 shadow-md shadow-indigo-600/10 hover:shadow-indigo-600/25 transition-all cursor-pointer flex items-center gap-1"
+            className="text-xs font-semibold px-3 py-1.5 sm:py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all cursor-pointer flex items-center gap-1"
           >
             <span>Şablon Yükle</span>
+          </button>
+
+          <button
+            onClick={onOpenNotebookModal}
+            className="text-xs font-semibold px-3 py-1.5 sm:py-2 rounded-lg bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-md shadow-emerald-600/10 hover:shadow-emerald-600/25 transition-all cursor-pointer flex items-center gap-1.5"
+            title="Kişisel Defter Oluştur"
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Defter Oluştur</span>
           </button>
 
           <div className="flex items-center border border-neutral-800 rounded-lg bg-neutral-900/40">

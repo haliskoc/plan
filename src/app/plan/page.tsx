@@ -10,6 +10,7 @@ import { Settings } from "@/components/Settings";
 import { StatsPanel } from "@/components/StatsPanel";
 import { RecurringItems } from "@/components/RecurringItems";
 import { PlanManager } from "@/components/PlanManager";
+import { NotebookModal } from "@/components/NotebookModal";
 import { usePlanStore, useActivePlan } from "@/store/usePlanStore";
 import { addDays, format, getDay } from "date-fns";
 import { requestNotificationPermission, sendStudyReminder, registerServiceWorker } from "@/utils/notifications";
@@ -27,6 +28,7 @@ export default function PlanPage() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
   const [isPlanManagerOpen, setIsPlanManagerOpen] = useState(false);
+  const [isNotebookModalOpen, setIsNotebookModalOpen] = useState(false);
   const [activePanel, setActivePanel] = useState<"recurring" | null>(null);
   const recurringAppliedRef = useRef(false);
 
@@ -123,6 +125,7 @@ export default function PlanPage() {
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenStats={() => setIsStatsOpen(true)}
         onOpenPlanManager={() => setIsPlanManagerOpen(true)}
+        onOpenNotebookModal={() => setIsNotebookModalOpen(true)}
       />
 
       <main className="flex-1 max-w-[1600px] w-full mx-auto p-4 sm:p-6 flex flex-col gap-6">
@@ -157,6 +160,7 @@ export default function PlanPage() {
       <TemplateLoader isOpen={isTemplateModalOpen} onClose={() => setIsTemplateModalOpen(false)} />
       <Settings isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
       <PlanManager isOpen={isPlanManagerOpen} onClose={() => setIsPlanManagerOpen(false)} />
+      <NotebookModal isOpen={isNotebookModalOpen} onClose={() => setIsNotebookModalOpen(false)} />
 
       {isStatsOpen && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
