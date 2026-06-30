@@ -9,9 +9,8 @@ interface CountdownProps {
   startDateStr?: string;
 }
 
-export function Countdown({ targetDateStr, startDateStr }: CountdownProps) {
-  const { pdfSettings, hasHydrated } = usePlanStore();
-  const hasBg = hasHydrated && !!pdfSettings.backgroundImage;
+export const Countdown = React.memo(function Countdown({ targetDateStr, startDateStr }: CountdownProps) {
+  const hasBg = usePlanStore((s) => s.hasHydrated && !!s.pdfSettings.backgroundImage);
 
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
@@ -157,4 +156,4 @@ export function Countdown({ targetDateStr, startDateStr }: CountdownProps) {
       </div>
     </div>
   );
-}
+});

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePlanStore } from "@/store/usePlanStore";
+import { usePlanStore, useActivePlan } from "@/store/usePlanStore";
 import { 
   BookOpen, 
   Calendar, 
@@ -17,7 +17,8 @@ import {
 import { differenceInDays, parseISO } from "date-fns";
 
 export default function LandingPage() {
-  const { plan, hasHydrated } = usePlanStore();
+  const plan = useActivePlan();
+  const hasHydrated = usePlanStore((s) => s.hasHydrated);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

@@ -7,8 +7,11 @@ import { WeeklyView } from "./WeeklyView";
 import { MonthlyView } from "./MonthlyView";
 import { Calendar, CalendarDays, CalendarRange, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
-export function PlannerViews() {
-  const { viewMode, setViewMode, isSidebarOpen, setIsSidebarOpen } = usePlanStore();
+export const PlannerViews = React.memo(function PlannerViews() {
+  const viewMode = usePlanStore((s) => s.viewMode);
+  const setViewMode = usePlanStore((s) => s.setViewMode);
+  const isSidebarOpen = usePlanStore((s) => s.isSidebarOpen);
+  const setIsSidebarOpen = usePlanStore((s) => s.setIsSidebarOpen);
 
   const tabs = [
     { id: "gunluk" as const, name: "Günlük", icon: Calendar },
@@ -66,5 +69,6 @@ export function PlannerViews() {
       </div>
     </div>
   );
-}
+});
+
 export default PlannerViews;

@@ -9,8 +9,12 @@ interface PlanManagerProps {
   onClose: () => void;
 }
 
-export function PlanManager({ isOpen, onClose }: PlanManagerProps) {
-  const { plans, activePlanId, createPlan, switchPlan, deletePlan } = usePlanStore();
+export const PlanManager = React.memo(function PlanManager({ isOpen, onClose }: PlanManagerProps) {
+  const plans = usePlanStore((s) => s.plans);
+  const activePlanId = usePlanStore((s) => s.activePlanId);
+  const createPlan = usePlanStore((s) => s.createPlan);
+  const switchPlan = usePlanStore((s) => s.switchPlan);
+  const deletePlan = usePlanStore((s) => s.deletePlan);
   const [newPlanTitle, setNewPlanTitle] = useState("");
 
   if (!isOpen) return null;
@@ -106,4 +110,4 @@ export function PlanManager({ isOpen, onClose }: PlanManagerProps) {
       </div>
     </div>
   );
-}
+});

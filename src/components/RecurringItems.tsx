@@ -6,8 +6,11 @@ import { YKS_TOPICS, TOPICS_MAP } from "@/data/topics";
 import { getSubjectColor } from "@/utils/subjectColors";
 import { Repeat, Plus, Trash2, Clock, RefreshCw, Power } from "lucide-react";
 
-export function RecurringItems() {
-  const { recurringItems, addRecurringItem, removeRecurringItem, toggleRecurringItem } = usePlanStore();
+export const RecurringItems = React.memo(function RecurringItems() {
+  const recurringItems = usePlanStore((s) => s.recurringItems);
+  const addRecurringItem = usePlanStore((s) => s.addRecurringItem);
+  const removeRecurringItem = usePlanStore((s) => s.removeRecurringItem);
+  const toggleRecurringItem = usePlanStore((s) => s.toggleRecurringItem);
   const [topicId, setTopicId] = useState("");
   const [duration, setDuration] = useState(90);
   const [selectedDays, setSelectedDays] = useState<number[]>([1, 2, 3, 4, 5]);
@@ -150,4 +153,4 @@ export function RecurringItems() {
       </div>
     </div>
   );
-}
+});

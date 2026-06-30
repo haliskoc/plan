@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { usePlanStore } from "@/store/usePlanStore";
+import React from "react";
+import { usePlanStore, useActivePlan } from "@/store/usePlanStore";
 import { 
   BookOpen, 
   Trash2, 
@@ -39,33 +39,44 @@ function validatePlan(data: unknown): boolean {
   return true;
 }
 
-export function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpenPlanManager }: HeaderProps) {
-  const { plan, setPlanTitle, clearPlan, hasHydrated, undo, redo, undoStack, redoStack } = usePlanStore();
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [tempTitle, setTempTitle] = useState(plan.title);
-  const [mounted, setMounted] = useState(false);
+export const Header = React.memo(function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpenPlanManager }: HeaderProps) {
+  const plan = useActivePlan();
+  const setPlanTitle = usePlanStore((s) => s.setPlanTitle);
+  const clearPlan = usePlanStore((s) => s.clearPlan);
+  const hasHydrated = usePlanStore((s) => s.hasHydrated);
+  const undo = usePlanStore((s) => s.undo);
+  const redo = usePlanStore((s) => s.redo);
+  const undoStack = usePlanStore((s) => s.undoStack);
+  const redoStack = usePlanStore((s) => s.redoStack);
 
-  useEffect(() => {
+  const [isEditingTitle, setIsEditingTitle] = React.useState(false);
+  const [tempTitle, setTempTitle] = React.useState(plan.title);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
     setMounted(true);
-    if (hasHydrated) {
+  }, []);
+
+  React.useEffect(() => {
+    if (hasHydrated && mounted) {
       setTempTitle(plan.title);
     }
-  }, [plan.title, hasHydrated]);
+  }, [plan.title, hasHydrated, mounted]);
 
-  const handleSaveTitle = () => {
+  const handleSaveTitle = React.useCallback(() => {
     if (tempTitle.trim()) {
       setPlanTitle(tempTitle.trim());
     }
     setIsEditingTitle(false);
-  };
+  }, [tempTitle, setPlanTitle]);
 
-  const handleClearPlan = () => {
+  const handleClearPlan = React.useCallback(() => {
     if (confirm("Tüm planınızı sıfırlamak istediğinize emin misiniz? Bu işlem geri alınabilir.")) {
       clearPlan();
     }
-  };
+  }, [clearPlan]);
 
-  const handleExportPlan = () => {
+  const handleExportPlan = React.useCallback(() => {
     const dataStr = JSON.stringify(plan, null, 2);
     const dataBlob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(dataBlob);
@@ -76,9 +87,9 @@ export function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpe
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-  };
+  }, [plan]);
 
-  const handleImportPlan = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImportPlan = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -91,7 +102,7 @@ export function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpe
           return;
         }
         if (confirm("Bu yedek dosyasını yüklemek mevcut planınızı silecektir. Devam etmek istiyor musunuz?")) {
-          usePlanStore.setState({ plan: importedData });
+          usePlanStore.setState((s) => ({ plans: [importedData], activePlanId: importedData.id }));
           alert("Plan başarıyla yüklendi!");
         }
       } catch {
@@ -100,10 +111,10 @@ export function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpe
     };
     reader.readAsText(file);
     e.target.value = "";
-  };
+  }, []);
 
   // Keyboard shortcuts
-  const handleKeyDown = useCallback(
+  const handleKeyDown = React.useCallback(
     (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
 
@@ -119,15 +130,15 @@ export function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpe
     [undo, redo]
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  const stats = useMemo(() => {
-    const items = plan?.items || [];
+  const stats = React.useMemo(() => {
+    const items = plan.items;
     const total = items.length;
-    const completed = items.filter(item => item.status === "tamamlandi").length;
+    const completed = items.filter((item) => item.status === "tamamlandi").length;
     const minutes = items.reduce((sum, item) => sum + item.durationMinutes, 0);
     return {
       totalItems: total,
@@ -135,7 +146,7 @@ export function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpe
       totalHours: Math.round(minutes / 60),
       completionPercentage: total > 0 ? Math.round((completed / total) * 100) : 0,
     };
-  }, [plan?.items]);
+  }, [plan.items]);
 
   if (!mounted || !hasHydrated) {
     return (
@@ -308,4 +319,4 @@ export function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpe
       </div>
     </header>
   );
-}
+});

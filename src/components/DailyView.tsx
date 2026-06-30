@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { usePlanStore, PlanItem } from "@/store/usePlanStore";
+import { usePlanStore, PlanItem, useActivePlan } from "@/store/usePlanStore";
 import { TOPICS_MAP } from "@/data/topics";
 import { formatFullDate } from "@/utils/dates";
 import { getSubjectColor } from "@/utils/subjectColors";
@@ -28,25 +28,20 @@ const loadConfetti = async () => {
   return confettiFn;
 };
 
-export function DailyView() {
-  const { 
-    selectedDate, 
-    setSelectedDate, 
-    plan, 
-    updatePlanItem, 
-    updatePlanItemNote,
-    removePlanItem,
-    selectedTrack,
-    pdfSettings 
-  } = usePlanStore();
+export const DailyView = React.memo(function DailyView() {
+  const selectedDate = usePlanStore((s) => s.selectedDate);
+  const setSelectedDate = usePlanStore((s) => s.setSelectedDate);
+  const plan = useActivePlan();
+  const updatePlanItem = usePlanStore((s) => s.updatePlanItem);
+  const updatePlanItemNote = usePlanStore((s) => s.updatePlanItemNote);
+  const removePlanItem = usePlanStore((s) => s.removePlanItem);
+  const selectedTrack = usePlanStore((s) => s.selectedTrack);
+  const pdfSettings = usePlanStore((s) => s.pdfSettings);
 
   const [isClient, setIsClient] = useState(false);
+  useEffect(() => { setIsClient(true); }, []);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const activeDate = parseISO(selectedDate);
+  const activeDate = useMemo(() => parseISO(selectedDate), [selectedDate]);
 
   const handlePrevDay = useCallback(() => {
     setSelectedDate(format(subDays(activeDate, 1), "yyyy-MM-dd"));
@@ -56,34 +51,36 @@ export function DailyView() {
     setSelectedDate(format(addDays(activeDate, 1), "yyyy-MM-dd"));
   }, [activeDate, setSelectedDate]);
 
-  const dayItems = plan.items.filter((item) => item.date === selectedDate);
+  const dayItems = useMemo(
+    () => plan.items.filter((item) => item.date === selectedDate),
+    [plan.items, selectedDate]
+  );
 
-  const handleToggleStatus = (id: string, currentStatus: string) => {
+  const handleToggleStatus = useCallback((id: string, currentStatus: string) => {
     const nextStatus = currentStatus === "tamamlandi" ? "yapilacak" : "tamamlandi";
     updatePlanItem(id, { status: nextStatus });
     if (nextStatus === "tamamlandi") {
       loadConfetti().then((cf) => cf({ particleCount: 100, spread: 70, origin: { y: 0.8 } }));
     }
-  };
+  }, [updatePlanItem]);
 
-  const handleChangeDuration = (id: string, amount: number) => {
+  const handleChangeDuration = useCallback((id: string, amount: number) => {
     const item = plan.items.find((i) => i.id === id);
     if (!item) return;
     updatePlanItem(id, { durationMinutes: Math.max(15, item.durationMinutes + amount) });
-  };
+  }, [plan.items, updatePlanItem]);
 
-  const handleChangeNote = (id: string, note: string) => {
+  const handleChangeNote = useCallback((id: string, note: string) => {
     updatePlanItemNote(id, note);
-  };
+  }, [updatePlanItemNote]);
 
-  // Track local note state per item to avoid store updates on every keystroke
   const [localNotes, setLocalNotes] = useState<Record<string, string>>({});
 
-  const handleLocalNoteChange = (id: string, value: string) => {
+  const handleLocalNoteChange = useCallback((id: string, value: string) => {
     setLocalNotes((prev) => ({ ...prev, [id]: value }));
-  };
+  }, []);
 
-  const handleNoteBlur = (id: string) => {
+  const handleNoteBlur = useCallback((id: string) => {
     const localVal = localNotes[id];
     if (localVal !== undefined) {
       handleChangeNote(id, localVal);
@@ -93,9 +90,12 @@ export function DailyView() {
         return next;
       });
     }
-  };
+  }, [localNotes, handleChangeNote]);
 
-  const totalMinutes = dayItems.reduce((sum, item) => sum + item.durationMinutes, 0);
+  const totalMinutes = useMemo(
+    () => dayItems.reduce((sum, item) => sum + item.durationMinutes, 0),
+    [dayItems]
+  );
 
   const hasBg = !!pdfSettings.backgroundImage;
 
@@ -254,4 +254,4 @@ export function DailyView() {
       </div>
     </div>
   );
-}
+});

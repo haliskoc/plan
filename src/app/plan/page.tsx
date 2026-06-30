@@ -8,20 +8,26 @@ import { PlannerViews } from "@/components/PlannerViews";
 import { TemplateLoader } from "@/components/TemplateLoader";
 import { Settings } from "@/components/Settings";
 import { StatsPanel } from "@/components/StatsPanel";
-import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { RecurringItems } from "@/components/RecurringItems";
 import { PlanManager } from "@/components/PlanManager";
-import { usePlanStore } from "@/store/usePlanStore";
+import { usePlanStore, useActivePlan } from "@/store/usePlanStore";
 import { addDays, format, getDay } from "date-fns";
 import { requestNotificationPermission, sendStudyReminder, registerServiceWorker } from "@/utils/notifications";
 
 export default function PlanPage() {
-  const { plan, hasHydrated, isSidebarOpen, theme, recurringItems, addPlanItems, pdfSettings } = usePlanStore();
+  const plan = useActivePlan();
+  const hasHydrated = usePlanStore((s) => s.hasHydrated);
+  const isSidebarOpen = usePlanStore((s) => s.isSidebarOpen);
+  const theme = usePlanStore((s) => s.theme);
+  const recurringItems = usePlanStore((s) => s.recurringItems);
+  const addPlanItems = usePlanStore((s) => s.addPlanItems);
+  const pdfSettings = usePlanStore((s) => s.pdfSettings);
+
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
   const [isPlanManagerOpen, setIsPlanManagerOpen] = useState(false);
-  const [activePanel, setActivePanel] = useState<"pomodoro" | "recurring" | null>(null);
+  const [activePanel, setActivePanel] = useState<"recurring" | null>(null);
   const recurringAppliedRef = useRef(false);
 
   const processRecurringItems = useCallback(() => {
@@ -30,7 +36,6 @@ export default function PlanPage() {
     const today = new Date();
     const itemsToAdd: Parameters<typeof addPlanItems>[0] = [];
 
-    // Build a Set index for O(1) lookups instead of O(n) plan.items.some()
     const scheduledIndex = new Set<string>();
     for (const item of plan.items) {
       scheduledIndex.add(`${item.date}|${item.topicId}`);
@@ -38,7 +43,7 @@ export default function PlanPage() {
 
     for (let d = 0; d < 28; d++) {
       const date = addDays(today, d);
-      const dayOfWeek = getDay(date); // 0=Sunday, 1=Monday...
+      const dayOfWeek = getDay(date);
       const dateStr = format(date, "yyyy-MM-dd");
 
       recurringItems.forEach((rec) => {
@@ -86,11 +91,9 @@ export default function PlanPage() {
     document.documentElement.style.colorScheme = theme;
   }, [theme]);
 
-  // Keyboard shortcut: / = focus search, 1-3 = switch view, s = toggle sidebar
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
-
       if (e.key === "Escape") {
         setIsStatsOpen(false);
         setIsSettingsOpen(false);
@@ -114,6 +117,7 @@ export default function PlanPage() {
           }}
         />
       )}
+
       <Header
         onOpenTemplateModal={() => setIsTemplateModalOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
@@ -128,25 +132,14 @@ export default function PlanPage() {
           {isSidebarOpen && (
             <div className="lg:col-span-3 space-y-4">
               <TopicSelector />
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setActivePanel(activePanel === "pomodoro" ? null : "pomodoro")}
-                  className={`flex-1 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer ${
-                    activePanel === "pomodoro" ? "bg-indigo-600 text-white" : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-neutral-200"
-                  }`}
-                >
-                  🍅 Pomodoro
-                </button>
-                <button
-                  onClick={() => setActivePanel(activePanel === "recurring" ? null : "recurring")}
-                  className={`flex-1 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer ${
-                    activePanel === "recurring" ? "bg-indigo-600 text-white" : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-neutral-200"
-                  }`}
-                >
-                  🔁 Tekrar
-                </button>
-              </div>
-              {activePanel === "pomodoro" && <PomodoroTimer />}
+              <button
+                onClick={() => setActivePanel(activePanel === "recurring" ? null : "recurring")}
+                className={`w-full text-xs font-bold py-2 rounded-xl transition-all cursor-pointer ${
+                  activePanel === "recurring" ? "bg-indigo-600 text-white" : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-neutral-200"
+                }`}
+              >
+                🔁 Tekrarlayan Çalışmalar
+              </button>
               {activePanel === "recurring" && <RecurringItems />}
             </div>
           )}

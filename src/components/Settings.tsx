@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { usePlanStore } from "@/store/usePlanStore";
+import { usePlanStore, useActivePlan } from "@/store/usePlanStore";
 import { X, SettingsIcon, Sun, Moon, Target, FileText, Image, Trash2, Link, Upload } from "lucide-react";
 import { analyzeImageColor, fileToDataUrl, urlToDataUrl } from "@/utils/colorAnalyzer";
 
@@ -10,8 +10,17 @@ interface SettingsProps {
   onClose: () => void;
 }
 
-export function Settings({ isOpen, onClose }: SettingsProps) {
-  const { plan, setExamDate, setPlanTitle, setGoals, goals, theme, toggleTheme, pdfSettings, setPdfSettings, setPdfBackgroundImage } = usePlanStore();
+export const Settings = React.memo(function Settings({ isOpen, onClose }: SettingsProps) {
+  const setExamDate = usePlanStore((s) => s.setExamDate);
+  const setPlanTitle = usePlanStore((s) => s.setPlanTitle);
+  const setGoals = usePlanStore((s) => s.setGoals);
+  const goals = usePlanStore((s) => s.goals);
+  const theme = usePlanStore((s) => s.theme);
+  const toggleTheme = usePlanStore((s) => s.toggleTheme);
+  const pdfSettings = usePlanStore((s) => s.pdfSettings);
+  const setPdfSettings = usePlanStore((s) => s.setPdfSettings);
+  const setPdfBackgroundImage = usePlanStore((s) => s.setPdfBackgroundImage);
+  const plan = useActivePlan();
   const [examDateInput, setExamDateInput] = useState(plan.examDate);
   const [titleInput, setTitleInput] = useState(plan.title);
   const [dailyGoal, setDailyGoal] = useState(goals.dailyMinutes);
@@ -287,4 +296,4 @@ export function Settings({ isOpen, onClose }: SettingsProps) {
       </div>
     </div>
   );
-}
+});

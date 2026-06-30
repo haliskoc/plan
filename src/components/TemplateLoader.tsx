@@ -10,8 +10,9 @@ interface TemplateLoaderProps {
   onClose: () => void;
 }
 
-export function TemplateLoader({ isOpen, onClose }: TemplateLoaderProps) {
-  const { loadTemplate, selectedDate } = usePlanStore();
+export const TemplateLoader = React.memo(function TemplateLoader({ isOpen, onClose }: TemplateLoaderProps) {
+  const loadTemplate = usePlanStore((s) => s.loadTemplate);
+  const selectedDate = usePlanStore((s) => s.selectedDate);
 
   if (!isOpen) return null;
 
@@ -117,4 +118,4 @@ export function TemplateLoader({ isOpen, onClose }: TemplateLoaderProps) {
       </div>
     </div>
   );
-}
+});

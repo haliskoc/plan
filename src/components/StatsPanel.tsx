@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { usePlanStore } from "@/store/usePlanStore";
+import { usePlanStore, useActivePlan } from "@/store/usePlanStore";
 import { BarChart3, Flame, Clock, CheckCircle, Target, TrendingUp } from "lucide-react";
 import { format, subDays, parseISO, differenceInDays } from "date-fns";
 import { tr } from "date-fns/locale";
 
-export function StatsPanel() {
-  const { plan, goals } = usePlanStore();
+export const StatsPanel = React.memo(function StatsPanel() {
+  const plan = useActivePlan();
+  const goals = usePlanStore((s) => s.goals);
 
   const stats = useMemo(() => {
     const items = plan.items;
@@ -113,4 +114,4 @@ export function StatsPanel() {
       </div>
     </div>
   );
-}
+});

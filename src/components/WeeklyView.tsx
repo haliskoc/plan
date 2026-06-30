@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { usePlanStore, PlanItem } from "@/store/usePlanStore";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { usePlanStore, PlanItem, useActivePlan } from "@/store/usePlanStore";
 import { TOPICS_MAP } from "@/data/topics";
 import { getShortDate, formatDayName } from "@/utils/dates";
 import { 
@@ -25,58 +25,47 @@ const loadConfettiW = async () => {
   return confettiFnW;
 };
 
-export function WeeklyView() {
-  const { 
-    selectedDate, 
-    setSelectedDate, 
-    plan, 
-    updatePlanItem, 
-    removePlanItem,
-    selectedTrack,
-    pdfSettings 
-  } = usePlanStore();
+export const WeeklyView = React.memo(function WeeklyView() {
+  const selectedDate = usePlanStore((s) => s.selectedDate);
+  const setSelectedDate = usePlanStore((s) => s.setSelectedDate);
+  const plan = useActivePlan();
+  const updatePlanItem = usePlanStore((s) => s.updatePlanItem);
+  const removePlanItem = usePlanStore((s) => s.removePlanItem);
+  const selectedTrack = usePlanStore((s) => s.selectedTrack);
+  const pdfSettings = usePlanStore((s) => s.pdfSettings);
 
   const [isClient, setIsClient] = useState(false);
+  useEffect(() => { setIsClient(true); }, []);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const activeDate = useMemo(() => parseISO(selectedDate), [selectedDate]);
 
-  const activeDate = parseISO(selectedDate);
+  const startOfActiveWeek = useMemo(() => startOfWeek(activeDate, { weekStartsOn: 1 }), [activeDate]);
+  const endOfActiveWeek = useMemo(() => endOfWeek(activeDate, { weekStartsOn: 1 }), [activeDate]);
 
-  // Find start (Monday) and end (Sunday) of the active week
-  const startOfActiveWeek = startOfWeek(activeDate, { weekStartsOn: 1 });
-  const endOfActiveWeek = endOfWeek(activeDate, { weekStartsOn: 1 });
-
-  const daysOfWeek = eachDayOfInterval({
+  const daysOfWeek = useMemo(() => eachDayOfInterval({
     start: startOfActiveWeek,
     end: endOfActiveWeek
-  });
+  }), [startOfActiveWeek, endOfActiveWeek]);
 
-  const handlePrevWeek = () => {
-    const prevWeek = subWeeks(activeDate, 1);
-    setSelectedDate(format(prevWeek, "yyyy-MM-dd"));
-  };
+  const handlePrevWeek = useCallback(() => {
+    setSelectedDate(format(subWeeks(activeDate, 1), "yyyy-MM-dd"));
+  }, [activeDate, setSelectedDate]);
 
-  const handleNextWeek = () => {
-    const nextWeek = addWeeks(activeDate, 1);
-    setSelectedDate(format(nextWeek, "yyyy-MM-dd"));
-  };
+  const handleNextWeek = useCallback(() => {
+    setSelectedDate(format(addWeeks(activeDate, 1), "yyyy-MM-dd"));
+  }, [activeDate, setSelectedDate]);
 
-  const handleToggleStatus = (id: string, currentStatus: string) => {
+  const handleToggleStatus = useCallback((id: string, currentStatus: string) => {
     const nextStatus = currentStatus === "tamamlandi" ? "yapilacak" : "tamamlandi";
     updatePlanItem(id, { status: nextStatus });
-
     if (nextStatus === "tamamlandi") {
       loadConfettiW().then((cf) => cf({ particleCount: 50, spread: 60, origin: { y: 0.85 } }));
     }
-  };
+  }, [updatePlanItem]);
 
-  // Filter items that fall in this week's interval
-  const weekStartStr = format(startOfActiveWeek, "yyyy-MM-dd");
-  const weekEndStr = format(endOfActiveWeek, "yyyy-MM-dd");
+  const weekStartStr = useMemo(() => format(startOfActiveWeek, "yyyy-MM-dd"), [startOfActiveWeek]);
+  const weekEndStr = useMemo(() => format(endOfActiveWeek, "yyyy-MM-dd"), [endOfActiveWeek]);
   
-  // Pre-compute items by date
   const itemsByDateMap = useMemo(() => {
     const map = new Map<string, { items: PlanItem[]; minutes: number }>();
     for (const item of plan.items) {
@@ -96,14 +85,17 @@ export function WeeklyView() {
     return all;
   }, [itemsByDateMap]);
 
-  const weekRangeLabel = `${format(startOfActiveWeek, "d MMMM", { locale: tr })} - ${format(endOfActiveWeek, "d MMMM yyyy", { locale: tr })}`;
+  const weekRangeLabel = useMemo(
+    () => `${format(startOfActiveWeek, "d MMMM", { locale: tr })} - ${format(endOfActiveWeek, "d MMMM yyyy", { locale: tr })}`,
+    [startOfActiveWeek, endOfActiveWeek]
+  );
+
   const hasBg = !!pdfSettings.backgroundImage;
 
   return (
     <div className={`flex flex-col h-full border border-neutral-900 rounded-2xl p-4 sm:p-6 shadow-xl transition-all duration-300 ${
       hasBg ? "bg-neutral-950/80" : "bg-neutral-950/90"
     }`}>
-      {/* Date Header navigation */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-b-neutral-900 pb-5 mb-5">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-indigo-400" />
@@ -112,24 +104,17 @@ export function WeeklyView() {
         
         <div className="flex items-center justify-between sm:justify-start gap-4">
           <div className="flex items-center gap-1.5 bg-neutral-900 border border-neutral-800 rounded-xl p-1">
-            <button
-              onClick={handlePrevWeek}
-              className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
-            >
+            <button onClick={handlePrevWeek} className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer">
               <ChevronLeft className="w-4 h-4" />
             </button>
             <span className="text-xs font-bold text-neutral-200 px-2 select-none min-w-[170px] text-center">
               {weekRangeLabel}
             </span>
-            <button
-              onClick={handleNextWeek}
-              className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
-            >
+            <button onClick={handleNextWeek} className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer">
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
 
-          {/* PDF Download Link */}
           {isClient && weeklyItems.length > 0 && (
             <LazyWeeklyPDF
               planTitle={plan.title}
@@ -145,7 +130,6 @@ export function WeeklyView() {
         </div>
       </div>
 
-      {/* Grid columns */}
       <div className="flex-1 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-neutral-800 scrollbar-track-transparent">
         <div className="grid grid-cols-7 gap-2 sm:gap-3 min-w-[740px] sm:min-w-[840px] h-[calc(100vh-340px)]">
           {daysOfWeek.map((day) => {
@@ -171,7 +155,6 @@ export function WeeklyView() {
                         : "bg-neutral-900/10 border-neutral-900 hover:border-neutral-800"
                 }`}
               >
-                {/* Day Header */}
                 <div className="text-center border-b border-neutral-900 pb-2 mb-3 shrink-0">
                   <h3 className="text-xs font-bold text-white mb-0.5">
                     {format(day, "EEEE", { locale: tr })}
@@ -188,7 +171,6 @@ export function WeeklyView() {
                   </div>
                 </div>
 
-                {/* Day list items */}
                 <div className="flex-1 overflow-y-auto space-y-2 pr-0.5 scrollbar-none">
                   {dayItems.map((item) => {
                     const topic = TOPICS_MAP.get(item.topicId);
@@ -198,9 +180,7 @@ export function WeeklyView() {
                     return (
                       <div
                         key={item.id}
-                        onClick={(e) => {
-                          e.stopPropagation(); // Avoid triggering parent day selection
-                        }}
+                        onClick={(e) => { e.stopPropagation(); }}
                         className={`group relative p-2.5 rounded-lg border transition-all flex flex-col gap-1.5 ${
                           isCompleted
                             ? "bg-emerald-500/5 border-emerald-500/20 text-neutral-400"
@@ -220,9 +200,7 @@ export function WeeklyView() {
                           </button>
                         </div>
                         <span className={`text-[10px] font-bold leading-tight ${
-                          isCompleted 
-                            ? "line-through text-neutral-500" 
-                            : "text-white"
+                          isCompleted ? "line-through text-neutral-500" : "text-white"
                         }`}>
                           {topic.name}
                         </span>
@@ -233,13 +211,10 @@ export function WeeklyView() {
                             {item.durationMinutes} dk
                           </span>
                           
-                          {/* Toggle complete */}
                           <button
                             onClick={() => handleToggleStatus(item.id, item.status)}
                             className={`w-3.5 h-3.5 border rounded-sm flex items-center justify-center cursor-pointer transition-colors ${
-                              isCompleted 
-                                ? "bg-emerald-600 border-emerald-500 text-white" 
-                                : "border-neutral-700 text-transparent hover:border-neutral-500"
+                              isCompleted ? "bg-emerald-600 border-emerald-500 text-white" : "border-neutral-700 text-transparent hover:border-neutral-500"
                             }`}
                           >
                             <Check className="w-2.5 h-2.5 stroke-[3px]" />
@@ -262,4 +237,4 @@ export function WeeklyView() {
       </div>
     </div>
   );
-}
+});

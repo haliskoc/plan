@@ -47,15 +47,14 @@ export interface PdfSettings {
   dailyOrientation: "portrait" | "landscape";
   weeklyOrientation: "portrait" | "landscape";
   monthlyOrientation: "portrait" | "landscape";
-  backgroundImage: string; // base64 data URL, empty if none
-  backgroundOpacity: number; // 0-100, 100 = full, 0 = invisible
-  backgroundColorAvg: string; // analyzed dominant color hex
-  textColorLight: string; // recommended text color on dark bg
-  textColorDark: string; // recommended text color on light bg
+  backgroundImage: string;
+  backgroundOpacity: number;
+  backgroundColorAvg: string;
+  textColorLight: string;
+  textColorDark: string;
 }
 
 export interface PlanState {
-  plan: Plan;
   selectedDate: string;
   selectedExamType: "TYT" | "AYT";
   selectedTrack: "SAY" | "EA" | "SOZ";
@@ -112,8 +111,19 @@ const defaultPlan: Plan = {
   items: [],
 };
 
+function getActivePlan(state: PlanState): Plan {
+  return state.plans.find((p) => p.id === state.activePlanId) || state.plans[0];
+}
+
+function updateActivePlan(state: PlanState, updateFn: (plan: Plan) => Plan): Plan[] {
+  const active = getActivePlan(state);
+  const updated = updateFn(active);
+  return state.plans.map((p) => (p.id === updated.id ? updated : p));
+}
+
 function pushUndo(state: PlanState) {
-  const stack = [...state.undoStack, [...state.plan.items]];
+  const active = getActivePlan(state);
+  const stack = [...state.undoStack, [...active.items]];
   if (stack.length > 20) stack.shift();
   return stack;
 }
@@ -141,7 +151,6 @@ function validatePlan(data: unknown): Plan | null {
 export const usePlanStore = create<PlanState>()(
   persist(
     (set, get) => ({
-      plan: { ...defaultPlan },
       selectedDate: format(new Date(), "yyyy-MM-dd"),
       selectedExamType: "TYT",
       selectedTrack: "SAY",
@@ -183,40 +192,30 @@ export const usePlanStore = create<PlanState>()(
       addPlanItem: (item) => {
         const newItem: PlanItem = {
           ...item,
-          id: `plan-item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: `pi-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         };
         set((state) => ({
           undoStack: pushUndo(state),
           redoStack: [],
-          plan: {
-            ...state.plan,
-            items: [...state.plan.items, newItem],
-          },
-          plans: state.plans.map((p) =>
-            p.id === state.activePlanId
-              ? { ...p, items: [...p.items, newItem] }
-              : p
-          ),
+          plans: updateActivePlan(state, (p) => ({
+            ...p,
+            items: [...p.items, newItem],
+          })),
         }));
       },
 
       addPlanItems: (items) => {
         const newItems = items.map((item) => ({
           ...item,
-          id: `plan-item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${Math.random().toString(36).substr(2, 5)}`,
+          id: `pi-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${Math.random().toString(36).substr(2, 5)}`,
         }));
         set((state) => ({
           undoStack: pushUndo(state),
           redoStack: [],
-          plan: {
-            ...state.plan,
-            items: [...state.plan.items, ...newItems],
-          },
-          plans: state.plans.map((p) =>
-            p.id === state.activePlanId
-              ? { ...p, items: [...p.items, ...newItems] }
-              : p
-          ),
+          plans: updateActivePlan(state, (p) => ({
+            ...p,
+            items: [...p.items, ...newItems],
+          })),
         }));
       },
 
@@ -224,15 +223,10 @@ export const usePlanStore = create<PlanState>()(
         set((state) => ({
           undoStack: pushUndo(state),
           redoStack: [],
-          plan: {
-            ...state.plan,
-            items: state.plan.items.filter((item) => item.id !== id),
-          },
-          plans: state.plans.map((p) =>
-            p.id === state.activePlanId
-              ? { ...p, items: p.items.filter((item) => item.id !== id) }
-              : p
-          ),
+          plans: updateActivePlan(state, (p) => ({
+            ...p,
+            items: p.items.filter((item) => item.id !== id),
+          })),
         }));
       },
 
@@ -240,22 +234,10 @@ export const usePlanStore = create<PlanState>()(
         set((state) => ({
           undoStack: pushUndo(state),
           redoStack: [],
-          plan: {
-            ...state.plan,
-            items: state.plan.items.map((item) =>
-              item.id === id ? { ...item, ...updates } : item
-            ),
-          },
-          plans: state.plans.map((p) =>
-            p.id === state.activePlanId
-              ? {
-                  ...p,
-                  items: p.items.map((item) =>
-                    item.id === id ? { ...item, ...updates } : item
-                  ),
-                }
-              : p
-          ),
+          plans: updateActivePlan(state, (p) => ({
+            ...p,
+            items: p.items.map((item) => (item.id === id ? { ...item, ...updates } : item)),
+          })),
         }));
       },
 
@@ -263,12 +245,12 @@ export const usePlanStore = create<PlanState>()(
         const state = get();
         if (state.undoStack.length === 0) return;
         const previous = state.undoStack[state.undoStack.length - 1];
+        const active = getActivePlan(state);
         set({
           undoStack: state.undoStack.slice(0, -1),
-          redoStack: [...state.redoStack, [...state.plan.items]],
-          plan: { ...state.plan, items: previous },
+          redoStack: [...state.redoStack, [...active.items]],
           plans: state.plans.map((p) =>
-            p.id === state.activePlanId ? { ...p, items: previous } : p
+            p.id === active.id ? { ...p, items: previous } : p
           ),
         });
       },
@@ -277,44 +259,32 @@ export const usePlanStore = create<PlanState>()(
         const state = get();
         if (state.redoStack.length === 0) return;
         const next = state.redoStack[state.redoStack.length - 1];
+        const active = getActivePlan(state);
         set({
-          undoStack: [...state.undoStack, [...state.plan.items]],
+          undoStack: [...state.undoStack, [...active.items]],
           redoStack: state.redoStack.slice(0, -1),
-          plan: { ...state.plan, items: next },
           plans: state.plans.map((p) =>
-            p.id === state.activePlanId ? { ...p, items: next } : p
+            p.id === active.id ? { ...p, items: next } : p
           ),
         });
       },
 
       setExamDate: (date) => {
         set((state) => ({
-          plan: { ...state.plan, examDate: date },
-          plans: state.plans.map((p) =>
-            p.id === state.activePlanId ? { ...p, examDate: date } : p
-          ),
+          plans: updateActivePlan(state, (p) => ({ ...p, examDate: date })),
         }));
       },
 
       setPlanTitle: (title) => {
         set((state) => ({
-          plan: { ...state.plan, title },
-          plans: state.plans.map((p) =>
-            p.id === state.activePlanId ? { ...p, title } : p
-          ),
+          plans: updateActivePlan(state, (p) => ({ ...p, title })),
         }));
       },
 
       setSelectedDate: (date) => set({ selectedDate: date }),
-
-      setSelectedExamType: (examType) =>
-        set({ selectedExamType: examType, selectedSubject: "" }),
-
-      setSelectedTrack: (track) =>
-        set({ selectedTrack: track, selectedSubject: "" }),
-
+      setSelectedExamType: (examType) => set({ selectedExamType: examType, selectedSubject: "" }),
+      setSelectedTrack: (track) => set({ selectedTrack: track, selectedSubject: "" }),
       setSelectedSubject: (subject) => set({ selectedSubject: subject }),
-
       setViewMode: (viewMode) => set({ viewMode }),
 
       loadTemplate: (templateType) => {
@@ -323,15 +293,10 @@ export const usePlanStore = create<PlanState>()(
         set({
           undoStack: pushUndo(state),
           redoStack: [],
-          plan: {
-            ...state.plan,
-            items: [...state.plan.items, ...newItems],
-          },
-          plans: state.plans.map((p) =>
-            p.id === state.activePlanId
-              ? { ...p, items: [...p.items, ...newItems] }
-              : p
-          ),
+          plans: updateActivePlan(state, (p) => ({
+            ...p,
+            items: [...p.items, ...newItems],
+          })),
         });
       },
 
@@ -339,10 +304,7 @@ export const usePlanStore = create<PlanState>()(
         set((state) => ({
           undoStack: pushUndo(state),
           redoStack: [],
-          plan: { ...state.plan, items: [] },
-          plans: state.plans.map((p) =>
-            p.id === state.activePlanId ? { ...p, items: [] } : p
-          ),
+          plans: updateActivePlan(state, (p) => ({ ...p, items: [] })),
         }));
       },
 
@@ -357,7 +319,6 @@ export const usePlanStore = create<PlanState>()(
         set((state) => ({
           plans: [...state.plans, newPlan],
           activePlanId: newPlan.id,
-          plan: newPlan,
           undoStack: [],
           redoStack: [],
         }));
@@ -365,11 +326,9 @@ export const usePlanStore = create<PlanState>()(
 
       switchPlan: (planId) => {
         const state = get();
-        const target = state.plans.find((p) => p.id === planId);
-        if (!target) return;
+        if (!state.plans.find((p) => p.id === planId)) return;
         set({
           activePlanId: planId,
-          plan: target,
           undoStack: [],
           redoStack: [],
         });
@@ -379,12 +338,11 @@ export const usePlanStore = create<PlanState>()(
         const state = get();
         if (state.plans.length <= 1) return;
         const remaining = state.plans.filter((p) => p.id !== planId);
-        const newActive =
-          planId === state.activePlanId ? remaining[0] : state.plan;
+        const newActiveId =
+          planId === state.activePlanId ? remaining[0].id : state.activePlanId;
         set({
           plans: remaining,
-          activePlanId: newActive.id,
-          plan: newActive,
+          activePlanId: newActiveId,
           undoStack: [],
           redoStack: [],
         });
@@ -395,87 +353,65 @@ export const usePlanStore = create<PlanState>()(
           ...item,
           id: `rec-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
         };
-        set((state) => ({
-          recurringItems: [...state.recurringItems, newItem],
-        }));
+        set((s) => ({ recurringItems: [...s.recurringItems, newItem] }));
       },
 
       removeRecurringItem: (id) => {
-        set((state) => ({
-          recurringItems: state.recurringItems.filter((r) => r.id !== id),
-        }));
+        set((s) => ({ recurringItems: s.recurringItems.filter((r) => r.id !== id) }));
       },
 
       toggleRecurringItem: (id) => {
-        set((state) => ({
-          recurringItems: state.recurringItems.map((r) =>
+        set((s) => ({
+          recurringItems: s.recurringItems.map((r) =>
             r.id === id ? { ...r, active: !r.active } : r
           ),
         }));
       },
 
       setPdfSettings: (settings) => {
-        set((s) => ({
-          pdfSettings: { ...s.pdfSettings, ...settings },
-        }));
+        set((s) => ({ pdfSettings: { ...s.pdfSettings, ...settings } }));
       },
 
       setPdfBackgroundImage: (dataUrl) => {
         try {
           localStorage.setItem("yks-planner-bg", dataUrl);
         } catch {}
-        set((s) => ({
-          pdfSettings: { ...s.pdfSettings, backgroundImage: dataUrl },
-        }));
+        set((s) => ({ pdfSettings: { ...s.pdfSettings, backgroundImage: dataUrl } }));
       },
 
       updatePlanItemNote: (id, note) => {
-        // Update note WITHOUT pushing to undo stack — note edits are too granular
         set((state) => ({
-          plan: {
-            ...state.plan,
-            items: state.plan.items.map((item) =>
-              item.id === id ? { ...item, note } : item
-            ),
-          },
-          plans: state.plans.map((p) =>
-            p.id === state.activePlanId
-              ? {
-                  ...p,
-                  items: p.items.map((item) =>
-                    item.id === id ? { ...item, note } : item
-                  ),
-                }
-              : p
-          ),
+          plans: updateActivePlan(state, (p) => ({
+            ...p,
+            items: p.items.map((item) => (item.id === id ? { ...item, note } : item)),
+          })),
         }));
       },
     }),
     {
       name: "yks-planner-storage",
       partialize: (state) => {
-        // Exclude undoStack, redoStack, and pdfSettings.backgroundImage from localStorage
         const { undoStack, redoStack, pdfSettings, ...rest } = state;
         return {
           ...rest,
           pdfSettings: {
             ...pdfSettings,
-            backgroundImage: "", // Excluded from yks-planner-storage
+            backgroundImage: "",
           },
         };
       },
       onRehydrateStorage: () => (state, error) => {
         if (error || !state) {
-          console.warn("localStorage bozuk, varsayılan değerlerle başlatılıyor.");
-          if (state) {
-            state.setHasHydrated(true);
-          }
+          if (state) state.setHasHydrated(true);
           return;
         }
         try {
-          if (state.plan && !state.plans) {
-            state.plans = [state.plan];
-            state.activePlanId = state.plan.id;
+          if (!state.plans || state.plans.length === 0) {
+            state.plans = [{ ...defaultPlan }];
+            state.activePlanId = defaultPlan.id;
+          }
+          if (!state.activePlanId || !state.plans.find((p) => p.id === state.activePlanId)) {
+            state.activePlanId = state.plans[0].id;
           }
           if (!state.goals) {
             state.goals = { dailyMinutes: 180, weeklyMinutes: 900 };
@@ -502,9 +438,7 @@ export const usePlanStore = create<PlanState>()(
           state.redoStack = [];
           try {
             const bg = localStorage.getItem("yks-planner-bg");
-            if (bg) {
-              state.pdfSettings.backgroundImage = bg;
-            }
+            if (bg) state.pdfSettings.backgroundImage = bg;
           } catch {}
           state.setHasHydrated(true);
         } catch {
@@ -514,3 +448,10 @@ export const usePlanStore = create<PlanState>()(
     }
   )
 );
+
+export function useActivePlan(): Plan {
+  return usePlanStore((s) => {
+    const p = s.plans.find((plan) => plan.id === s.activePlanId);
+    return p || s.plans[0];
+  });
+}
