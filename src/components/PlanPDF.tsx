@@ -88,52 +88,52 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   checklistSectionTitle: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "bold",
     color: "#0f172a",
-    marginBottom: 4,
-    marginTop: 6,
-    borderBottomWidth: 1,
+    marginBottom: 6,
+    marginTop: 8,
+    borderBottomWidth: 1.5,
     borderBottomColor: "#6366f1",
-    paddingBottom: 6,
+    paddingBottom: 4,
   },
   checklistSubjectTitle: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: "bold",
-    color: "#1e293b",
-    marginTop: 8,
-    marginBottom: 4,
+    color: "#334155",
+    marginTop: 6,
+    marginBottom: 3,
     paddingVertical: 3,
-    paddingHorizontal: 6,
-    backgroundColor: "#f8fafc",
+    paddingHorizontal: 8,
+    backgroundColor: "#f1f5f9",
     borderRadius: 3,
   },
   checklistRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 2.5,
-    paddingHorizontal: 6,
+    paddingVertical: 1.5,
+    paddingHorizontal: 4,
     borderBottomWidth: 0.5,
     borderBottomColor: "#f1f5f9",
   },
   checklistCheckbox: {
-    width: 12,
-    height: 12,
+    width: 10,
+    height: 10,
     borderWidth: 1,
     borderColor: "#94a3b8",
     borderRadius: 2,
-    marginRight: 8,
   },
   checklistTopicName: {
-    fontSize: 8.5,
+    fontSize: 8,
     color: "#334155",
     flex: 1,
   },
   checklistNumber: {
     fontSize: 7,
     color: "#94a3b8",
-    width: 20,
+    width: 18,
     textAlign: "right",
+    marginRight: 6,
   },
   table: {
     display: "flex",
@@ -302,64 +302,92 @@ export function TopicChecklistPage({ planTitle, examDateStr, track }: TopicCheck
   const aytGroups = groupTopicsBySubject(aytTopics);
   const trackLabel = getTrackLabel(track);
 
-  let globalIndex = 0;
-  const renderGroup = (groups: ReturnType<typeof groupTopicsBySubject>, sectionLabel: string) => {
+  const renderSection = (
+    groups: ReturnType<typeof groupTopicsBySubject>,
+    sectionLabel: string,
+    startIndex: number
+  ) => {
+    let idx = startIndex;
     return (
-      <View key={sectionLabel}>
+      <View>
         <Text style={styles.checklistSectionTitle}>{sectionLabel}</Text>
-        {groups.map((group) => {
-          return (
-            <View key={group.subject}>
-              <Text style={styles.checklistSubjectTitle}>{group.subject} ({group.topics.length} konu)</Text>
-              {group.topics.map((topic) => {
-                globalIndex++;
-                return (
-                  <View key={topic.id} style={styles.checklistRow}>
-                    <Text style={styles.checklistNumber}>{globalIndex}.</Text>
-                    <View style={styles.checklistCheckbox} />
-                    <Text style={styles.checklistTopicName}>{topic.name}</Text>
-                    <View style={styles.checklistCheckbox} />
-                  </View>
-                );
-              })}
-            </View>
-          );
-        })}
+        {groups.map((group) => (
+          <View key={group.subject}>
+            <Text style={styles.checklistSubjectTitle}>
+              {group.subject} ({group.topics.length} konu)
+            </Text>
+            {group.topics.map((topic) => {
+              idx++;
+              return (
+                <View key={topic.id} style={styles.checklistRow} wrap={false}>
+                  <Text style={styles.checklistNumber}>{idx}.</Text>
+                  <View style={styles.checklistCheckbox} />
+                  <Text style={{ fontSize: 7, color: "#94a3b8", width: 18, textAlign: "center" }}>ög</Text>
+                  <View style={styles.checklistCheckbox} />
+                  <Text style={{ fontSize: 7, color: "#94a3b8", width: 18, textAlign: "center" }}>sç</Text>
+                  <Text style={styles.checklistTopicName}>{topic.name}</Text>
+                </View>
+              );
+            })}
+          </View>
+        ))}
       </View>
     );
   };
 
+  const noteBox = (
+    <View style={styles.noteBox}>
+      <Text style={styles.noteTitle}>Kullanım: Öğ=Öğrendim / Sç=Soru Çözümü Tamam</Text>
+      <Text style={styles.noteText}>
+        {trackLabel} alanına göre YKS&apos;de sorumlu olduğunuz tüm konular.
+      </Text>
+    </View>
+  );
+
   return (
-    <Page size="A4" style={styles.page}>
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>{planTitle}</Text>
-          <Text style={styles.subtitle}>Konu Takip Listesi — {trackLabel}</Text>
+    <>
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.title}>{planTitle}</Text>
+            <Text style={styles.subtitle}>TYT Konu Takip Listesi — {trackLabel}</Text>
+          </View>
+          <View style={{ alignItems: "flex-end" }}>
+            <Text style={styles.countdownText}>YKS&apos;ye {daysLeft} Gün</Text>
+            <Text style={styles.subtitle}>Hedef: {examDateStr}</Text>
+          </View>
         </View>
-        <View style={{ alignItems: "flex-end" }}>
-          <Text style={styles.countdownText}>YKS&apos;ye {daysLeft} Gün</Text>
-          <Text style={styles.subtitle}>Hedef: {examDateStr}</Text>
+        {renderSection(tytGroups, "TYT Konuları (Temel Yeterlilik Testi)", 0)}
+        <View style={{ marginTop: 15 }}>
+          {noteBox}
         </View>
-      </View>
+        <View style={styles.footer}>
+          <Text>TYT Konu Takip Listesi • {trackLabel} Alanı</Text>
+          <Text>{tytTopics.length} konu</Text>
+        </View>
+      </Page>
 
-      {renderGroup(tytGroups, "TYT Konuları (Temel Yeterlilik Testi)")}
-      <View style={{ marginTop: 10 }} />
-      {renderGroup(aytGroups, `AYT Konuları — ${trackLabel} (Alan Yeterlilik Testi)`)}
-
-      <View style={styles.noteBox}>
-        <Text style={styles.noteTitle}>Kullanım Talimatı</Text>
-        <Text style={styles.noteText}>
-          Bu liste, seçtiğiniz alana ({trackLabel}) göre YKS&apos;de sorumlu olduğunuz tüm konuları içermektedir.
-          Her konunun yanında iki adet onay kutusu bulunur: İlk kutu konuyu öğrendiğinizi, ikinci kutu ise soru çözümünü tamamladığınızı işaretlemek içindir.
-          İlerlemenizi takip edin, eksiklerinizi belirleyin!
-        </Text>
-      </View>
-
-      <View style={styles.footer}>
-        <Text>YKS Çalışma Planlayıcısı — Konu Takip Listesi • {trackLabel} Alanı</Text>
-        <Text>{tytTopics.length + aytTopics.length} konu</Text>
-      </View>
-    </Page>
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.title}>{planTitle}</Text>
+            <Text style={styles.subtitle}>AYT Konu Takip Listesi — {trackLabel}</Text>
+          </View>
+          <View style={{ alignItems: "flex-end" }}>
+            <Text style={styles.countdownText}>YKS&apos;ye {daysLeft} Gün</Text>
+            <Text style={styles.subtitle}>Hedef: {examDateStr}</Text>
+          </View>
+        </View>
+        {renderSection(aytGroups, `AYT Konuları — ${trackLabel} (Alan Yeterlilik Testi)`, tytTopics.length)}
+        <View style={{ marginTop: 15 }}>
+          {noteBox}
+        </View>
+        <View style={styles.footer}>
+          <Text>AYT Konu Takip Listesi • {trackLabel} Alanı</Text>
+          <Text>{aytTopics.length} konu</Text>
+        </View>
+      </Page>
+    </>
   );
 }
 

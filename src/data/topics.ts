@@ -1,8 +1,7 @@
 import { Topic } from "@/store/usePlanStore";
 
-// Static database of YKS 2027 topics
 export const YKS_TOPICS: Topic[] = [
-  // ==================== TYT MATEMATİK ====================
+  // ═══════════════ TYT MATEMATİK ═══════════════
   { id: "tyt-mat-1", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Temel Kavramlar", order: 1 },
   { id: "tyt-mat-2", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Sayı Basamakları", order: 2 },
   { id: "tyt-mat-3", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Bölme ve Bölünebilme", order: 3 },
@@ -14,7 +13,7 @@ export const YKS_TOPICS: Topic[] = [
   { id: "tyt-mat-9", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Mutlak Değer", order: 9 },
   { id: "tyt-mat-10", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Üslü Sayılar", order: 10 },
   { id: "tyt-mat-11", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Köklü Sayılar", order: 11 },
-  { id: "tyt-mat-12", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Çarpanlara Ayırma", order: 12 },
+  { id: "tyt-mat-12", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Çarpanlara Ayırma ve Özdeşlikler", order: 12 },
   { id: "tyt-mat-13", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Oran-Orantı", order: 13 },
   { id: "tyt-mat-14", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Denklem Kurma Problemleri", order: 14 },
   { id: "tyt-mat-15", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Yaş, İşçi, Hareket Problemleri", order: 15 },
@@ -26,8 +25,9 @@ export const YKS_TOPICS: Topic[] = [
   { id: "tyt-mat-21", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Veri ve İstatistik", order: 21 },
   { id: "tyt-mat-22", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Permütasyon ve Kombinasyon", order: 22 },
   { id: "tyt-mat-23", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Binom Açılımı ve Olasılık", order: 23 },
+  { id: "tyt-mat-24", examType: "TYT", subject: "Matematik", track: "ORTAK", name: "Sayma ve Olasılık", order: 24 },
 
-  // ==================== TYT GEOMETRİ ====================
+  // ═══════════════ TYT GEOMETRİ ═══════════════
   { id: "tyt-geo-1", examType: "TYT", subject: "Geometri", track: "ORTAK", name: "Doğruda ve Üçgende Açılar", order: 1 },
   { id: "tyt-geo-2", examType: "TYT", subject: "Geometri", track: "ORTAK", name: "Özel Üçgenler (Dik, İkizkenar, Eşkenar)", order: 2 },
   { id: "tyt-geo-3", examType: "TYT", subject: "Geometri", track: "ORTAK", name: "Üçgende Açıortay ve Kenarortay", order: 3 },
@@ -41,23 +41,24 @@ export const YKS_TOPICS: Topic[] = [
   { id: "tyt-geo-11", examType: "TYT", subject: "Geometri", track: "ORTAK", name: "Noktanın ve Doğrunun Analitiği", order: 11 },
   { id: "tyt-geo-12", examType: "TYT", subject: "Geometri", track: "ORTAK", name: "Katı Cisimler (Prizma, Piramit, Koni, Küre)", order: 12 },
 
-  // ==================== TYT TÜRKÇE ====================
+  // ═══════════════ TYT TÜRKÇE ═══════════════
   { id: "tyt-tur-1", examType: "TYT", subject: "Türkçe", track: "ORTAK", name: "Sözcükte Anlam", order: 1 },
   { id: "tyt-tur-2", examType: "TYT", subject: "Türkçe", track: "ORTAK", name: "Cümlede Anlam", order: 2 },
   { id: "tyt-tur-3", examType: "TYT", subject: "Türkçe", track: "ORTAK", name: "Paragrafta Anlatım Teknikleri", order: 3 },
   { id: "tyt-tur-4", examType: "TYT", subject: "Türkçe", track: "ORTAK", name: "Paragrafta Yapı ve Anlam", order: 4 },
-  { id: "tyt-tur-5", examType: "TYT", subject: "Türkçe", track: "ORTAK", name: "Ses Bilgisi", order: 5 },
+  { id: "tyt-tur-5", examType: "TYT", subject: "Türkçe", track: "ORTAK", name: "Ses Bilgisi (Ses Olayları)", order: 5 },
   { id: "tyt-tur-6", examType: "TYT", subject: "Türkçe", track: "ORTAK", name: "Yazım Kuralları", order: 6 },
   { id: "tyt-tur-7", examType: "TYT", subject: "Türkçe", track: "ORTAK", name: "Noktalama İşaretleri", order: 7 },
   { id: "tyt-tur-8", examType: "TYT", subject: "Türkçe", track: "ORTAK", name: "Sözcük Türleri (İsim, Sıfat, Zamir, Zarf)", order: 8 },
-  { id: "tyt-tur-9", examType: "TYT", subject: "Türkçe", track: "ORTAK", name: "Edat, Bağlaç, Ünlem, Eylemsi", order: 9 },
+  { id: "tyt-tur-9", examType: "TYT", subject: "Türkçe", track: "ORTAK", name: "Edat, Bağlaç, Ünlem, Fiil, Eylemsi", order: 9 },
   { id: "tyt-tur-10", examType: "TYT", subject: "Türkçe", track: "ORTAK", name: "Cümlenin Ögeleri ve Cümle Türleri", order: 10 },
   { id: "tyt-tur-11", examType: "TYT", subject: "Türkçe", track: "ORTAK", name: "Anlatım Bozuklukları", order: 11 },
+  { id: "tyt-tur-12", examType: "TYT", subject: "Türkçe", track: "ORTAK", name: "Fiilde Çatı ve Cümle Çeşitleri", order: 12 },
 
-  // ==================== TYT FİZİK ====================
+  // ═══════════════ TYT FİZİK ═══════════════
   { id: "tyt-fiz-1", examType: "TYT", subject: "Fizik", track: "ORTAK", name: "Fizik Bilimine Giriş", order: 1 },
   { id: "tyt-fiz-2", examType: "TYT", subject: "Fizik", track: "ORTAK", name: "Madde ve Özellikleri (Özkütle, Adezyon-Kohezyon)", order: 2 },
-  { id: "tyt-fiz-3", examType: "TYT", subject: "Fizik", track: "ORTAK", name: "Katı ve Sıvı Basıncı, Gaz Basıncı", order: 3 },
+  { id: "tyt-fiz-3", examType: "TYT", subject: "Fizik", track: "ORTAK", name: "Katı, Sıvı ve Gaz Basıncı", order: 3 },
   { id: "tyt-fiz-4", examType: "TYT", subject: "Fizik", track: "ORTAK", name: "Sıvıların Kaldırma Kuvveti", order: 4 },
   { id: "tyt-fiz-5", examType: "TYT", subject: "Fizik", track: "ORTAK", name: "Hareket ve Kuvvet (Newton Yasaları, Sürtünme)", order: 5 },
   { id: "tyt-fiz-6", examType: "TYT", subject: "Fizik", track: "ORTAK", name: "İş, Enerji ve Güç", order: 6 },
@@ -67,18 +68,17 @@ export const YKS_TOPICS: Topic[] = [
   { id: "tyt-fiz-10", examType: "TYT", subject: "Fizik", track: "ORTAK", name: "Dalgalar (Yay, Su, Ses, Deprem Dalgaları)", order: 10 },
   { id: "tyt-fiz-11", examType: "TYT", subject: "Fizik", track: "ORTAK", name: "Optik (Yansıma, Aynalar, Kırılma, Mercekler, Renk)", order: 11 },
 
-  // ==================== TYT KİMYA ====================
+  // ═══════════════ TYT KİMYA ═══════════════
   { id: "tyt-kim-1", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Kimya Bilimi (Simya, Güvenlik, Laboratuvar)", order: 1 },
-  { id: "tyt-kim-2", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Atomun Yapısı ve Modelleri", order: 2 },
-  { id: "tyt-kim-3", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Periyodik Sistem", order: 3 },
-  { id: "tyt-kim-4", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Kimyasal Türler Arası Etkileşimler", order: 4 },
-  { id: "tyt-kim-5", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Maddenin Halleri (Katı, Sıvı, Gaz, Plazma)", order: 5 },
-  { id: "tyt-kim-6", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Kimyanın Temel Kanunları ve Hesaplamalar", order: 6 },
-  { id: "tyt-kim-7", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Karışımlar ve Ayırma Teknikleri", order: 7 },
-  { id: "tyt-kim-8", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Asitler, Bazlar ve Tuzlar", order: 8 },
-  { id: "tyt-kim-9", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Kimya Her Yerde (Günlük Hayatta Kimya)", order: 9 },
+  { id: "tyt-kim-2", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Atomun Yapısı ve Periyodik Sistem", order: 2 },
+  { id: "tyt-kim-3", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Kimyasal Türler Arası Etkileşimler", order: 3 },
+  { id: "tyt-kim-4", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Maddenin Halleri (Katı, Sıvı, Gaz, Plazma)", order: 4 },
+  { id: "tyt-kim-5", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Kimyanın Temel Kanunları ve Hesaplamalar", order: 5 },
+  { id: "tyt-kim-6", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Karışımlar ve Ayırma Teknikleri", order: 6 },
+  { id: "tyt-kim-7", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Asitler, Bazlar ve Tuzlar", order: 7 },
+  { id: "tyt-kim-8", examType: "TYT", subject: "Kimya", track: "ORTAK", name: "Kimya Her Yerde (Günlük Hayatta Kimya)", order: 8 },
 
-  // ==================== TYT BİYOLOJİ ====================
+  // ═══════════════ TYT BİYOLOJİ ═══════════════
   { id: "tyt-biy-1", examType: "TYT", subject: "Biyoloji", track: "ORTAK", name: "Canlıların Ortak Özellikleri", order: 1 },
   { id: "tyt-biy-2", examType: "TYT", subject: "Biyoloji", track: "ORTAK", name: "Canlıların Yapısındaki Temel Bileşenler", order: 2 },
   { id: "tyt-biy-3", examType: "TYT", subject: "Biyoloji", track: "ORTAK", name: "Hücrenin Yapısı, Organeller ve Hücre Zarı", order: 3 },
@@ -89,21 +89,21 @@ export const YKS_TOPICS: Topic[] = [
   { id: "tyt-biy-8", examType: "TYT", subject: "Biyoloji", track: "ORTAK", name: "Kalıtım İlkeleri ve Soyağaçları", order: 8 },
   { id: "tyt-biy-9", examType: "TYT", subject: "Biyoloji", track: "ORTAK", name: "Ekosistem Ekolojisi ve Çevre Sorunları", order: 9 },
 
-  // ==================== TYT TARİH ====================
+  // ═══════════════ TYT TARİH ═══════════════
   { id: "tyt-tar-1", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "Tarih ve Zaman, İlk Çağ Medeniyetleri", order: 1 },
   { id: "tyt-tar-2", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "İlk ve Orta Çağlarda Türk Dünyası", order: 2 },
-  { id: "tyt-tar-3", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "İslam Medeniyetinin Doğuşu ve İlk Türk İslam Devletleri", order: 3 },
+  { id: "tyt-tar-3", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "İslam Medeniyetinin Doğuşu ve İlk Türk-İslam Devletleri", order: 3 },
   { id: "tyt-tar-4", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "Osmanlı Devleti Kuruluş ve Yükselme Dönemleri", order: 4 },
-  { id: "tyt-tar-5", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "Osmanlı Devleti Kültür, Medeniyet ve Teşkilat Yapısı", order: 5 },
-  { id: "tyt-tar-6", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "Yeni Çağ ve Yakın Çağ'da Avrupa ve Osmanlı Siyaseti", order: 6 },
-  { id: "tyt-tar-7", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "En Uzun Yüzyıl (Osmanlı Dağılma Dönemi)", order: 7 },
+  { id: "tyt-tar-5", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "Osmanlı Kültür, Medeniyet ve Teşkilat Yapısı", order: 5 },
+  { id: "tyt-tar-6", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "Yeni Çağ ve Yakın Çağ'da Avrupa ve Osmanlı", order: 6 },
+  { id: "tyt-tar-7", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "Osmanlı Dağılma Dönemi ve Islahatlar", order: 7 },
   { id: "tyt-tar-8", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "20. Yüzyıl Başlarında Osmanlı ve I. Dünya Savaşı", order: 8 },
   { id: "tyt-tar-9", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "Milli Mücadele Hazırlık Dönemi ve Kongreler", order: 9 },
   { id: "tyt-tar-10", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "Kurtuluş Savaşı Muharebeler ve Antlaşmalar", order: 10 },
   { id: "tyt-tar-11", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "Atatürk İlke ve İnkılapları", order: 11 },
   { id: "tyt-tar-12", examType: "TYT", subject: "Tarih", track: "ORTAK", name: "Atatürk Dönemi Türk Dış Politikası", order: 12 },
 
-  // ==================== TYT COĞRAFYA ====================
+  // ═══════════════ TYT COĞRAFYA ═══════════════
   { id: "tyt-cog-1", examType: "TYT", subject: "Coğrafya", track: "ORTAK", name: "Doğa ve İnsan, Coğrafi Koordinatlar", order: 1 },
   { id: "tyt-cog-2", examType: "TYT", subject: "Coğrafya", track: "ORTAK", name: "Dünya'nın Şekli ve Hareketleri", order: 2 },
   { id: "tyt-cog-3", examType: "TYT", subject: "Coğrafya", track: "ORTAK", name: "Harita Bilgisi ve Projeksiyonlar", order: 3 },
@@ -115,21 +115,21 @@ export const YKS_TOPICS: Topic[] = [
   { id: "tyt-cog-9", examType: "TYT", subject: "Coğrafya", track: "ORTAK", name: "Ulaşım Hatları ve Bölge Sınıflandırması", order: 9 },
   { id: "tyt-cog-10", examType: "TYT", subject: "Coğrafya", track: "ORTAK", name: "Doğal Afetler ve Korunma Yolları", order: 10 },
 
-  // ==================== TYT FELSEFE ====================
+  // ═══════════════ TYT FELSEFE ═══════════════
   { id: "tyt-fel-1", examType: "TYT", subject: "Felsefe", track: "ORTAK", name: "Felsefeyi Tanıma ve Felsefi Düşünce", order: 1 },
   { id: "tyt-fel-2", examType: "TYT", subject: "Felsefe", track: "ORTAK", name: "Bilgi Felsefesi (Epistemoloji)", order: 2 },
   { id: "tyt-fel-3", examType: "TYT", subject: "Felsefe", track: "ORTAK", name: "Varlık Felsefesi (Ontoloji)", order: 3 },
   { id: "tyt-fel-4", examType: "TYT", subject: "Felsefe", track: "ORTAK", name: "Ahlak (Etik) ve Din Felsefesi", order: 4 },
-  { id: "tyt-fel-5", examType: "TYT", subject: "Felsefe", track: "ORTAK", name: "Siyaset ve Bilim Felsefesi", order: 5 },
+  { id: "tyt-fel-5", examType: "TYT", subject: "Felsefe", track: "ORTAK", name: "Siyaset, Sanat ve Bilim Felsefesi", order: 5 },
 
-  // ==================== TYT DİN KÜLTÜRÜ ====================
+  // ═══════════════ TYT DİN KÜLTÜRÜ ═══════════════
   { id: "tyt-din-1", examType: "TYT", subject: "Din Kültürü", track: "ORTAK", name: "İslam ve İbadet, Temel İbadetler", order: 1 },
   { id: "tyt-din-2", examType: "TYT", subject: "Din Kültürü", track: "ORTAK", name: "Gençlik ve Değerler, Ahlaki Kurallar", order: 2 },
   { id: "tyt-din-3", examType: "TYT", subject: "Din Kültürü", track: "ORTAK", name: "Allah-İnsan İlişkisi, İsim ve Sıfatlar", order: 3 },
   { id: "tyt-din-4", examType: "TYT", subject: "Din Kültürü", track: "ORTAK", name: "Hz. Muhammed'in Hayatı ve Genç Örnekler", order: 4 },
   { id: "tyt-din-5", examType: "TYT", subject: "Din Kültürü", track: "ORTAK", name: "Din, Bilim, Sanat ve Yaşayan Dinler", order: 5 },
 
-  // ==================== AYT MATEMATİK ====================
+  // ═══════════════ AYT MATEMATİK (ORTAK — SAY + EA) ═══════════════
   { id: "ayt-mat-1", examType: "AYT", subject: "Matematik", track: "ORTAK", name: "İleri Fonksiyonlar ve Grafikler", order: 1 },
   { id: "ayt-mat-2", examType: "AYT", subject: "Matematik", track: "ORTAK", name: "Polinomlar ve Polinom Fonksiyonlar", order: 2 },
   { id: "ayt-mat-3", examType: "AYT", subject: "Matematik", track: "ORTAK", name: "İkinci Dereceden Denklemler ve Karmaşık Sayılar", order: 3 },
@@ -143,100 +143,125 @@ export const YKS_TOPICS: Topic[] = [
   { id: "ayt-mat-11", examType: "AYT", subject: "Matematik", track: "ORTAK", name: "Türev (Kurallar, Teğet, Ekstremum, Max-Min)", order: 11 },
   { id: "ayt-mat-12", examType: "AYT", subject: "Matematik", track: "ORTAK", name: "İntegral (Belirsiz, Belirli İntegral, Alan Hesabı)", order: 12 },
 
-  // ==================== AYT GEOMETRİ ====================
+  // ═══════════════ AYT GEOMETRİ (ORTAK — SAY + EA) ═══════════════
   { id: "ayt-geo-1", examType: "AYT", subject: "Geometri", track: "ORTAK", name: "Doğrunun Analitik İncelenmesi (İleri Düzey)", order: 1 },
   { id: "ayt-geo-2", examType: "AYT", subject: "Geometri", track: "ORTAK", name: "Çemberin Analitik İncelenmesi", order: 2 },
   { id: "ayt-geo-3", examType: "AYT", subject: "Geometri", track: "ORTAK", name: "Dönüşüm Geometrisi (Öteleme, Dönme, Yansıma)", order: 3 },
   { id: "ayt-geo-4", examType: "AYT", subject: "Geometri", track: "ORTAK", name: "Uzay Geometrisi ve Katı Cisimler", order: 4 },
 
-  // ==================== AYT FİZİK ====================
+  // ═══════════════ AYT FİZİK (SAY) ═══════════════
   { id: "ayt-fiz-1", examType: "AYT", subject: "Fizik", track: "SAY", name: "Vektörler ve Bağıl Hareket", order: 1 },
   { id: "ayt-fiz-2", examType: "AYT", subject: "Fizik", track: "SAY", name: "Newton'ın Hareket Yasaları (Dinamik)", order: 2 },
   { id: "ayt-fiz-3", examType: "AYT", subject: "Fizik", track: "SAY", name: "Bir Boyutta Sabit İvmeli Hareket (Atışlar)", order: 3 },
   { id: "ayt-fiz-4", examType: "AYT", subject: "Fizik", track: "SAY", name: "İki Boyutta Hareket", order: 4 },
   { id: "ayt-fiz-5", examType: "AYT", subject: "Fizik", track: "SAY", name: "İtme ve Çizgisel Momentum (Çarpışmalar)", order: 5 },
-  { id: "ayt-fiz-6", examType: "AYT", subject: "Fizik", track: "SAY", name: "Tork, Denge ve Kütle Merkezi, Basit Makineler", order: 6 },
+  { id: "ayt-fiz-6", examType: "AYT", subject: "Fizik", track: "SAY", name: "Tork, Denge, Kütle Merkezi, Basit Makineler", order: 6 },
   { id: "ayt-fiz-7", examType: "AYT", subject: "Fizik", track: "SAY", name: "Elektriksel Alan ve Potansiyel, Paralel Levhalar", order: 7 },
-  { id: "ayt-fiz-8", examType: "AYT", subject: "Fizik", track: "SAY", name: "Manyetizma, Elektromanyetik İndüklenme, Alternatif Akım", order: 8 },
+  { id: "ayt-fiz-8", examType: "AYT", subject: "Fizik", track: "SAY", name: "Manyetizma, EM İndüklenme, Alternatif Akım", order: 8 },
   { id: "ayt-fiz-9", examType: "AYT", subject: "Fizik", track: "SAY", name: "Düzgün Çembersel Hareket ve Açısal Momentum", order: 9 },
   { id: "ayt-fiz-10", examType: "AYT", subject: "Fizik", track: "SAY", name: "Kütle Çekimi ve Kepler Yasaları", order: 10 },
   { id: "ayt-fiz-11", examType: "AYT", subject: "Fizik", track: "SAY", name: "Basit Harmonik Hareket", order: 11 },
-  { id: "ayt-fiz-12", examType: "AYT", subject: "Fizik", track: "SAY", name: "Dalga Mekaniği (Girişim, Kırınım, Doppler, EM Dalgalar)", order: 12 },
-  { id: "ayt-fiz-13", examType: "AYT", subject: "Fizik", track: "SAY", name: "Atom Fiziğine Giriş, Radyoaktivite, Büyük Patlama", order: 13 },
-  { id: "ayt-fiz-14", examType: "AYT", subject: "Fizik", track: "SAY", name: "Modern Fizik (Rölativite, Fotoelektrik, Compton, De Broglie)", order: 14 },
+  { id: "ayt-fiz-12", examType: "AYT", subject: "Fizik", track: "SAY", name: "Dalga Mekaniği (Girişim, Kırınım, Doppler, EM)", order: 12 },
+  { id: "ayt-fiz-13", examType: "AYT", subject: "Fizik", track: "SAY", name: "Atom Fiziğine Giriş ve Radyoaktivite", order: 13 },
+  { id: "ayt-fiz-14", examType: "AYT", subject: "Fizik", track: "SAY", name: "Modern Fizik (Rölativite, Fotoelektrik, Compton)", order: 14 },
   { id: "ayt-fiz-15", examType: "AYT", subject: "Fizik", track: "SAY", name: "Modern Fiziğin Teknolojideki Uygulamaları", order: 15 },
 
-  // ==================== AYT KİMYA ====================
-  { id: "ayt-kim-1", examType: "AYT", subject: "Kimya", track: "SAY", name: "Modern Atom Teorisi (Kuantum Sayıları, Orbitaller)", order: 1 },
+  // ═══════════════ AYT KİMYA (SAY) ═══════════════
+  { id: "ayt-kim-1", examType: "AYT", subject: "Kimya", track: "SAY", name: "Modern Atom Teorisi (Kuantum, Orbitaller)", order: 1 },
   { id: "ayt-kim-2", examType: "AYT", subject: "Kimya", track: "SAY", name: "Gazlar (Gaz Yasaları, Karışımlar, Gerçek Gazlar)", order: 2 },
-  { id: "ayt-kim-3", examType: "AYT", subject: "Kimya", track: "SAY", name: "Sıvı Çözeltiler ve Derişim Birimleri, Koligatif Özellikler", order: 3 },
+  { id: "ayt-kim-3", examType: "AYT", subject: "Kimya", track: "SAY", name: "Sıvı Çözeltiler, Derişim, Koligatif Özellikler", order: 3 },
   { id: "ayt-kim-4", examType: "AYT", subject: "Kimya", track: "SAY", name: "Kimyasal Tepkimelerde Enerji (Entalpi)", order: 4 },
   { id: "ayt-kim-5", examType: "AYT", subject: "Kimya", track: "SAY", name: "Kimyasal Tepkimelerde Hız", order: 5 },
-  { id: "ayt-kim-6", examType: "AYT", subject: "Kimya", track: "SAY", name: "Kimyasal Tepkimelerde Denge (Le Chatelier)", order: 6 },
-  { id: "ayt-kim-7", examType: "AYT", subject: "Kimya", track: "SAY", name: "Asit-Baz Dengesi (Sulu Çözelti Dengeleri, pH, Titrasyon)", order: 7 },
+  { id: "ayt-kim-6", examType: "AYT", subject: "Kimya", track: "SAY", name: "Kimyasal Denge (Le Chatelier)", order: 6 },
+  { id: "ayt-kim-7", examType: "AYT", subject: "Kimya", track: "SAY", name: "Asit-Baz Dengesi (pH, Titrasyon, Tampon Çözeltiler)", order: 7 },
   { id: "ayt-kim-8", examType: "AYT", subject: "Kimya", track: "SAY", name: "Çözünürlük Dengesi (KÇÇ, Ortak İyon)", order: 8 },
-  { id: "ayt-kim-9", examType: "AYT", subject: "Kimya", track: "SAY", name: "Kimya ve Elektrik (Redoks, Piller, Elektroliz, Korozyon)", order: 9 },
+  { id: "ayt-kim-9", examType: "AYT", subject: "Kimya", track: "SAY", name: "Kimya ve Elektrik (Redoks, Piller, Elektroliz)", order: 9 },
   { id: "ayt-kim-10", examType: "AYT", subject: "Kimya", track: "SAY", name: "Karbon Kimyasına Giriş (Hibritleşme, Formüller)", order: 10 },
-  { id: "ayt-kim-11", examType: "AYT", subject: "Kimya", track: "SAY", name: "Organik Kimya (Alkan, Alken, Alkin, Aromatikler, Alkol, Eter)", order: 11 },
-  { id: "ayt-kim-12", examType: "AYT", subject: "Kimya", track: "SAY", name: "Organik Kimya II (Aldehit, Keton, Karboksilik Asit, Ester)", order: 12 },
-  { id: "ayt-kim-13", examType: "AYT", subject: "Kimya", track: "SAY", name: "Enerji Kaynakları ve Bilimsel Gelişmeler", order: 13 },
+  { id: "ayt-kim-11", examType: "AYT", subject: "Kimya", track: "SAY", name: "Organik Kimya I (Alkan, Alken, Alkin, Aromatik)", order: 11 },
+  { id: "ayt-kim-12", examType: "AYT", subject: "Kimya", track: "SAY", name: "Organik Kimya II (Alkol, Eter, Aldehit, Keton)", order: 12 },
+  { id: "ayt-kim-13", examType: "AYT", subject: "Kimya", track: "SAY", name: "Organik Kimya III (Asit, Ester, Polimerler)", order: 13 },
+  { id: "ayt-kim-14", examType: "AYT", subject: "Kimya", track: "SAY", name: "Enerji Kaynakları ve Bilimsel Gelişmeler", order: 14 },
 
-  // ==================== AYT BİYOLOJİ ====================
-  { id: "ayt-biy-1", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Denetleyici ve Düzenleyici Sistemler (Sinir ve Endokrin)", order: 1 },
-  { id: "ayt-biy-2", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Duyu Organları", order: 2 },
-  { id: "ayt-biy-3", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Destek ve Hareket Sistemi", order: 3 },
-  { id: "ayt-biy-4", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Sindirim Sistemi", order: 4 },
-  { id: "ayt-biy-5", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Dolaşım ve Bağışıklık Sistemleri", order: 5 },
-  { id: "ayt-biy-6", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Solunum Sistemi", order: 6 },
-  { id: "ayt-biy-7", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Üriner Sistem (Boşaltım)", order: 7 },
-  { id: "ayt-biy-8", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Üreme Sistemi ve Embriyonik Gelişim", order: 8 },
-  { id: "ayt-biy-9", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Komünite ve Popülasyon Ekolojisi", order: 9 },
-  { id: "ayt-biy-10", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Genden Proteine (DNA, RNA Replikasyonu ve Sentezi)", order: 10 },
-  { id: "ayt-biy-11", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Canlılarda Enerji Dönüşümleri (Fotosentez, Kemosentez)", order: 11 },
-  { id: "ayt-biy-12", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Hücresel Solunum (Oksijenli/Oksijensiz Solunum, Fermantasyon)", order: 12 },
-  { id: "ayt-biy-13", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Bitki Biyolojisi (Doku, Organlar, Taşıma, Üreme)", order: 13 },
-  { id: "ayt-biy-14", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Canlılar ve Çevre (Adaptasyon ve Evrimsel Faktörler)", order: 14 },
+  // ═══════════════ AYT BİYOLOJİ (SAY) ═══════════════
+  { id: "ayt-biy-1", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Denetleyici ve Düzenleyici Sistemler (Sinir)", order: 1 },
+  { id: "ayt-biy-2", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Endokrin Sistem ve Hormonlar", order: 2 },
+  { id: "ayt-biy-3", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Duyu Organları", order: 3 },
+  { id: "ayt-biy-4", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Destek ve Hareket Sistemi", order: 4 },
+  { id: "ayt-biy-5", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Sindirim Sistemi", order: 5 },
+  { id: "ayt-biy-6", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Dolaşım Sistemi (Kalp, Damarlar, Kan)", order: 6 },
+  { id: "ayt-biy-7", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Bağışıklık Sistemi (İmmün Sistem)", order: 7 },
+  { id: "ayt-biy-8", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Solunum Sistemi", order: 8 },
+  { id: "ayt-biy-9", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Üriner Sistem (Boşaltım)", order: 9 },
+  { id: "ayt-biy-10", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Üreme Sistemi ve Embriyonik Gelişim", order: 10 },
+  { id: "ayt-biy-11", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Komünite ve Popülasyon Ekolojisi", order: 11 },
+  { id: "ayt-biy-12", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Genden Proteine (DNA, RNA, Replikasyon)", order: 12 },
+  { id: "ayt-biy-13", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Canlılarda Enerji Dönüşümleri (Fotosentez)", order: 13 },
+  { id: "ayt-biy-14", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Hücresel Solunum (Oksijenli/Oksijensiz, Fermantasyon)", order: 14 },
+  { id: "ayt-biy-15", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Bitki Biyolojisi (Doku, Organ, Madde Taşıma)", order: 15 },
+  { id: "ayt-biy-16", examType: "AYT", subject: "Biyoloji", track: "SAY", name: "Canlılar ve Çevre (Adaptasyon, Evrim)", order: 16 },
 
-  // ==================== AYT EDEBİYAT ====================
-  { id: "ayt-ede-1", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Güzel Sanatlar, Edebiyat ve Coşku Dolu Metinler", order: 1 },
-  { id: "ayt-ede-2", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Şiir Bilgisi (Ölçü, Kafiye, Ahenk unsurları)", order: 2 },
+  // ═══════════════ AYT EDEBİYAT (EA + SOZ) ═══════════════
+  { id: "ayt-ede-1", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Güzel Sanatlar, Edebiyat ve Metin Türleri", order: 1 },
+  { id: "ayt-ede-2", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Şiir Bilgisi (Ölçü, Kafiye, Ahenk, Nazım Biçimleri)", order: 2 },
   { id: "ayt-ede-3", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Söz Sanatları (Edebi Sanatlar)", order: 3 },
   { id: "ayt-ede-4", examType: "AYT", subject: "Edebiyat", track: "EA", name: "İslamiyet Öncesi Türk Edebiyatı ve Geçiş Dönemi", order: 4 },
-  { id: "ayt-ede-5", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Halk Edebiyatı (Anonim, Aşık, Tekke Şiiri)", order: 5 },
-  { id: "ayt-ede-6", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Divan Edebiyatı (Nazım Biçimleri, Sanatçılar)", order: 6 },
+  { id: "ayt-ede-5", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Halk Edebiyatı (Anonim, Aşık, Tekke Tasavvuf)", order: 5 },
+  { id: "ayt-ede-6", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Divan Edebiyatı (Nazım Biçimleri ve Sanatçılar)", order: 6 },
   { id: "ayt-ede-7", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Edebi Akımlar ve Batı Edebiyatı", order: 7 },
-  { id: "ayt-ede-8", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Tanzimat Edebiyatı ve Servet-i Fünun Dönemi", order: 8 },
-  { id: "ayt-ede-9", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Fecr-i Ati ve Milli Edebiyat Akımı", order: 9 },
-  { id: "ayt-ede-10", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Cumhuriyet Dönemi Edebiyatı (Roman, Hikaye, Şiir)", order: 10 },
+  { id: "ayt-ede-8", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Tanzimat Dönemi Edebiyatı (I. ve II. Dönem)", order: 8 },
+  { id: "ayt-ede-9", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Servet-i Fünun ve Fecr-i Ati Dönemi", order: 9 },
+  { id: "ayt-ede-10", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Milli Edebiyat Dönemi ve Bağımsız Sanatçılar", order: 10 },
+  { id: "ayt-ede-11", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Cumhuriyet Dönemi Şiir (Garip, II. Yeni, Toplumcu)", order: 11 },
+  { id: "ayt-ede-12", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Cumhuriyet Dönemi Roman ve Hikaye", order: 12 },
+  { id: "ayt-ede-13", examType: "AYT", subject: "Edebiyat", track: "EA", name: "Cumhuriyet Dönemi Tiyatro ve Deneme", order: 13 },
 
-  // ==================== AYT TARİH-1 & TARİH-2 ====================
-  { id: "ayt-tar1-1", examType: "AYT", subject: "Tarih", track: "EA", name: "Tarih Bilimi ve İlk Uygarlıklar (AYT-1)", order: 1 },
-  { id: "ayt-tar1-2", examType: "AYT", subject: "Tarih", track: "EA", name: "İlk Türk Devletleri ve İslamiyet'in Doğuşu (AYT-1)", order: 2 },
-  { id: "ayt-tar1-3", examType: "AYT", subject: "Tarih", track: "EA", name: "Osmanlı Devleti Kuruluş, Yükselme, Kültür (AYT-1)", order: 3 },
-  { id: "ayt-tar1-4", examType: "AYT", subject: "Tarih", track: "EA", name: "Milli Mücadele Dönemi ve Atatürkçülük (AYT-1)", order: 4 },
-  { id: "ayt-tar2-1", examType: "AYT", subject: "Tarih-2", track: "SOZ", name: "Orta Çağ ve Yeni Çağ'da Avrupa Tarihi (AYT-2)", order: 1 },
-  { id: "ayt-tar2-2", examType: "AYT", subject: "Tarih-2", track: "SOZ", name: "Osmanlı Devleti Diplomatik Dengeler ve Dağılma (AYT-2)", order: 2 },
-  { id: "ayt-tar2-3", examType: "AYT", subject: "Tarih-2", track: "SOZ", name: "XX. Yüzyıl Başlarında Dünya ve İkinci Dünya Savaşı", order: 3 },
-  { id: "ayt-tar2-4", examType: "AYT", subject: "Tarih-2", track: "SOZ", name: "Soğuk Savaş, Yumuşama Dönemi ve Küreselleşen Dünya", order: 4 },
+  // ═══════════════ AYT TARİH-1 (EA + SOZ) ═══════════════
+  { id: "ayt-tar1-1", examType: "AYT", subject: "Tarih", track: "EA", name: "Tarih Bilimi, İlk ve Orta Çağ Uygarlıkları", order: 1 },
+  { id: "ayt-tar1-2", examType: "AYT", subject: "Tarih", track: "EA", name: "İlk Türk Devletleri ve Türk-İslam Devletleri", order: 2 },
+  { id: "ayt-tar1-3", examType: "AYT", subject: "Tarih", track: "EA", name: "Anadolu'nun Türkleşmesi ve Beylikler Dönemi", order: 3 },
+  { id: "ayt-tar1-4", examType: "AYT", subject: "Tarih", track: "EA", name: "Osmanlı Devleti Kuruluş, Yükselme ve Kültür-Med.", order: 4 },
+  { id: "ayt-tar1-5", examType: "AYT", subject: "Tarih", track: "EA", name: "Osmanlı Yenileşme, Islahat ve Dağılma Süreci", order: 5 },
+  { id: "ayt-tar1-6", examType: "AYT", subject: "Tarih", track: "EA", name: "Milli Mücadele Hazırlık, Kongreler ve TBMM", order: 6 },
+  { id: "ayt-tar1-7", examType: "AYT", subject: "Tarih", track: "EA", name: "Kurtuluş Savaşı, Antlaşmalar ve Atatürkçülük", order: 7 },
 
-  // ==================== AYT COĞRAFYA-1 & COĞRAFYA-2 ====================
-  { id: "ayt-cog1-1", examType: "AYT", subject: "Coğrafya", track: "EA", name: "Biyoçeşitlilik, Enerji Akışı ve Döngüler", order: 1 },
-  { id: "ayt-cog1-2", examType: "AYT", subject: "Coğrafya", track: "EA", name: "Şehirler, Fonksiyonları ve Etki Alanları", order: 2 },
-  { id: "ayt-cog1-3", examType: "AYT", subject: "Coğrafya", track: "EA", name: "Türkiye Ekonomisi, Sektörel Analiz, Tarım ve Sanayi", order: 3 },
-  { id: "ayt-cog2-1", examType: "AYT", subject: "Coğrafya-2", track: "SOZ", name: "Küresel Ticaret, Ulaşım ve Turizm Etkisi", order: 1 },
-  { id: "ayt-cog2-2", examType: "AYT", subject: "Coğrafya-2", track: "SOZ", name: "Bölgesel Kalkınma Projeleri ve Çevre Sorunları", order: 2 },
-  { id: "ayt-cog2-3", examType: "AYT", subject: "Coğrafya-2", track: "SOZ", name: "Küresel ve Bölgesel Örgütler (BM, NATO, AB vb.)", order: 3 },
+  // ═══════════════ AYT COĞRAFYA-1 (EA + SOZ) ═══════════════
+  { id: "ayt-cog1-1", examType: "AYT", subject: "Coğrafya", track: "EA", name: "Ekosistem, Madde Döngüleri ve Enerji Akışı", order: 1 },
+  { id: "ayt-cog1-2", examType: "AYT", subject: "Coğrafya", track: "EA", name: "Biyoçeşitlilik ve Biyomlar", order: 2 },
+  { id: "ayt-cog1-3", examType: "AYT", subject: "Coğrafya", track: "EA", name: "Nüfus, Göç, Yerleşme ve Şehirleşme", order: 3 },
+  { id: "ayt-cog1-4", examType: "AYT", subject: "Coğrafya", track: "EA", name: "Türkiye'de Nüfus ve Yerleşme", order: 4 },
+  { id: "ayt-cog1-5", examType: "AYT", subject: "Coğrafya", track: "EA", name: "Ekonomik Faaliyetler ve Türkiye'de Tarım", order: 5 },
+  { id: "ayt-cog1-6", examType: "AYT", subject: "Coğrafya", track: "EA", name: "Türkiye'de Sanayi, Ticaret ve Turizm", order: 6 },
+  { id: "ayt-cog1-7", examType: "AYT", subject: "Coğrafya", track: "EA", name: "Bölgeler, Kalkınma Projeleri ve Ulaşım", order: 7 },
 
-  // ==================== AYT FELSEFE GRUBU ====================
-  { id: "ayt-fel-1", examType: "AYT", subject: "Felsefe Grubu", track: "SOZ", name: "Psikolojinin Alanı ve Bilişsel Süreçler", order: 1 },
-  { id: "ayt-fel-2", examType: "AYT", subject: "Felsefe Grubu", track: "SOZ", name: "Öğrenme, Bellek, Düşünme ve Güdüler", order: 2 },
-  { id: "ayt-fel-3", examType: "AYT", subject: "Felsefe Grubu", track: "SOZ", name: "Sosyolojiye Giriş, Birey ve Toplum Yapısı", order: 3 },
-  { id: "ayt-fel-4", examType: "AYT", subject: "Felsefe Grubu", track: "SOZ", name: "Toplumsal Değişme, Tabakalaşma ve Kurumlar", order: 4 },
-  { id: "ayt-fel-5", examType: "AYT", subject: "Felsefe Grubu", track: "SOZ", name: "Klasik Mantık (Kavram, Önermeler, Çıkarım)", order: 5 },
-  { id: "ayt-fel-6", examType: "AYT", subject: "Felsefe Grubu", track: "SOZ", name: "Sembolik Mantık (Önermeler ve Yüklemler Mantığı)", order: 6 },
+  // ═══════════════ AYT TARİH-2 (SOZ) ═══════════════
+  { id: "ayt-tar2-1", examType: "AYT", subject: "Tarih-2", track: "SOZ", name: "Orta Çağ'da Avrupa, İslam Dünyası ve Haçlı Seferleri", order: 1 },
+  { id: "ayt-tar2-2", examType: "AYT", subject: "Tarih-2", track: "SOZ", name: "Yeni Çağ'da Avrupa (Rönesans, Reform, Aydınlanma)", order: 2 },
+  { id: "ayt-tar2-3", examType: "AYT", subject: "Tarih-2", track: "SOZ", name: "Osmanlı Devleti'nin Dış Politikası ve Diplomasi", order: 3 },
+  { id: "ayt-tar2-4", examType: "AYT", subject: "Tarih-2", track: "SOZ", name: "Sanayi Devrimi, Sömürgecilik ve Osmanlı'ya Etkileri", order: 4 },
+  { id: "ayt-tar2-5", examType: "AYT", subject: "Tarih-2", track: "SOZ", name: "XX. Yüzyıl Başları, I. ve II. Dünya Savaşı", order: 5 },
+  { id: "ayt-tar2-6", examType: "AYT", subject: "Tarih-2", track: "SOZ", name: "Soğuk Savaş, Yumuşama ve Küreselleşme", order: 6 },
 
-  // ==================== AYT DİN KÜLTÜRÜ (SÖZEL) ====================
-  { id: "ayt-din-1", examType: "AYT", subject: "Din Kültürü (AYT)", track: "SOZ", name: "İslam Düşüncesinde İtikadi, Fıkhi ve Tasavvufi Yorumlar", order: 1 },
-  { id: "ayt-din-2", examType: "AYT", subject: "Din Kültürü (AYT)", track: "SOZ", name: "Dünya ve Ahiret İnancı, Ölüm Ötesi Hayat", order: 2 },
-  { id: "ayt-din-3", examType: "AYT", subject: "Din Kültürü (AYT)", track: "SOZ", name: "Kur'an'da Bazı Temel Kavramlar (Cihat, İhlas vb.)", order: 3 }
+  // ═══════════════ AYT COĞRAFYA-2 (SOZ) ═══════════════
+  { id: "ayt-cog2-1", examType: "AYT", subject: "Coğrafya-2", track: "SOZ", name: "Küresel Ticaret, Ulaşım ve Lojistik Ağları", order: 1 },
+  { id: "ayt-cog2-2", examType: "AYT", subject: "Coğrafya-2", track: "SOZ", name: "Küresel Turizm ve Etkileri", order: 2 },
+  { id: "ayt-cog2-3", examType: "AYT", subject: "Coğrafya-2", track: "SOZ", name: "Bölgesel Kalkınma Projeleri ve Stratejileri", order: 3 },
+  { id: "ayt-cog2-4", examType: "AYT", subject: "Coğrafya-2", track: "SOZ", name: "Çevre Sorunları ve Sürdürülebilir Kalkınma", order: 4 },
+  { id: "ayt-cog2-5", examType: "AYT", subject: "Coğrafya-2", track: "SOZ", name: "Küresel ve Bölgesel Örgütler (BM, NATO, AB, KEİ)", order: 5 },
+  { id: "ayt-cog2-6", examType: "AYT", subject: "Coğrafya-2", track: "SOZ", name: "Türkiye'nin Jeopolitik Konumu ve Bölgesel Etkileri", order: 6 },
+
+  // ═══════════════ AYT FELSEFE GRUBU (SOZ) ═══════════════
+  { id: "ayt-fel-1", examType: "AYT", subject: "Felsefe Grubu", track: "SOZ", name: "Psikolojiye Giriş ve Duyum, Algı", order: 1 },
+  { id: "ayt-fel-2", examType: "AYT", subject: "Felsefe Grubu", track: "SOZ", name: "Öğrenme, Bellek, Düşünme ve Zeka", order: 2 },
+  { id: "ayt-fel-3", examType: "AYT", subject: "Felsefe Grubu", track: "SOZ", name: "Kişilik, Güdülenme ve Ruh Sağlığı", order: 3 },
+  { id: "ayt-fel-4", examType: "AYT", subject: "Felsefe Grubu", track: "SOZ", name: "Sosyolojiye Giriş, Toplum ve Kültür", order: 4 },
+  { id: "ayt-fel-5", examType: "AYT", subject: "Felsefe Grubu", track: "SOZ", name: "Toplumsal Tabakalaşma, Değişme ve Kurumlar", order: 5 },
+  { id: "ayt-fel-6", examType: "AYT", subject: "Felsefe Grubu", track: "SOZ", name: "Klasik Mantık (Kavram, Önerme, Akıl Yürütme)", order: 6 },
+  { id: "ayt-fel-7", examType: "AYT", subject: "Felsefe Grubu", track: "SOZ", name: "Sembolik Mantık ve Modern Mantık", order: 7 },
+
+  // ═══════════════ AYT DİN KÜLTÜRÜ (SOZ) ═══════════════
+  { id: "ayt-din-1", examType: "AYT", subject: "Din Kültürü (AYT)", track: "SOZ", name: "İslam Düşüncesinde İtikadi, Fıkhi Yorumlar", order: 1 },
+  { id: "ayt-din-2", examType: "AYT", subject: "Din Kültürü (AYT)", track: "SOZ", name: "İslam Düşüncesinde Tasavvufi Yorumlar", order: 2 },
+  { id: "ayt-din-3", examType: "AYT", subject: "Din Kültürü (AYT)", track: "SOZ", name: "Dünya ve Ahiret İnancı, Kıyamet ve Ahiret", order: 3 },
+  { id: "ayt-din-4", examType: "AYT", subject: "Din Kültürü (AYT)", track: "SOZ", name: "Kur'an'da Temel Kavramlar (Cihat, İhlas, Takva)", order: 4 },
+  { id: "ayt-din-5", examType: "AYT", subject: "Din Kültürü (AYT)", track: "SOZ", name: "İnançla İlgili Güncel Meseleler", order: 5 },
 ];
