@@ -286,6 +286,15 @@ export const Settings = React.memo(function Settings({ isOpen, onClose }: Settin
                 <span>%5 (soluk)</span><span>%40 (belirgin)</span>
               </div>
             </div>
+
+            {/* Uygulama Rehberi */}
+            <div className="border-t border-neutral-900 pt-4 mt-2">
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-2 block">Uygulama Rehberi</label>
+              <button onClick={() => { usePlanStore.setState({ hasCompletedOnboarding: false }); onClose(); }}
+                className="w-full py-2.5 bg-neutral-900 border border-neutral-800 hover:border-indigo-500 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer">
+                Giriş Turunu Yeniden Başlat
+              </button>
+            </div>
           </div>
 
           <button onClick={handleSave}

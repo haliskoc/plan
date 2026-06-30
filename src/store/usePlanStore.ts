@@ -99,6 +99,8 @@ export interface PlanState {
   setPdfSettings: (settings: Partial<PdfSettings>) => void;
   setPdfBackgroundImage: (dataUrl: string) => void;
   updatePlanItemNote: (id: string, note: string) => void;
+  hasCompletedOnboarding: boolean;
+  setHasCompletedOnboarding: (hasCompletedOnboarding: boolean) => void;
 }
 
 const DEFAULT_EXAM_DATE = "2027-06-19";
@@ -178,6 +180,8 @@ export const usePlanStore = create<PlanState>()(
 
       setHasHydrated: (state) => set({ hasHydrated: state }),
       setIsSidebarOpen: (isSidebarOpen) => set({ isSidebarOpen }),
+      hasCompletedOnboarding: false,
+      setHasCompletedOnboarding: (hasCompletedOnboarding) => set({ hasCompletedOnboarding }),
 
       toggleTheme: () =>
         set((s) => ({
@@ -433,6 +437,9 @@ export const usePlanStore = create<PlanState>()(
               textColorLight: "#ffffff",
               textColorDark: "#0f172a",
             };
+          }
+          if (state.hasCompletedOnboarding === undefined) {
+            state.hasCompletedOnboarding = false;
           }
           state.undoStack = [];
           state.redoStack = [];

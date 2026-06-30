@@ -20,7 +20,7 @@ export const PlannerViews = React.memo(function PlannerViews() {
   ];
 
   return (
-    <div className="flex flex-col h-full gap-4">
+    <div id="tour-planner-views" className="flex flex-col h-full gap-4">
       <div className="flex items-center justify-between gap-4 shrink-0">
         <div className="flex p-1 bg-neutral-950/90 border border-neutral-900 rounded-2xl w-max">
           {tabs.map((tab) => {

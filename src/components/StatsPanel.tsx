@@ -39,7 +39,7 @@ export const StatsPanel = React.memo(function StatsPanel() {
   const maxMinutes = Math.max(1, ...stats.last7Days.map((d) => d.minutes), goals.dailyMinutes);
 
   return (
-    <div className="bg-neutral-950/90 border border-neutral-900 rounded-2xl p-5 shadow-xl">
+    <div id="tour-stats-panel" className="bg-neutral-950/90 border border-neutral-900 rounded-2xl p-5 shadow-xl">
       <h2 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
         <BarChart3 className="w-4 h-4 text-indigo-400" />
         İstatistikler

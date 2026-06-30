@@ -11,6 +11,7 @@ import { StatsPanel } from "@/components/StatsPanel";
 import { RecurringItems } from "@/components/RecurringItems";
 import { PlanManager } from "@/components/PlanManager";
 import { NotebookModal } from "@/components/NotebookModal";
+import { OnboardingTour } from "@/components/OnboardingTour";
 import { usePlanStore, useActivePlan } from "@/store/usePlanStore";
 import { addDays, format, getDay } from "date-fns";
 import { requestNotificationPermission, sendStudyReminder, registerServiceWorker } from "@/utils/notifications";
@@ -272,6 +273,7 @@ export default function PlanPage() {
           {/* Navigation Links */}
           <nav className="space-y-1.5">
             <button
+              id="tour-planner-tab"
               onClick={() => setMobileTab("plan")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 mobileTab === "plan"
@@ -297,6 +299,7 @@ export default function PlanPage() {
             </button>
 
             <button
+              id="tour-stats-tab"
               onClick={() => setMobileTab("stats")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 mobileTab === "stats"
@@ -340,7 +343,7 @@ export default function PlanPage() {
           </div>
 
           {/* Action Grid */}
-          <div className="grid grid-cols-2 gap-2">
+          <div id="tour-quick-actions" className="grid grid-cols-2 gap-2">
             <button
               onClick={() => setIsTemplateModalOpen(true)}
               className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-neutral-900 border border-neutral-850 hover:border-neutral-700 text-neutral-300 hover:text-white text-[11px] font-bold cursor-pointer transition-all"
@@ -375,7 +378,7 @@ export default function PlanPage() {
           </div>
 
           {/* Backup buttons */}
-          <div className="flex items-center gap-2">
+          <div id="tour-backup-actions" className="flex items-center gap-2">
             <button
               onClick={handleExportPlan}
               className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-neutral-850 bg-neutral-900/40 text-neutral-400 hover:text-white transition-all cursor-pointer text-[10px] font-bold"
@@ -439,6 +442,7 @@ export default function PlanPage() {
                 <div className="hidden lg:block lg:col-span-4 xl:col-span-3.5 space-y-4">
                   <TopicSelector />
                   <button
+                    id="tour-recurring-btn"
                     onClick={() => setActivePanel(activePanel === "recurring" ? null : "recurring")}
                     className={`w-full text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer ${
                       activePanel === "recurring"
@@ -463,6 +467,7 @@ export default function PlanPage() {
             <div className={`w-full space-y-4 lg:hidden ${mobileTab === "library" ? "block" : "hidden"}`}>
               <TopicSelector />
               <button
+                id="tour-recurring-btn-mobile"
                 onClick={() => setActivePanel(activePanel === "recurring" ? null : "recurring")}
                 className={`w-full text-xs font-bold py-3.5 bg-neutral-900 border border-neutral-850 rounded-2xl text-neutral-400 hover:text-white transition-all cursor-pointer`}
               >
@@ -484,6 +489,15 @@ export default function PlanPage() {
       <PlanManager isOpen={isPlanManagerOpen} onClose={() => setIsPlanManagerOpen(false)} />
       <NotebookModal isOpen={isNotebookModalOpen} onClose={() => setIsNotebookModalOpen(false)} />
 
+      <OnboardingTour
+        mobileTab={mobileTab}
+        setMobileTab={setMobileTab}
+        isMobileMenuOpen={isMobileMenuOpen}
+        setIsMobileMenuOpen={setIsMobileMenuOpen}
+        activePanel={activePanel}
+        setActivePanel={setActivePanel}
+      />
+
       {isStatsOpen && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="w-full max-w-2xl max-h-[85vh] overflow-y-auto">
@@ -501,6 +515,7 @@ export default function PlanPage() {
       {/* Mobile Bottom Navigation Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-neutral-950/90 border-t border-neutral-900 backdrop-blur-md px-4 pb-[calc(8px+env(safe-area-inset-bottom,0px))] pt-2.5 flex items-center justify-around lg:hidden shadow-[0_-8px_30px_rgb(0,0,0,0.5)]">
         <button
+          id="tour-mobile-plan-tab"
           onClick={() => setMobileTab("plan")}
           className={`flex flex-col items-center gap-1.5 py-1 px-3 transition-colors cursor-pointer ${
             mobileTab === "plan" ? "text-indigo-400 font-bold" : "text-neutral-500 hover:text-neutral-300"
@@ -511,6 +526,7 @@ export default function PlanPage() {
         </button>
 
         <button
+          id="tour-mobile-library-tab"
           onClick={() => setMobileTab("library")}
           className={`flex flex-col items-center gap-1.5 py-1 px-3 transition-colors cursor-pointer ${
             mobileTab === "library" ? "text-indigo-400 font-bold" : "text-neutral-500 hover:text-neutral-300"
@@ -521,6 +537,7 @@ export default function PlanPage() {
         </button>
 
         <button
+          id="tour-mobile-stats-tab"
           onClick={() => setMobileTab("stats")}
           className={`flex flex-col items-center gap-1.5 py-1 px-3 transition-colors cursor-pointer ${
             mobileTab === "stats" ? "text-indigo-400 font-bold" : "text-neutral-500 hover:text-neutral-300"
@@ -531,6 +548,7 @@ export default function PlanPage() {
         </button>
 
         <button
+          id="tour-mobile-actions-tab"
           onClick={() => setIsMobileMenuOpen(true)}
           className="flex flex-col items-center gap-1.5 py-1 px-3 text-neutral-500 hover:text-neutral-300 transition-colors cursor-pointer"
         >
@@ -566,7 +584,7 @@ export default function PlanPage() {
             </div>
 
             {/* Action Grid */}
-            <div className="grid grid-cols-2 gap-3">
+            <div id="tour-mobile-menu-actions" className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => { setIsMobileMenuOpen(false); setIsTemplateModalOpen(true); }}
                 className="flex flex-col items-center justify-center p-4 rounded-2xl bg-neutral-900/60 border border-neutral-850 text-center hover:bg-neutral-900 hover:border-neutral-800 transition-all cursor-pointer gap-2"
@@ -626,7 +644,7 @@ export default function PlanPage() {
             </div>
 
             {/* Sub-group: Undo / Redo & Backup */}
-            <div className="space-y-3 pt-2">
+            <div id="tour-mobile-menu-backups" className="space-y-3 pt-2">
               {/* Undo / Redo Row */}
               <div className="flex items-center gap-3">
                 <button
