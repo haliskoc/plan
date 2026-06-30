@@ -105,3 +105,7 @@ html.light .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   body { background: white !important; color: black !important; }
   .no-print { display: none !important; }
 }
+
+.blend-mode-difference {
+  mix-blend-mode: difference;
+}

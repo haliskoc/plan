@@ -64,7 +64,7 @@ function buildStyles(pdf: PdfSettings) {
   const bgRow = bgDark ? "rgba(255,255,255,0.04)" : "#f8f9fa";
 
   return StyleSheet.create({
-    page: { fontFamily: "Roboto", padding: 30, backgroundColor: "#ffffff", position: "relative" },
+    page: { fontFamily: "Roboto", backgroundColor: pdf.backgroundColorAvg || "#ffffff", position: "relative" },
     header: { borderBottomWidth: 1.5, borderBottomColor: "#6366f1", paddingBottom: 12, marginBottom: 20, display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
     title: { fontSize: 16, fontWeight: "bold", color: txt },
     subtitle: { fontSize: 9, color: txtSub, marginTop: 4 },
@@ -105,9 +105,23 @@ function buildStyles(pdf: PdfSettings) {
 
 function BackgroundLayer({ image, opacity, children }: { image: string; opacity: number; children: React.ReactNode }) {
   return (
-    <View style={{ position: "relative", flex: 1 }}>
+    <View style={{ position: "relative", flex: 1, padding: 30 }}>
       {image ? (
-        <Image src={image} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: opacity / 100, objectFit: "cover" }} />
+        <Image 
+          src={image} 
+          style={{ 
+            position: "absolute", 
+            top: 0, 
+            left: 0, 
+            right: 0, 
+            bottom: 0, 
+            width: "100%", 
+            height: "100%", 
+            opacity: opacity / 100, 
+            objectFit: "cover",
+            zIndex: -100
+          }} 
+        />
       ) : null}
       <View style={{ flex: 1 }}>{children}</View>
     </View>

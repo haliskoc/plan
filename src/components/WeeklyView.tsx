@@ -98,14 +98,17 @@ export function WeeklyView() {
   }, [itemsByDateMap]);
 
   const weekRangeLabel = `${format(startOfActiveWeek, "d MMMM", { locale: tr })} - ${format(endOfActiveWeek, "d MMMM yyyy", { locale: tr })}`;
+  const hasBg = !!pdfSettings.backgroundImage;
 
   return (
-    <div className="flex flex-col h-full bg-neutral-950/60 border border-neutral-900 rounded-2xl p-4 sm:p-6 shadow-xl backdrop-blur-md">
+    <div className={`flex flex-col h-full border border-neutral-900 rounded-2xl p-4 sm:p-6 shadow-xl backdrop-blur-md transition-all duration-300 ${
+      hasBg ? "bg-neutral-950/35" : "bg-neutral-950/60"
+    }`}>
       {/* Date Header navigation */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-b-neutral-900 pb-5 mb-5">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-indigo-400" />
-          <h2 className="text-base font-bold text-white tracking-tight">Haftalık Çalışma Planı</h2>
+          <h2 className={`text-base font-bold text-white tracking-tight ${hasBg ? "blend-mode-difference" : ""}`}>Haftalık Çalışma Planı</h2>
         </div>
         
         <div className="flex items-center justify-between sm:justify-start gap-4">
@@ -175,12 +178,14 @@ export function WeeklyView() {
                     ? "bg-indigo-950/20 border-indigo-500/50 shadow-md shadow-indigo-500/5" 
                     : isToday
                       ? "bg-neutral-900/40 border-neutral-700 shadow-xs"
-                      : "bg-neutral-900/10 border-neutral-900 hover:border-neutral-800"
+                      : hasBg
+                        ? "bg-neutral-900/5 border-neutral-900/60 hover:border-neutral-800/80"
+                        : "bg-neutral-900/10 border-neutral-900 hover:border-neutral-800"
                 }`}
               >
                 {/* Day Header */}
                 <div className="text-center border-b border-neutral-900 pb-2 mb-3 shrink-0">
-                  <h3 className="text-xs font-bold text-white mb-0.5">
+                  <h3 className={`text-xs font-bold text-white mb-0.5 ${hasBg ? "blend-mode-difference" : ""}`}>
                     {format(day, "EEEE", { locale: tr })}
                   </h3>
                   <div className="flex items-center justify-center gap-1.5">
@@ -226,7 +231,13 @@ export function WeeklyView() {
                             <Trash2 className="w-2.5 h-2.5" />
                           </button>
                         </div>
-                        <span className={`text-[10px] font-bold leading-tight ${isCompleted ? "line-through text-neutral-500" : ""}`}>
+                        <span className={`text-[10px] font-bold leading-tight ${
+                          isCompleted 
+                            ? "line-through text-neutral-500" 
+                            : hasBg 
+                              ? "text-white blend-mode-difference" 
+                              : "text-white"
+                        }`}>
                           {topic.name}
                         </span>
 

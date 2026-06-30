@@ -16,7 +16,7 @@ import { addDays, format, getDay } from "date-fns";
 import { requestNotificationPermission, sendStudyReminder, registerServiceWorker } from "@/utils/notifications";
 
 export default function PlanPage() {
-  const { plan, hasHydrated, isSidebarOpen, theme, recurringItems, addPlanItems } = usePlanStore();
+  const { plan, hasHydrated, isSidebarOpen, theme, recurringItems, addPlanItems, pdfSettings } = usePlanStore();
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
@@ -97,7 +97,18 @@ export default function PlanPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-neutral-200 flex flex-col selection:bg-indigo-500/30 selection:text-white">
+    <div className="min-h-screen text-neutral-200 flex flex-col selection:bg-indigo-500/30 selection:text-white relative">
+      {hasHydrated && pdfSettings.backgroundImage && (
+        <div 
+          className="fixed inset-0 w-full h-full -z-50 pointer-events-none transition-opacity duration-300"
+          style={{
+            backgroundImage: `url(${pdfSettings.backgroundImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: (pdfSettings.backgroundOpacity || 15) / 100,
+          }}
+        />
+      )}
       <Header
         onOpenTemplateModal={() => setIsTemplateModalOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}

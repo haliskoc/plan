@@ -203,7 +203,18 @@ export function Settings({ isOpen, onClose }: SettingsProps) {
                   <div className="w-5 h-5 rounded-full border border-neutral-700" style={{ backgroundColor: pdfSettings.backgroundColorAvg }} />
                   <span className="text-[10px] text-neutral-500 font-mono">{pdfSettings.backgroundColorAvg}</span>
                   <span className="text-[10px] text-neutral-500 ml-auto">
-                    {pdfSettings.textColorDark === "#ffffff" ? "Koyu zemin → açık yazı" : "Açık zemin → koyu yazı"}
+                    {(() => {
+                      const bg = pdfSettings.backgroundColorAvg || "#ffffff";
+                      try {
+                        const r = parseInt(bg.slice(1, 3), 16);
+                        const g = parseInt(bg.slice(3, 5), 16);
+                        const b = parseInt(bg.slice(5, 7), 16);
+                        const isDark = (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.5;
+                        return isDark ? "Koyu zemin → açık yazı" : "Açık zemin → koyu yazı";
+                      } catch {
+                        return "Açık zemin → koyu yazı";
+                      }
+                    })()}
                   </span>
                 </div>
                 <button onClick={handleRemoveBg}

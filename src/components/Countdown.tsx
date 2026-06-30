@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { differenceInSeconds, differenceInDays, parseISO } from "date-fns";
+import { usePlanStore } from "@/store/usePlanStore";
 
 interface CountdownProps {
   targetDateStr: string;
@@ -9,6 +10,9 @@ interface CountdownProps {
 }
 
 export function Countdown({ targetDateStr, startDateStr }: CountdownProps) {
+  const { pdfSettings, hasHydrated } = usePlanStore();
+  const hasBg = hasHydrated && !!pdfSettings.backgroundImage;
+
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
     hours: number;
@@ -79,18 +83,20 @@ export function Countdown({ targetDateStr, startDateStr }: CountdownProps) {
   const percentagePassed = Math.min(100, Math.round((daysPassed / totalDays) * 100));
 
   return (
-    <div className="relative overflow-hidden w-full bg-linear-to-r from-neutral-900/90 to-neutral-950/90 border border-neutral-800 rounded-2xl p-6 shadow-xl backdrop-blur-md">
+    <div className={`relative overflow-hidden w-full border border-neutral-800 rounded-2xl p-6 shadow-xl backdrop-blur-md transition-all duration-300 ${
+      hasBg ? "bg-neutral-950/35" : "bg-linear-to-r from-neutral-900/90 to-neutral-950/90"
+    }`}>
       <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
 
       <div className="flex flex-col md:flex-row items-center justify-between gap-6">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-white mb-1">
+          <h2 className={`text-xl font-bold tracking-tight text-white mb-1 ${hasBg ? "blend-mode-difference" : ""}`}>
             2027 YKS Hedef Geri Sayım
           </h2>
           <p className="text-sm text-neutral-400">
             Hedef Sınav Tarihi:{" "}
-            <span className="font-semibold text-indigo-400">{targetDateStr}</span>
+            <span className={`font-semibold text-indigo-450 ${hasBg ? "blend-mode-difference" : "text-indigo-400"}`}>{targetDateStr}</span>
           </p>
         </div>
 
@@ -101,37 +107,45 @@ export function Countdown({ targetDateStr, startDateStr }: CountdownProps) {
         ) : (
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="flex flex-col items-center">
-              <span className="text-3xl sm:text-4xl font-extrabold text-white font-mono bg-neutral-900/80 px-4 py-2 rounded-xl border border-neutral-800 shadow-inner w-20 sm:w-24 text-center">
+              <span className={`text-3xl sm:text-4xl font-extrabold text-white font-mono px-4 py-2 rounded-xl border border-neutral-800 shadow-inner w-20 sm:w-24 text-center transition-all duration-300 ${
+                hasBg ? "bg-transparent blend-mode-difference" : "bg-neutral-900/80"
+              }`}>
                 {timeLeft.days}
               </span>
-              <span className="text-[10px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider">
+              <span className={`text-[10px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider ${hasBg ? "blend-mode-difference text-neutral-200" : ""}`}>
                 Gün
               </span>
             </div>
-            <div className="text-2xl font-bold text-neutral-700">:</div>
+            <div className={`text-2xl font-bold text-neutral-700 ${hasBg ? "blend-mode-difference text-neutral-300" : ""}`}>:</div>
             <div className="flex flex-col items-center">
-              <span className="text-3xl sm:text-4xl font-extrabold text-indigo-400 font-mono bg-neutral-900/80 px-4 py-2 rounded-xl border border-neutral-800 shadow-inner w-16 sm:w-20 text-center">
+              <span className={`text-3xl sm:text-4xl font-extrabold text-indigo-400 font-mono px-4 py-2 rounded-xl border border-neutral-800 shadow-inner w-16 sm:w-20 text-center transition-all duration-300 ${
+                hasBg ? "bg-transparent blend-mode-difference text-indigo-300" : "bg-neutral-900/80"
+              }`}>
                 {String(timeLeft.hours).padStart(2, "0")}
               </span>
-              <span className="text-[10px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider">
+              <span className={`text-[10px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider ${hasBg ? "blend-mode-difference text-neutral-200" : ""}`}>
                 Saat
               </span>
             </div>
-            <div className="text-2xl font-bold text-neutral-700">:</div>
+            <div className={`text-2xl font-bold text-neutral-700 ${hasBg ? "blend-mode-difference text-neutral-300" : ""}`}>:</div>
             <div className="flex flex-col items-center">
-              <span className="text-3xl sm:text-4xl font-extrabold text-cyan-400 font-mono bg-neutral-900/80 px-4 py-2 rounded-xl border border-neutral-800 shadow-inner w-16 sm:w-20 text-center">
+              <span className={`text-3xl sm:text-4xl font-extrabold text-cyan-400 font-mono px-4 py-2 rounded-xl border border-neutral-800 shadow-inner w-16 sm:w-20 text-center transition-all duration-300 ${
+                hasBg ? "bg-transparent blend-mode-difference text-cyan-300" : "bg-neutral-900/80"
+              }`}>
                 {String(timeLeft.minutes).padStart(2, "0")}
               </span>
-              <span className="text-[10px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider">
+              <span className={`text-[10px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider ${hasBg ? "blend-mode-difference text-neutral-200" : ""}`}>
                 Dakika
               </span>
             </div>
-            <div className="text-2xl font-bold text-neutral-700">:</div>
+            <div className={`text-2xl font-bold text-neutral-700 ${hasBg ? "blend-mode-difference text-neutral-300" : ""}`}>:</div>
             <div className="flex flex-col items-center">
-              <span className="text-3xl sm:text-4xl font-extrabold text-pink-400 font-mono bg-neutral-900/80 px-4 py-2 rounded-xl border border-neutral-800 shadow-inner w-16 sm:w-20 text-center">
+              <span className={`text-3xl sm:text-4xl font-extrabold text-pink-400 font-mono px-4 py-2 rounded-xl border border-neutral-800 shadow-inner w-16 sm:w-20 text-center transition-all duration-300 ${
+                hasBg ? "bg-transparent blend-mode-difference text-pink-300" : "bg-neutral-900/80"
+              }`}>
                 {String(timeLeft.seconds).padStart(2, "0")}
               </span>
-              <span className="text-[10px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider">
+              <span className={`text-[10px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider ${hasBg ? "blend-mode-difference text-neutral-200" : ""}`}>
                 Saniye
               </span>
             </div>

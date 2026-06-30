@@ -78,12 +78,16 @@ export function DailyView() {
 
   const totalMinutes = dayItems.reduce((sum, item) => sum + item.durationMinutes, 0);
 
+  const hasBg = !!pdfSettings.backgroundImage;
+
   return (
-    <div className="flex flex-col h-full bg-neutral-950/60 border border-neutral-900 rounded-2xl p-4 sm:p-6 shadow-xl backdrop-blur-md">
+    <div className={`flex flex-col h-full border border-neutral-900 rounded-2xl p-4 sm:p-6 shadow-xl backdrop-blur-md transition-all duration-300 ${
+      hasBg ? "bg-neutral-950/35" : "bg-neutral-950/60"
+    }`}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-neutral-900 pb-5 mb-5">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-indigo-400" />
-          <h2 className="text-base font-bold text-white tracking-tight">Günlük Çalışma Planı</h2>
+          <h2 className={`text-base font-bold text-white tracking-tight ${hasBg ? "blend-mode-difference" : ""}`}>Günlük Çalışma Planı</h2>
         </div>
         
         <div className="flex items-center justify-between sm:justify-start gap-4">
@@ -132,8 +136,8 @@ export function DailyView() {
       </div>
 
       <div className="flex items-center justify-between text-xs text-neutral-400 mb-4 px-1">
-        <span>Günün Ders Yükü: <strong className="text-white">{dayItems.length} konu</strong></span>
-        <span>Planlanan Süre: <strong className="text-indigo-400 font-mono">{Math.round(totalMinutes / 60 * 10) / 10} saat</strong> ({totalMinutes} dk)</span>
+        <span>Günün Ders Yükü: <strong className={`text-white ${hasBg ? "blend-mode-difference" : ""}`}>{dayItems.length} konu</strong></span>
+        <span>Planlanan Süre: <strong className={`text-indigo-400 font-mono ${hasBg ? "blend-mode-difference text-indigo-300" : ""}`}>{Math.round(totalMinutes / 60 * 10) / 10} saat</strong> ({totalMinutes} dk)</span>
       </div>
 
       <div className="flex-1 overflow-y-auto pr-1 space-y-3 max-h-[calc(100vh-390px)] scrollbar-thin scrollbar-thumb-neutral-800 scrollbar-track-transparent">
@@ -157,7 +161,9 @@ export function DailyView() {
                 className={`relative border rounded-2xl p-4 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${
                   isCompleted
                     ? "bg-emerald-500/5 border-emerald-500/20"
-                    : "bg-neutral-900/30 border-neutral-850 hover:border-neutral-800"
+                    : hasBg 
+                      ? "bg-neutral-900/10 border-neutral-850/50 hover:border-neutral-800"
+                      : "bg-neutral-900/30 border-neutral-850 hover:border-neutral-800"
                 }`}
               >
                 <div className="flex items-start gap-3.5 flex-1">
@@ -182,7 +188,11 @@ export function DailyView() {
                       </span>
                     </div>
                     <span className={`text-xs font-bold leading-normal transition-colors ${
-                      isCompleted ? "text-neutral-500 line-through" : "text-white"
+                      isCompleted 
+                        ? "text-neutral-500 line-through" 
+                        : hasBg 
+                          ? "text-white blend-mode-difference" 
+                          : "text-white"
                     }`}>
                       {topic.name}
                     </span>
