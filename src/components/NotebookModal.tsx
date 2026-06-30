@@ -57,9 +57,9 @@ const COVER_OPTIONS: { id: CoverStyle; name: string; desc: string; previewClass:
   },
   {
     id: "creative-sunset",
-    name: "Aurora Orbits",
-    desc: "Midnight mor zemin üzerinde gün batımı renk küreleri ve yörünge halkaları.",
-    previewClass: "bg-purple-950/90 border border-pink-500/20 relative overflow-hidden flex flex-col justify-between p-2 text-white",
+    name: "Kozmik Keşif (Space Odyssey)",
+    desc: "Gece mavisi zemin üzerinde Satürn gezegeni, gökyüzü koordinatları ve takımyıldız şemaları.",
+    previewClass: "bg-[#060814] border border-amber-500/30 relative overflow-hidden flex flex-col justify-between p-2 text-white before:content-[''] before:absolute before:inset-0 before:bg-[radial-gradient(rgba(249,115,22,0.1)_1px,transparent_1px)] before:bg-[size:10px_10px]",
   },
   {
     id: "minimalist-slate",
