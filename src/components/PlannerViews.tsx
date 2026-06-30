@@ -45,7 +45,7 @@ export const PlannerViews = React.memo(function PlannerViews() {
 
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl bg-neutral-950/90 border border-neutral-900 text-neutral-400 hover:text-neutral-200 hover:border-neutral-850 transition-all cursor-pointer shadow-xs select-none"
+          className="hidden items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl bg-neutral-950/90 border border-neutral-900 text-neutral-400 hover:text-neutral-200 hover:border-neutral-850 transition-all cursor-pointer shadow-xs select-none"
           title={isSidebarOpen ? "Konu Kütüphanesini Kapat" : "Konu Kütüphanesini Aç"}
         >
           {isSidebarOpen ? (

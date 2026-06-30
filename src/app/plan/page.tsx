@@ -29,7 +29,8 @@ import {
   Download, 
   Upload, 
   Trash2, 
-  X 
+  X,
+  Edit2
 } from "lucide-react";
 
 function validatePlan(data: unknown): boolean {
@@ -49,7 +50,6 @@ function validatePlan(data: unknown): boolean {
 export default function PlanPage() {
   const plan = useActivePlan();
   const hasHydrated = usePlanStore((s) => s.hasHydrated);
-  const isSidebarOpen = usePlanStore((s) => s.isSidebarOpen);
   const theme = usePlanStore((s) => s.theme);
   const toggleTheme = usePlanStore((s) => s.toggleTheme);
   const recurringItems = usePlanStore((s) => s.recurringItems);
@@ -60,6 +60,7 @@ export default function PlanPage() {
   const undoStack = usePlanStore((s) => s.undoStack);
   const redoStack = usePlanStore((s) => s.redoStack);
   const pdfSettings = usePlanStore((s) => s.pdfSettings);
+  const setPlanTitle = usePlanStore((s) => s.setPlanTitle);
 
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -69,9 +70,26 @@ export default function PlanPage() {
   const [activePanel, setActivePanel] = useState<"recurring" | null>(null);
   const recurringAppliedRef = useRef(false);
 
-  // Mobile navigation and menu states
+  // Desktop/Mobile active tab navigation and menu states
   const [mobileTab, setMobileTab] = useState<"plan" | "library" | "stats">("plan");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Desktop Title Editor states
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [tempTitle, setTempTitle] = useState(plan.title);
+
+  useEffect(() => {
+    if (hasHydrated) {
+      setTempTitle(plan.title);
+    }
+  }, [plan.title, hasHydrated]);
+
+  const handleSaveTitle = useCallback(() => {
+    if (tempTitle.trim()) {
+      setPlanTitle(tempTitle.trim());
+    }
+    setIsEditingTitle(false);
+  }, [tempTitle, setPlanTitle]);
 
   const handleClearPlan = useCallback(() => {
     if (confirm("Tüm planınızı sıfırlamak istediğinize emin misiniz? Bu işlem geri alınabilir.")) {
@@ -195,7 +213,7 @@ export default function PlanPage() {
   }, []);
 
   return (
-    <div className="min-h-screen text-neutral-200 flex flex-col selection:bg-indigo-500/30 selection:text-white relative">
+    <div className="min-h-screen text-neutral-200 flex flex-col lg:flex-row selection:bg-indigo-500/30 selection:text-white relative overflow-hidden bg-black">
       {hasHydrated && pdfSettings.backgroundImage && (
         <div 
           className="fixed inset-0 w-full h-full -z-50 pointer-events-none transition-opacity duration-300"
@@ -208,66 +226,244 @@ export default function PlanPage() {
         />
       )}
 
-      <Header
-        onOpenTemplateModal={() => setIsTemplateModalOpen(true)}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onOpenStats={() => setIsStatsOpen(true)}
-        onOpenPlanManager={() => setIsPlanManagerOpen(true)}
-        onOpenNotebookModal={() => setIsNotebookModalOpen(true)}
-      />
+      {/* Desktop Dashboard Left Sidebar */}
+      <aside className="hidden lg:flex flex-col w-64 xl:w-72 shrink-0 border-r border-neutral-900 bg-neutral-950/80 backdrop-blur-md p-5 sticky top-0 h-screen justify-between z-30 shadow-2xl">
+        <div className="space-y-6">
+          {/* Logo & Title Editor */}
+          <div className="flex items-center gap-3 border-b border-neutral-900 pb-5">
+            <div className="w-9 h-9 xl:w-10 xl:h-10 rounded-xl bg-linear-to-tr from-indigo-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-indigo-500/10 shrink-0">
+              <BookOpen className="w-4.5 h-4.5 xl:w-5 xl:h-5 text-white" />
+            </div>
+            <div className="flex flex-col min-w-0 flex-1">
+              {isEditingTitle ? (
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="text"
+                    value={tempTitle}
+                    onChange={(e) => setTempTitle(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSaveTitle()}
+                    className="bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1 text-xs font-semibold text-white focus:outline-hidden focus:border-indigo-500 w-full"
+                    autoFocus
+                  />
+                  <button 
+                    onClick={handleSaveTitle}
+                    className="p-1 rounded-md bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 transition-colors cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between group min-w-0">
+                  <h1 className="text-sm font-bold text-white tracking-tight truncate pr-1">
+                    {plan.title}
+                  </h1>
+                  <button
+                    onClick={() => setIsEditingTitle(true)}
+                    className="p-1 rounded-md text-neutral-500 hover:text-neutral-300 hover:bg-neutral-900/50 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                  >
+                    <Edit2 className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+              <span className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider mt-0.5">YKS 2027 Odası</span>
+            </div>
+          </div>
 
-      <main className="flex-1 max-w-[1600px] w-full mx-auto p-4 sm:p-6 flex flex-col gap-6">
-        
-        {/* Countdown - Hide on mobile if library or stats tab is active */}
-        <div className={mobileTab === "plan" ? "block" : "hidden lg:block"}>
-          <Countdown targetDateStr={hasHydrated ? plan.examDate : "2027-06-19"} />
+          {/* Navigation Links */}
+          <nav className="space-y-1.5">
+            <button
+              onClick={() => setMobileTab("plan")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                mobileTab === "plan"
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/15"
+                  : "text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900/40"
+              }`}
+            >
+              <Calendar className="w-4 h-4 shrink-0" />
+              <span>Çalışma Planım</span>
+            </button>
+
+            <button
+              onClick={() => setMobileTab("library")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                mobileTab === "library"
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/15"
+                  : "text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900/40"
+              }`}
+            >
+              <BookOpen className="w-4 h-4 shrink-0" />
+              <span>Ders / Konu Ekle</span>
+            </button>
+
+            <button
+              onClick={() => setMobileTab("stats")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                mobileTab === "stats"
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/15"
+                  : "text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900/40"
+              }`}
+            >
+              <BarChart3 className="w-4 h-4 shrink-0" />
+              <span>İstatistikler</span>
+            </button>
+          </nav>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-20 lg:pb-0">
+        {/* Sidebar Desktop Actions / Settings Panel */}
+        <div className="border-t border-neutral-900 pt-5 space-y-4 shrink-0">
+          {/* Quick Undo/Redo & Theme */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={undo}
+              disabled={undoStack.length === 0}
+              className="flex-1 p-2.5 rounded-xl border border-neutral-850 bg-neutral-900/40 text-neutral-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer flex justify-center"
+              title="Geri Al (Ctrl+Z)"
+            >
+              <Undo2 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={redo}
+              disabled={redoStack.length === 0}
+              className="flex-1 p-2.5 rounded-xl border border-neutral-850 bg-neutral-900/40 text-neutral-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer flex justify-center"
+              title="İleri Al (Ctrl+Y)"
+            >
+              <Redo2 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={toggleTheme}
+              className="flex-1 p-2.5 rounded-xl border border-neutral-850 bg-neutral-900/40 text-neutral-400 hover:text-white transition-all cursor-pointer flex justify-center"
+              title="Tema Değiştir"
+            >
+              {theme === "dark" ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}
+            </button>
+          </div>
+
+          {/* Action Grid */}
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => setIsTemplateModalOpen(true)}
+              className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-neutral-900 border border-neutral-850 hover:border-neutral-700 text-neutral-300 hover:text-white text-[11px] font-bold cursor-pointer transition-all"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+              <span className="truncate">Şablon Yükle</span>
+            </button>
+
+            <button
+              onClick={() => setIsNotebookModalOpen(true)}
+              className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-neutral-900 border border-neutral-850 hover:border-neutral-700 text-neutral-300 hover:text-white text-[11px] font-bold cursor-pointer transition-all"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span className="truncate">Defter</span>
+            </button>
+
+            <button
+              onClick={() => setIsPlanManagerOpen(true)}
+              className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-neutral-900 border border-neutral-850 hover:border-neutral-700 text-neutral-300 hover:text-white text-[11px] font-bold cursor-pointer transition-all"
+            >
+              <Layers className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span className="truncate">Yönetici</span>
+            </button>
+
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-neutral-900 border border-neutral-850 hover:border-neutral-700 text-neutral-300 hover:text-white text-[11px] font-bold cursor-pointer transition-all"
+            >
+              <SettingsIcon className="w-3.5 h-3.5 text-pink-400 shrink-0" />
+              <span className="truncate">Ayarlar</span>
+            </button>
+          </div>
+
+          {/* Backup buttons */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleExportPlan}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-neutral-850 bg-neutral-900/40 text-neutral-400 hover:text-white transition-all cursor-pointer text-[10px] font-bold"
+              title="Yedek indir (JSON)"
+            >
+              <Download className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Yedek Al</span>
+            </button>
+            <label
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-neutral-850 bg-neutral-900/40 text-neutral-400 hover:text-white transition-all cursor-pointer text-[10px] font-bold text-center"
+              title="Yedek yükle (JSON)"
+            >
+              <Upload className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Yedek Yükle</span>
+              <input
+                type="file"
+                accept=".json"
+                onChange={handleImportPlan}
+                className="hidden"
+              />
+            </label>
+          </div>
+
+          {/* Clear Plan Button */}
+          <button
+            onClick={handleClearPlan}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 hover:border-red-500/20 text-red-400 hover:text-red-300 text-xs font-bold transition-all cursor-pointer"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Planı Sıfırla</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Workspace Column */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto h-screen">
+        {/* Mobile Header (Automatically hidden on desktop viewports) */}
+        <Header
+          onOpenTemplateModal={() => setIsTemplateModalOpen(true)}
+          onOpenSettings={() => setIsSettingsOpen(true)}
+          onOpenStats={() => setIsStatsOpen(true)}
+          onOpenPlanManager={() => setIsPlanManagerOpen(true)}
+          onOpenNotebookModal={() => setIsNotebookModalOpen(true)}
+        />
+
+        {/* Content Container */}
+        <main className="flex-1 max-w-[1200px] w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
           
-          {/* Sidebar (Topic selector) - Desktop Only */}
-          {isSidebarOpen && (
-            <div className="hidden lg:block lg:col-span-3 space-y-4">
-              <TopicSelector />
-              <button
-                onClick={() => setActivePanel(activePanel === "recurring" ? null : "recurring")}
-                className={`w-full text-xs font-bold py-2 rounded-xl transition-all cursor-pointer ${
-                  activePanel === "recurring" ? "bg-indigo-600 text-white" : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-neutral-200"
-                }`}
-              >
-                🔁 Tekrarlayan Çalışmalar
-              </button>
-              {activePanel === "recurring" && <RecurringItems />}
-            </div>
+          {/* Countdown - Show only in "Planım" Tab to reduce clutter */}
+          {mobileTab === "plan" && (
+            <Countdown targetDateStr={hasHydrated ? plan.examDate : "2027-06-19"} />
           )}
 
-          {/* Planner Views - Shown on mobile only under 'plan' tab */}
-          <div className={`${
-            isSidebarOpen ? "lg:col-span-6" : "lg:col-span-8"
-          } w-full h-full flex flex-col gap-4 ${mobileTab === "plan" ? "block" : "hidden lg:block"}`}>
-            <PlannerViews />
-          </div>
+          {/* Segmented Main Views */}
+          <div className="w-full pb-20 lg:pb-0">
+            {/* 1. Plan Tab (Daily/Weekly/Monthly Calendars) */}
+            <div className={mobileTab === "plan" ? "block" : "hidden"}>
+              <PlannerViews />
+            </div>
 
-          {/* Library (Topic Selector) - Mobile Only under 'library' tab */}
-          <div className={`w-full space-y-4 lg:hidden ${mobileTab === "library" ? "block" : "hidden"}`}>
-            <TopicSelector />
-            <button
-              onClick={() => setActivePanel(activePanel === "recurring" ? null : "recurring")}
-              className={`w-full text-xs font-bold py-3.5 bg-neutral-900 border border-neutral-850 rounded-2xl text-neutral-400 hover:text-white transition-all cursor-pointer`}
-            >
-              {activePanel === "recurring" ? "🔁 Tekrarlayanları Gizle" : "🔁 Tekrarlayan Çalışmalar"}
-            </button>
-            {activePanel === "recurring" && <RecurringItems />}
-          </div>
+            {/* 2. Library Tab (Topic Selectors + Recurring items) */}
+            <div className={mobileTab === "library" ? "block" : "hidden"}>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div className="lg:col-span-8">
+                  <TopicSelector />
+                </div>
+                <div className="lg:col-span-4 space-y-4">
+                  <button
+                    onClick={() => setActivePanel(activePanel === "recurring" ? null : "recurring")}
+                    className={`w-full text-xs font-bold py-3.5 rounded-2xl transition-all cursor-pointer ${
+                      activePanel === "recurring"
+                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10"
+                        : "bg-neutral-900 border border-neutral-850 text-neutral-400 hover:text-neutral-200"
+                    }`}
+                  >
+                    {activePanel === "recurring" ? "🔁 Tekrarlayanları Gizle" : "🔁 Tekrarlayan Çalışmalar"}
+                  </button>
+                  {activePanel === "recurring" && <RecurringItems />}
+                </div>
+              </div>
+            </div>
 
-          {/* Stats Panel - Desktop default, Mobile under 'stats' tab */}
-          <div className={`${
-            isSidebarOpen ? "lg:col-span-3" : "lg:col-span-4"
-          } space-y-4 ${mobileTab === "stats" ? "block" : "hidden lg:block"}`}>
-            {!isStatsOpen && <StatsPanel />}
+            {/* 3. Stats Tab */}
+            <div className={mobileTab === "stats" ? "block" : "hidden"}>
+              {!isStatsOpen && <StatsPanel />}
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
 
       <TemplateLoader isOpen={isTemplateModalOpen} onClose={() => setIsTemplateModalOpen(false)} />
       <Settings isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
@@ -349,7 +545,7 @@ export default function PlanPage() {
               <h3 className="text-base font-bold text-white tracking-tight">Hızlı İşlemler</h3>
               <button 
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-1 rounded-lg bg-neutral-900 border border-neutral-850 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                className="p-1 rounded-lg bg-neutral-950 border border-neutral-900 text-neutral-400 hover:text-white transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>

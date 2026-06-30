@@ -163,7 +163,7 @@ export const Header = React.memo(function Header({ onOpenTemplateModal, onOpenSe
   const { totalItems, completedItems, totalHours, completionPercentage } = stats;
 
   return (
-    <header className="w-full bg-neutral-950/80 border-b border-neutral-900 sticky top-0 z-50 backdrop-blur-md px-4 sm:px-6 py-3 lg:py-4 shadow-sm">
+    <header className="w-full bg-neutral-950/80 border-b border-neutral-900 sticky top-0 z-50 backdrop-blur-md px-4 sm:px-6 py-3 shadow-sm lg:hidden">
       <div className="max-w-[1600px] mx-auto flex flex-row items-center justify-between gap-4 w-full">
         <div className="flex items-center gap-2.5 sm:gap-3">
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-linear-to-tr from-indigo-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-indigo-500/10 shrink-0">
