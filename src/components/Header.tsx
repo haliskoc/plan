@@ -124,6 +124,19 @@ export function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpe
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
+  const stats = useMemo(() => {
+    const items = plan?.items || [];
+    const total = items.length;
+    const completed = items.filter(item => item.status === "tamamlandi").length;
+    const minutes = items.reduce((sum, item) => sum + item.durationMinutes, 0);
+    return {
+      totalItems: total,
+      completedItems: completed,
+      totalHours: Math.round(minutes / 60),
+      completionPercentage: total > 0 ? Math.round((completed / total) * 100) : 0,
+    };
+  }, [plan?.items]);
+
   if (!mounted || !hasHydrated) {
     return (
       <header className="w-full bg-neutral-950/80 border-b border-neutral-900 sticky top-0 z-50 backdrop-blur-md px-6 py-4 flex items-center justify-between h-20">
@@ -135,17 +148,7 @@ export function Header({ onOpenTemplateModal, onOpenSettings, onOpenStats, onOpe
     );
   }
 
-  const { totalItems, completedItems, totalHours, completionPercentage } = useMemo(() => {
-    const total = plan.items.length;
-    const completed = plan.items.filter(item => item.status === "tamamlandi").length;
-    const minutes = plan.items.reduce((sum, item) => sum + item.durationMinutes, 0);
-    return {
-      totalItems: total,
-      completedItems: completed,
-      totalHours: Math.round(minutes / 60),
-      completionPercentage: total > 0 ? Math.round((completed / total) * 100) : 0,
-    };
-  }, [plan.items]);
+  const { totalItems, completedItems, totalHours, completionPercentage } = stats;
 
   return (
     <header className="w-full bg-neutral-950/80 border-b border-neutral-900 sticky top-0 z-50 backdrop-blur-md px-4 sm:px-6 py-4 shadow-sm">
