@@ -589,103 +589,159 @@ const BlueprintBackground = () => (
   </View>
 );
 
-const SpaceOdysseyBackground = () => (
-  <View style={{ position: "absolute", left: 0, top: 0, width: 595.28, height: 841.89, zIndex: -10, overflow: "hidden", backgroundColor: "#060814" }} fixed>
-    {/* Nebula orange/pink/blue glows */}
-    <View style={{ position: "absolute", top: 120, left: 80, width: 400, height: 400, borderRadius: 200, backgroundColor: "#f97316", opacity: 0.08 }} />
-    <View style={{ position: "absolute", bottom: 100, right: 60, width: 350, height: 350, borderRadius: 175, backgroundColor: "#6366f1", opacity: 0.07 }} />
-    <View style={{ position: "absolute", top: 380, left: 180, width: 220, height: 220, borderRadius: 110, backgroundColor: "#d946ef", opacity: 0.04 }} />
+const SpaceOdysseyBackground = ({ ownerName }: { ownerName: string }) => {
+  const cleanName = (ownerName || "DEFTER").trim().toUpperCase().replace(/\s+/g, "");
+  const N = cleanName.length;
+  
+  // Calculate constellation points in a staggered zigzag at the top area
+  const points = Array.from({ length: N }).map((_, i) => {
+    // Distribute X evenly from 120 to 475
+    const x = N > 1 ? 120 + (i * 355) / (N - 1) : 297.64;
+    // Stagger Y vertically using sine wave with irrational frequency for pseudorandom zigzag
+    const y = 100 + Math.sin(i * 2.3) * 35;
+    return { x, y, char: cleanName[i] };
+  });
 
-    <Svg style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }}>
-      {/* Background celestial coordinates grid */}
-      {Array.from({ length: 9 }).map((_, i) => {
-        const radius = 60 + i * 50;
-        return (
-          <Circle
-            key={`orbit-${i}`}
-            cx={297.64}
-            cy={420.94}
-            r={radius}
-            stroke="#ffffff"
-            strokeWidth={0.4}
-            strokeDasharray={i % 2 === 0 ? "4, 6" : "2, 3"}
-            opacity={0.15}
-          />
-        );
-      })}
-      
-      {/* Constellation lines */}
-      {/* Ursa Major (Big Dipper) sketch */}
-      <Line x1={80} y1={120} x2={110} y2={130} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
-      <Line x1={110} y1={130} x2={140} y2={125} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
-      <Line x1={140} y1={125} x2={165} y2={155} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
-      <Line x1={165} y1={155} x2={145} y2={185} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
-      <Line x1={145} y1={185} x2={105} y2={180} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
-      <Line x1={105} y1={180} x2={165} y2={155} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
+  return (
+    <View style={{ position: "absolute", left: 0, top: 0, width: 595.28, height: 841.89, zIndex: -10, overflow: "hidden", backgroundColor: "#060814" }} fixed>
+      {/* Nebula orange/pink/blue glows */}
+      <View style={{ position: "absolute", top: 120, left: 80, width: 400, height: 400, borderRadius: 200, backgroundColor: "#f97316", opacity: 0.08 }} />
+      <View style={{ position: "absolute", bottom: 100, right: 60, width: 350, height: 350, borderRadius: 175, backgroundColor: "#6366f1", opacity: 0.07 }} />
+      <View style={{ position: "absolute", top: 380, left: 180, width: 220, height: 220, borderRadius: 110, backgroundColor: "#d946ef", opacity: 0.04 }} />
 
-      {/* Orion-like constellation */}
-      <Line x1={450} y1={680} x2={480} y2={710} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
-      <Line x1={480} y1={710} x2={465} y2={750} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
-      <Line x1={465} y1={750} x2={435} y2={730} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
-      <Line x1={435} y1={730} x2={450} y2={680} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
-      {/* Belt */}
-      <Circle cx={445} cy={715} r={1.5} fill="#fbbf24" />
-      <Circle cx={453} cy={718} r={1.5} fill="#fbbf24" />
-      <Circle cx={461} cy={721} r={1.5} fill="#fbbf24" />
+      <Svg style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }}>
+        {/* Background celestial coordinates grid */}
+        {Array.from({ length: 9 }).map((_, i) => {
+          const radius = 60 + i * 50;
+          return (
+            <Circle
+              key={`orbit-${i}`}
+              cx={297.64}
+              cy={420.94}
+              r={radius}
+              stroke="#ffffff"
+              strokeWidth={0.4}
+              strokeDasharray={i % 2 === 0 ? "4, 6" : "2, 3"}
+              opacity={0.15}
+            />
+          );
+        })}
+        
+        {/* Constellation lines */}
+        {/* Ursa Major (Big Dipper) sketch */}
+        <Line x1={80} y1={120} x2={110} y2={130} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
+        <Line x1={110} y1={130} x2={140} y2={125} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
+        <Line x1={140} y1={125} x2={165} y2={155} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
+        <Line x1={165} y1={155} x2={145} y2={185} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
+        <Line x1={145} y1={185} x2={105} y2={180} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
+        <Line x1={105} y1={180} x2={165} y2={155} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
 
-      {/* Compass / Windrose in top right corner */}
-      <Circle cx={520} cy={80} r={28} stroke="#ffffff" strokeWidth={0.6} opacity={0.2} fill="transparent" />
-      <Line x1={520} y1={46} x2={520} y2={114} stroke="#ffffff" strokeWidth={0.6} opacity={0.3} />
-      <Line x1={486} y1={80} x2={554} y2={80} stroke="#ffffff" strokeWidth={0.6} opacity={0.3} />
-      {/* Compass pointer */}
-      <Path d="M 520 52 L 524 80 L 520 84 L 516 80 Z" fill="#f97316" opacity={0.6} />
-      <Path d="M 520 108 L 524 80 L 520 84 L 516 80 Z" fill="#ffffff" opacity={0.4} />
+        {/* Orion-like constellation */}
+        <Line x1={450} y1={680} x2={480} y2={710} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
+        <Line x1={480} y1={710} x2={465} y2={750} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
+        <Line x1={465} y1={750} x2={435} y2={730} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
+        <Line x1={435} y1={730} x2={450} y2={680} stroke="#ffffff" strokeWidth={0.5} opacity={0.3} />
+        {/* Belt */}
+        <Circle cx={445} cy={715} r={1.5} fill="#fbbf24" />
+        <Circle cx={453} cy={718} r={1.5} fill="#fbbf24" />
+        <Circle cx={461} cy={721} r={1.5} fill="#fbbf24" />
 
-      {/* Compass / Windrose in bottom left corner */}
-      <Circle cx={75} cy={760} r={28} stroke="#ffffff" strokeWidth={0.6} opacity={0.2} fill="transparent" />
-      <Line x1={75} y1={726} x2={75} y2={794} stroke="#ffffff" strokeWidth={0.6} opacity={0.3} />
-      <Line x1={41} y1={760} x2={109} y2={760} stroke="#ffffff" strokeWidth={0.6} opacity={0.3} />
-      <Path d="M 75 732 L 79 760 L 75 764 L 71 760 Z" fill="#fbbf24" opacity={0.6} />
-      <Path d="M 75 788 L 79 760 L 75 764 L 71 760 Z" fill="#ffffff" opacity={0.4} />
+        {/* Compass / Windrose in top right corner */}
+        <Circle cx={520} cy={80} r={28} stroke="#ffffff" strokeWidth={0.6} opacity={0.2} fill="transparent" />
+        <Line x1={520} y1={46} x2={520} y2={114} stroke="#ffffff" strokeWidth={0.6} opacity={0.3} />
+        <Line x1={486} y1={80} x2={554} y2={80} stroke="#ffffff" strokeWidth={0.6} opacity={0.3} />
+        {/* Compass pointer */}
+        <Path d="M 520 52 L 524 80 L 520 84 L 516 80 Z" fill="#f97316" opacity={0.6} />
+        <Path d="M 520 108 L 524 80 L 520 84 L 516 80 Z" fill="#ffffff" opacity={0.4} />
 
-      {/* Celestial coordinate markers */}
-      <Line x1={297.64} y1={20} x2={297.64} y2={821.89} stroke="#ffffff" strokeWidth={0.3} strokeDasharray="3, 10" opacity={0.12} />
-      <Line x1={20} y1={420.94} x2={575.28} y2={420.94} stroke="#ffffff" strokeWidth={0.3} strokeDasharray="3, 10" opacity={0.12} />
+        {/* Compass / Windrose in bottom left corner */}
+        <Circle cx={75} cy={760} r={28} stroke="#ffffff" strokeWidth={0.6} opacity={0.2} fill="transparent" />
+        <Line x1={75} y1={726} x2={75} y2={794} stroke="#ffffff" strokeWidth={0.6} opacity={0.3} />
+        <Line x1={41} y1={760} x2={109} y2={760} stroke="#ffffff" strokeWidth={0.6} opacity={0.3} />
+        <Path d="M 75 732 L 79 760 L 75 764 L 71 760 Z" fill="#fbbf24" opacity={0.6} />
+        <Path d="M 75 788 L 79 760 L 75 764 L 71 760 Z" fill="#ffffff" opacity={0.4} />
 
-      {/* Scattered Golden & White Stars */}
-      <Circle cx={120} cy={220} r={1.5} fill="#fbbf24" opacity={0.8} />
-      <Circle cx={210} cy={140} r={1.0} fill="#ffffff" opacity={0.6} />
-      <Circle cx={440} cy={180} r={2.0} fill="#fbbf24" opacity={0.9} />
-      <Circle cx={380} cy={280} r={1.2} fill="#ffffff" opacity={0.7} />
-      <Circle cx={180} cy={600} r={1.8} fill="#fbbf24" opacity={0.8} />
-      <Circle cx={240} cy={710} r={1.0} fill="#ffffff" opacity={0.5} />
-      <Circle cx={130} cy={480} r={1.5} fill="#ffffff" opacity={0.7} />
-      <Circle cx={480} cy={340} r={2.0} fill="#fbbf24" opacity={0.9} />
-      <Circle cx={510} cy={540} r={1.2} fill="#ffffff" opacity={0.6} />
-      <Circle cx={90} cy={350} r={1.0} fill="#ffffff" opacity={0.5} />
+        {/* Celestial coordinate markers */}
+        <Line x1={297.64} y1={20} x2={297.64} y2={821.89} stroke="#ffffff" strokeWidth={0.3} strokeDasharray="3, 10" opacity={0.12} />
+        <Line x1={20} y1={420.94} x2={575.28} y2={420.94} stroke="#ffffff" strokeWidth={0.3} strokeDasharray="3, 10" opacity={0.12} />
 
-      {/* Intricate Saturn in Center Piece */}
-      {/* Back ring */}
-      <Path d="M 230 426 C 240 405, 355 405, 365 426" stroke="#fbbf24" strokeWidth={5} fill="transparent" opacity={0.65} />
-      <Path d="M 215 429 C 230 398, 365 398, 380 429" stroke="#f97316" strokeWidth={2.5} fill="transparent" opacity={0.5} />
-      
-      {/* Planet Sphere */}
-      <Circle cx={297.64} cy={420.94} r={46} fill="#1e1b4b" stroke="#ffffff" strokeWidth={0.8} />
-      {/* Planet Shading/Stripes */}
-      <Path d="M 252 425 C 275 435, 320 435, 343 425 C 320 430, 275 430, 252 425 Z" fill="#fbbf24" opacity={0.4} />
-      <Path d="M 256 412 C 275 420, 320 420, 339 412 C 320 415, 275 415, 256 412 Z" fill="#f97316" opacity={0.3} />
+        {/* Scattered Golden & White Stars */}
+        <Circle cx={120} cy={220} r={1.5} fill="#fbbf24" opacity={0.8} />
+        <Circle cx={210} cy={140} r={1.0} fill="#ffffff" opacity={0.6} />
+        <Circle cx={440} cy={180} r={2.0} fill="#fbbf24" opacity={0.9} />
+        <Circle cx={380} cy={280} r={1.2} fill="#ffffff" opacity={0.7} />
+        <Circle cx={180} cy={600} r={1.8} fill="#fbbf24" opacity={0.8} />
+        <Circle cx={240} cy={710} r={1.0} fill="#ffffff" opacity={0.5} />
+        <Circle cx={130} cy={480} r={1.5} fill="#ffffff" opacity={0.7} />
+        <Circle cx={480} cy={340} r={2.0} fill="#fbbf24" opacity={0.9} />
+        <Circle cx={510} cy={540} r={1.2} fill="#ffffff" opacity={0.6} />
+        <Circle cx={90} cy={350} r={1.0} fill="#ffffff" opacity={0.5} />
 
-      {/* Front ring */}
-      <Path d="M 230 426 C 220 435, 250 448, 297.64 448 C 345 448, 375 435, 365 426" stroke="#fbbf24" strokeWidth={5.5} fill="transparent" />
-      <Path d="M 215 429 C 200 442, 240 455, 297.64 455 C 355 455, 395 442, 380 429" stroke="#f97316" strokeWidth={3.0} fill="transparent" opacity={0.8} />
-      <Path d="M 205 431 C 190 446, 235 460, 297.64 460 C 360 460, 405 446, 390 431" stroke="#ffffff" strokeWidth={1.0} fill="transparent" opacity={0.6} />
+        {/* Dynamic Constellation based on owner's name */}
+        {points.map((pt, idx) => (
+          <React.Fragment key={`star-char-${idx}`}>
+            {/* Connecting line to next star */}
+            {idx < N - 1 && (
+              <Line
+                x1={pt.x}
+                y1={pt.y}
+                x2={points[idx + 1].x}
+                y2={points[idx + 1].y}
+                stroke="#fbbf24"
+                strokeWidth={0.6}
+                strokeDasharray="2, 3"
+                opacity={0.35}
+              />
+            )}
+            
+            {/* Outer glowing halo */}
+            <Circle cx={pt.x} cy={pt.y} r={5} fill="#fbbf24" opacity={0.2} />
+            {/* Inner bright star */}
+            <Circle cx={pt.x} cy={pt.y} r={1.8} fill="#ffffff" />
+            
+            {/* Star label (Letter of the name) */}
+            <Text
+              x={pt.x + 6}
+              y={pt.y + 3}
+              style={{ fontFamily: "Roboto", fontSize: 9, fontWeight: "bold", fill: "#ffffff" }}
+            >
+              {pt.char}
+            </Text>
+          </React.Fragment>
+        ))}
 
-      {/* Small Moon Orbiting */}
-      <Circle cx={220} cy={390} r={4.5} fill="#ffffff" stroke="#fbbf24" strokeWidth={0.5} />
-      <Circle cx={395} cy={460} r={2.0} fill="#f97316" />
-    </Svg>
-  </View>
-);
+        {/* Constellation naming label */}
+        <Text
+          x={297.64}
+          y={155}
+          style={{ fontFamily: "Roboto", fontSize: 6.5, fontWeight: "bold", fill: "#fbbf24", textAnchor: "middle" as const, letterSpacing: 2 }}
+        >
+          {`// ${cleanName} STELLAE CONSTELLATION`}
+        </Text>
+
+        {/* Intricate Saturn in Center Piece */}
+        {/* Back ring */}
+        <Path d="M 230 426 C 240 405, 355 405, 365 426" stroke="#fbbf24" strokeWidth={5} fill="transparent" opacity={0.65} />
+        <Path d="M 215 429 C 230 398, 365 398, 380 429" stroke="#f97316" strokeWidth={2.5} fill="transparent" opacity={0.5} />
+        
+        {/* Planet Sphere */}
+        <Circle cx={297.64} cy={420.94} r={46} fill="#1e1b4b" stroke="#ffffff" strokeWidth={0.8} />
+        {/* Planet Shading/Stripes */}
+        <Path d="M 252 425 C 275 435, 320 435, 343 425 C 320 430, 275 430, 252 425 Z" fill="#fbbf24" opacity={0.4} />
+        <Path d="M 256 412 C 275 420, 320 420, 339 412 C 320 415, 275 415, 256 412 Z" fill="#f97316" opacity={0.3} />
+
+        {/* Front ring */}
+        <Path d="M 230 426 C 220 435, 250 448, 297.64 448 C 345 448, 375 435, 365 426" stroke="#fbbf24" strokeWidth={5.5} fill="transparent" />
+        <Path d="M 215 429 C 200 442, 240 455, 297.64 455 C 355 455, 395 442, 380 429" stroke="#f97316" strokeWidth={3.0} fill="transparent" opacity={0.8} />
+        <Path d="M 205 431 C 190 446, 235 460, 297.64 460 C 360 460, 405 446, 390 431" stroke="#ffffff" strokeWidth={1.0} fill="transparent" opacity={0.6} />
+
+        {/* Small Moon Orbiting */}
+        <Circle cx={220} cy={390} r={4.5} fill="#ffffff" stroke="#fbbf24" strokeWidth={0.5} />
+        <Circle cx={395} cy={460} r={2.0} fill="#f97316" />
+      </Svg>
+    </View>
+  );
+};
 
 const ZenWabiSabiBackground = () => (
   <View style={{ position: "absolute", left: 0, top: 0, width: 595.28, height: 841.89, zIndex: -10, backgroundColor: "#f4f1ea" }} fixed>
@@ -874,7 +930,7 @@ const NotebookCover = ({
       case "creative-sunset":
         return (
           <>
-            <SpaceOdysseyBackground />
+            <SpaceOdysseyBackground ownerName={ownerName} />
             <View style={styles.sunsetTitleCard}>
               <Text style={{ fontSize: 8, color: "#fbbf24", fontWeight: "bold", letterSpacing: 3, marginBottom: 8 }}>
                 SPACE ODYSSEY // KOZMİK KEŞİF
@@ -888,13 +944,15 @@ const NotebookCover = ({
               
               <View style={[styles.coverMetaBox, { borderColor: "rgba(251, 191, 36, 0.35)", backgroundColor: "rgba(6, 8, 20, 0.75)", width: "100%" }]}>
                 <View style={styles.coverMetaRow}>
-                  <Text style={[styles.coverMetaLabel, { color: "#fbbf24" }]}>AD SOYAD:</Text>
-                  <Text style={{ color: "#ffffff", fontWeight: "bold", fontSize: 9 }}>{ownerName.toUpperCase() || "____________________"}</Text>
-                </View>
-                <View style={styles.coverMetaRow}>
                   <Text style={[styles.coverMetaLabel, { color: "#fbbf24" }]}>TARİH:</Text>
                   <Text style={{ color: "#cbd5e1", fontSize: 9 }}>{dateStr}</Text>
                 </View>
+                {subjects.length > 0 && (
+                  <View style={[styles.coverMetaRow, { marginTop: 4 }]}>
+                    <Text style={[styles.coverMetaLabel, { color: "#fbbf24" }]}>KAPSAM:</Text>
+                    <Text style={{ color: "#cbd5e1", fontSize: 9 }}>{subjects.length} Ders Planı</Text>
+                  </View>
+                )}
               </View>
 
               {subjects.length > 0 && (
