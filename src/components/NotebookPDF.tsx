@@ -311,10 +311,10 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   classicTitleCard: {
-    backgroundColor: "#faf8f2",
+    backgroundColor: "#faf6ed",
     borderWidth: 1.5,
-    borderColor: "#d97706",
-    borderRadius: 0,
+    borderColor: "#c5a880",
+    borderRadius: 2,
     padding: 25,
     width: "85%",
     alignItems: "center",
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
   },
   classicInnerBorder: {
     borderWidth: 1,
-    borderColor: "#d97706",
+    borderColor: "#c5a880",
     padding: 20,
     width: "100%",
     alignItems: "center",
@@ -639,24 +639,81 @@ const ZenWabiSabiBackground = () => (
   </View>
 );
 
-const VintageGoldFrameBackground = () => (
-  <View style={{ position: "absolute", left: 0, top: 0, width: 595.28, height: 841.89, zIndex: -10, backgroundColor: "#250910", borderStyle: "solid", borderLeftWidth: 15, borderRightWidth: 15, borderTopWidth: 15, borderBottomWidth: 15, borderColor: "#1c060c" }} fixed>
+const DarkAcademiaBackground = () => (
+  <View style={{ position: "absolute", left: 0, top: 0, width: 595.28, height: 841.89, zIndex: -10, backgroundColor: "#06130e", borderStyle: "solid", borderLeftWidth: 15, borderRightWidth: 15, borderTopWidth: 15, borderBottomWidth: 15, borderColor: "#020705" }} fixed>
     <Svg style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }}>
-      {/* Outer gold line */}
-      <Rect x={8} y={8} width={549.28} height={795.89} stroke="#d97706" strokeWidth={2.2} fill="transparent" />
-      {/* Inner gold line */}
-      <Rect x={13} y={13} width={539.28} height={785.89} stroke="#d97706" strokeWidth={0.8} fill="transparent" />
+      {/* Outer gold leaf frame border */}
+      <Rect x={8} y={8} width={549.28} height={795.89} stroke="#c5a880" strokeWidth={1.8} fill="transparent" />
+      {/* Inner thin border */}
+      <Rect x={14} y={14} width={537.28} height={783.89} stroke="#c5a880" strokeWidth={0.6} fill="transparent" />
       
-      {/* Vintage corner boxes */}
-      <Rect x={8} y={8} width={18} height={18} fill="#d97706" />
-      <Rect x={539.28} y={8} width={18} height={18} fill="#d97706" />
-      <Rect x={8} y={785.89} width={18} height={18} fill="#d97706" />
-      <Rect x={539.28} y={785.89} width={18} height={18} fill="#d97706" />
+      {/* Baroque corner ornaments - Top Left */}
+      <Path d="M 14 35 Q 35 35, 35 14" stroke="#c5a880" strokeWidth={1.2} fill="transparent" />
+      <Path d="M 14 45 Q 45 45, 45 14" stroke="#c5a880" strokeWidth={0.6} fill="transparent" />
+      <Circle cx={35} cy={35} r={2} fill="#c5a880" />
+      <Path d="M 14 60 C 25 60, 60 25, 60 14" stroke="#c5a880" strokeWidth={0.6} fill="transparent" opacity={0.6} />
+
+      {/* Baroque corner ornaments - Top Right */}
+      <Path d="M 551.28 35 Q 530.28 35, 530.28 14" stroke="#c5a880" strokeWidth={1.2} fill="transparent" />
+      <Path d="M 551.28 45 Q 520.28 45, 520.28 14" stroke="#c5a880" strokeWidth={0.6} fill="transparent" />
+      <Circle cx={530.28} cy={35} r={2} fill="#c5a880" />
+      <Path d="M 551.28 60 C 540.28 60, 505.28 25, 505.28 14" stroke="#c5a880" strokeWidth={0.6} fill="transparent" opacity={0.6} />
+
+      {/* Baroque corner ornaments - Bottom Left */}
+      <Path d="M 14 764.89 Q 35 764.89, 35 785.89" stroke="#c5a880" strokeWidth={1.2} fill="transparent" />
+      <Path d="M 14 754.89 Q 45 754.89, 45 785.89" stroke="#c5a880" strokeWidth={0.6} fill="transparent" />
+      <Circle cx={35} cy={764.89} r={2} fill="#c5a880" />
+      <Path d="M 14 739.89 C 25 739.89, 60 774.89, 60 785.89" stroke="#c5a880" strokeWidth={0.6} fill="transparent" opacity={0.6} />
+
+      {/* Baroque corner ornaments - Bottom Right */}
+      <Path d="M 551.28 764.89 Q 530.28 764.89, 530.28 785.89" stroke="#c5a880" strokeWidth={1.2} fill="transparent" />
+      <Path d="M 551.28 754.89 Q 520.28 754.89, 520.28 785.89" stroke="#c5a880" strokeWidth={0.6} fill="transparent" />
+      <Circle cx={530.28} cy={764.89} r={2} fill="#c5a880" />
+      <Path d="M 551.28 739.89 C 540.28 739.89, 505.28 774.89, 505.28 785.89" stroke="#c5a880" strokeWidth={0.6} fill="transparent" opacity={0.6} />
+
+      {/* Repeating side details - ivy pattern hint */}
+      {Array.from({ length: 12 }).map((_, i) => {
+        const y = 80 + i * 60;
+        return (
+          <React.Fragment key={`ivy-${i}`}>
+            <Circle cx={14} cy={y} r={1.5} fill="#c5a880" opacity={0.5} />
+            <Path d={`M 14 ${y} Q 20 ${y + 10}, 14 ${y + 20}`} stroke="#c5a880" strokeWidth={0.5} fill="transparent" opacity={0.3} />
+            <Circle cx={551.28} cy={y} r={1.5} fill="#c5a880" opacity={0.5} />
+            <Path d={`M 551.28 ${y} Q 545.28 ${y + 10}, 551.28 ${y + 20}`} stroke="#c5a880" strokeWidth={0.5} fill="transparent" opacity={0.3} />
+          </React.Fragment>
+        );
+      })}
+
+      {/* Intricate Academic Crest/Shield in upper section */}
+      {/* Laurel wreath left */}
+      <Path d="M 260 210 C 235 220, 235 270, 260 290" stroke="#c5a880" strokeWidth={1} fill="transparent" opacity={0.5} />
+      {Array.from({ length: 6 }).map((_, idx) => (
+        <Circle key={`lw-${idx}`} cx={242 + idx * 2} cy={225 + idx * 11} r={2.2} fill="#c5a880" opacity={0.6} />
+      ))}
       
-      <Circle cx={30} cy={30} r={6} stroke="#d97706" strokeWidth={0.8} fill="transparent" />
-      <Circle cx={535.28} cy={30} r={6} stroke="#d97706" strokeWidth={0.8} fill="transparent" />
-      <Circle cx={30} cy={781.89} r={6} stroke="#d97706" strokeWidth={0.8} fill="transparent" />
-      <Circle cx={535.28} cy={781.89} r={6} stroke="#d97706" strokeWidth={0.8} fill="transparent" />
+      {/* Laurel wreath right */}
+      <Path d="M 335 210 C 360 220, 360 270, 335 290" stroke="#c5a880" strokeWidth={1} fill="transparent" opacity={0.5} />
+      {Array.from({ length: 6 }).map((_, idx) => (
+        <Circle key={`rw-${idx}`} cx={353 - idx * 2} cy={225 + idx * 11} r={2.2} fill="#c5a880" opacity={0.6} />
+      ))}
+
+      {/* Main Shield */}
+      <Path d="M 297.64 195 L 327.64 210 V 250 C 327.64 270, 297.64 285, 297.64 285 C 297.64 285, 267.64 270, 267.64 250 V 210 Z" stroke="#c5a880" strokeWidth={1.8} fill="#06130e" />
+      {/* Inner shield line */}
+      <Path d="M 297.64 200 L 322.64 212.5 V 246 C 322.64 262.5, 297.64 276, 297.64 276 C 297.64 276, 272.64 262.5, 272.64 246 V 212.5 Z" stroke="#c5a880" strokeWidth={0.6} fill="transparent" opacity={0.7} />
+
+      {/* Open Book inside Shield */}
+      {/* Book pages */}
+      <Path d="M 297.64 235 C 291 228, 281 228, 276 230 V 242 C 281 240, 291 240, 297.64 247 Z" fill="#c5a880" opacity={0.8} />
+      <Path d="M 297.64 235 C 304 228, 314 228, 319 230 V 242 C 314 240, 304 240, 297.64 247 Z" fill="#c5a880" opacity={0.8} />
+      {/* Book center dividing line */}
+      <Line x1={297.64} y1={233} x2={297.64} y2={247} stroke="#06130e" strokeWidth={0.8} />
+      
+      {/* Crown emblem above shield */}
+      <Path d="M 287.64 185 L 291.64 191 L 297.64 185 L 303.64 191 L 307.64 185 L 307.64 193 L 287.64 193 Z" fill="#c5a880" />
+      <Circle cx={287.64} cy={185} r={0.8} fill="#c5a880" />
+      <Circle cx={297.64} cy={185} r={0.8} fill="#c5a880" />
+      <Circle cx={307.64} cy={185} r={0.8} fill="#c5a880" />
     </Svg>
   </View>
 );
@@ -823,36 +880,36 @@ const NotebookCover = ({
       case "academic-classic":
         return (
           <>
-            <VintageGoldFrameBackground />
+            <DarkAcademiaBackground />
             <View style={styles.classicTitleCard}>
               <View style={styles.classicInnerBorder}>
-                <Text style={{ fontSize: 9, color: "#d97706", fontWeight: "bold", letterSpacing: 4, marginBottom: 15, textTransform: "uppercase" }}>
-                  COLLEGII STUDIORUM
+                <Text style={{ fontSize: 9, color: "#a38350", fontWeight: "bold", letterSpacing: 4, marginBottom: 15, textTransform: "uppercase" }}>
+                  SCHOLASTICA // IVY LEAGUE
                 </Text>
                 
-                <Text style={[styles.coverTitle, { color: "#78350f", fontSize: 20, textTransform: "uppercase" as const, letterSpacing: 2, marginBottom: 15 }]}>
+                <Text style={[styles.coverTitle, { color: "#0f3024", fontSize: 20, textTransform: "uppercase" as const, letterSpacing: 2, marginBottom: 15 }]}>
                   {title || "DERS NOTLARIM"}
                 </Text>
                 
-                <Text style={{ fontSize: 8, color: "#b45309", marginBottom: 30, letterSpacing: 1.5 }}>
-                  YKS Sınavına Hazırlık Ders Defteri
+                <Text style={{ fontSize: 8, color: "#8c6b3f", marginBottom: 30, letterSpacing: 1.5 }}>
+                  STUDIORUM ET EXEMPLUM // MCMXXVII
                 </Text>
 
-                <View style={[styles.coverMetaBox, { borderColor: "#d97706", backgroundColor: "#fdfbf7", width: "100%", borderWidth: 1, padding: 12 }]}>
+                <View style={[styles.coverMetaBox, { borderColor: "#c5a880", backgroundColor: "#fdfdfb", width: "100%", borderWidth: 1, padding: 12 }]}>
                   <View style={[styles.coverMetaRow, { marginBottom: 6 }]}>
-                    <Text style={{ fontWeight: "bold", color: "#78350f", fontSize: 8 }}>ÖĞRENCİ ADI:</Text>
-                    <Text style={{ color: "#78350f", fontSize: 8, fontWeight: "bold" }}>{ownerName.toUpperCase() || "____________________"}</Text>
+                    <Text style={{ fontWeight: "bold", color: "#0f3024", fontSize: 8 }}>YAZAR:</Text>
+                    <Text style={{ color: "#0f3024", fontSize: 8, fontWeight: "bold" }}>{ownerName.toUpperCase() || "____________________"}</Text>
                   </View>
                   <View style={styles.coverMetaRow}>
-                    <Text style={{ fontWeight: "bold", color: "#78350f", fontSize: 8 }}>TARİH:</Text>
-                    <Text style={{ color: "#78350f", fontSize: 8 }}>{dateStr}</Text>
+                    <Text style={{ fontWeight: "bold", color: "#0f3024", fontSize: 8 }}>OLUŞTURMA TARİHİ:</Text>
+                    <Text style={{ color: "#0f3024", fontSize: 8 }}>{dateStr}</Text>
                   </View>
                 </View>
 
                 {subjects.length > 0 && (
                   <View style={styles.badgeContainer}>
                     {subjects.map((sub, idx) => (
-                      <Text key={idx} style={[styles.badge, { backgroundColor: "#fef3c7", color: "#92400e", borderWidth: 0.5, borderColor: "#f59e0b" }]}>
+                      <Text key={idx} style={[styles.badge, { backgroundColor: "#06130e", color: "#c5a880", borderWidth: 0.5, borderColor: "#c5a880" }]}>
                         {sub}
                       </Text>
                     ))}

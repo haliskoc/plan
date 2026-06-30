@@ -69,9 +69,9 @@ const COVER_OPTIONS: { id: CoverStyle; name: string; desc: string; previewClass:
   },
   {
     id: "academic-classic",
-    name: "Gothic Academic",
-    desc: "Koyu bordo kadife zemin üzerinde altın varaklı çerçeveler ve klasik şeritler.",
-    previewClass: "bg-rose-950 border-2 border-amber-600 flex flex-col justify-between p-2 text-amber-100",
+    name: "Karanlık Akademi (Dark Academia)",
+    desc: "Koyu zümrüt zemin üzerinde altın varaklı barok çerçeveler, yaprak işlemeleri ve kitaplı hanedan arması.",
+    previewClass: "bg-[#06130e] border-2 border-[#c5a880] flex flex-col justify-between p-2 text-amber-100 relative before:content-[''] before:absolute before:inset-1 before:border before:border-[#c5a880]/30",
   },
   {
     id: "optical-clean",
