@@ -82,59 +82,59 @@ export const Countdown = React.memo(function Countdown({ targetDateStr, startDat
   const percentagePassed = Math.min(100, Math.round((daysPassed / totalDays) * 100));
 
   return (
-    <div className={`relative overflow-hidden w-full border border-neutral-800 rounded-2xl p-6 shadow-xl transition-all duration-300 ${
+    <div className={`relative overflow-hidden w-full border border-neutral-800 rounded-2xl p-4 sm:p-6 shadow-xl transition-all duration-300 ${
       hasBg ? "bg-neutral-950/80" : "bg-linear-to-r from-neutral-900/90 to-neutral-950/90"
     }`}>
 
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-        <div>
-          <h2 className="text-xl font-bold tracking-tight text-white mb-1">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
+        <div className="text-center md:text-left w-full md:w-auto">
+          <h2 className="text-base sm:text-xl font-bold tracking-tight text-white mb-0.5 sm:mb-1">
             2027 YKS Hedef Geri Sayım
           </h2>
-          <p className="text-sm text-neutral-400">
+          <p className="text-xs sm:text-sm text-neutral-400">
             Hedef Sınav Tarihi:{" "}
             <span className="font-semibold text-indigo-400">{targetDateStr}</span>
           </p>
         </div>
 
         {timeLeft.isOver ? (
-          <div className="text-xl font-bold text-emerald-400 animate-bounce">
+          <div className="text-lg sm:text-xl font-bold text-emerald-400 animate-bounce text-center">
             YKS Zamanı Geldi! Başarılar Dileriz. 🎉
           </div>
         ) : (
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-1.5 sm:gap-4 justify-center">
             <div className="flex flex-col items-center">
-              <span className="text-3xl sm:text-4xl font-extrabold text-white font-mono px-4 py-2 rounded-xl border border-neutral-800 shadow-inner w-20 sm:w-24 text-center transition-all duration-300 bg-neutral-900/80">
+              <span className="text-2xl sm:text-4xl font-extrabold text-white font-mono px-2.5 py-1.5 rounded-xl border border-neutral-850 shadow-inner w-14 sm:w-24 text-center transition-all duration-300 bg-neutral-900/80">
                 {timeLeft.days}
               </span>
-              <span className="text-[10px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider">
+              <span className="text-[9px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider">
                 Gün
               </span>
             </div>
-            <div className="text-2xl font-bold text-neutral-700">:</div>
+            <div className="text-lg sm:text-2xl font-bold text-neutral-800">:</div>
             <div className="flex flex-col items-center">
-              <span className="text-3xl sm:text-4xl font-extrabold text-indigo-400 font-mono px-4 py-2 rounded-xl border border-neutral-800 shadow-inner w-16 sm:w-20 text-center transition-all duration-300 bg-neutral-900/80">
+              <span className="text-2xl sm:text-4xl font-extrabold text-indigo-400 font-mono px-2.5 py-1.5 rounded-xl border border-neutral-850 shadow-inner w-12 sm:w-20 text-center transition-all duration-300 bg-neutral-900/80">
                 {String(timeLeft.hours).padStart(2, "0")}
               </span>
-              <span className="text-[10px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider">
+              <span className="text-[9px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider">
                 Saat
               </span>
             </div>
-            <div className="text-2xl font-bold text-neutral-700">:</div>
+            <div className="text-lg sm:text-2xl font-bold text-neutral-800">:</div>
             <div className="flex flex-col items-center">
-              <span className="text-3xl sm:text-4xl font-extrabold text-cyan-400 font-mono px-4 py-2 rounded-xl border border-neutral-800 shadow-inner w-16 sm:w-20 text-center transition-all duration-300 bg-neutral-900/80">
+              <span className="text-2xl sm:text-4xl font-extrabold text-cyan-400 font-mono px-2.5 py-1.5 rounded-xl border border-neutral-850 shadow-inner w-12 sm:w-20 text-center transition-all duration-300 bg-neutral-900/80">
                 {String(timeLeft.minutes).padStart(2, "0")}
               </span>
-              <span className="text-[10px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider">
+              <span className="text-[9px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider">
                 Dakika
               </span>
             </div>
-            <div className="text-2xl font-bold text-neutral-700">:</div>
+            <div className="text-lg sm:text-2xl font-bold text-neutral-800">:</div>
             <div className="flex flex-col items-center">
-              <span className="text-3xl sm:text-4xl font-extrabold text-pink-400 font-mono px-4 py-2 rounded-xl border border-neutral-800 shadow-inner w-16 sm:w-20 text-center transition-all duration-300 bg-neutral-900/80">
+              <span className="text-2xl sm:text-4xl font-extrabold text-pink-400 font-mono px-2.5 py-1.5 rounded-xl border border-neutral-850 shadow-inner w-12 sm:w-20 text-center transition-all duration-300 bg-neutral-900/80">
                 {String(timeLeft.seconds).padStart(2, "0")}
               </span>
-              <span className="text-[10px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider">
+              <span className="text-[9px] sm:text-xs font-bold text-neutral-500 uppercase mt-1 tracking-wider">
                 Saniye
               </span>
             </div>
@@ -142,12 +142,12 @@ export const Countdown = React.memo(function Countdown({ targetDateStr, startDat
         )}
       </div>
 
-      <div className="mt-6">
-        <div className="flex justify-between text-xs font-medium text-neutral-400 mb-1.5">
+      <div className="mt-4 sm:mt-6">
+        <div className="flex justify-between text-[10px] sm:text-xs font-medium text-neutral-400 mb-1.5">
           <span>Hazırlık Süreci İlerlemesi</span>
           <span className="text-indigo-400 font-semibold">{percentagePassed}% tamamlandı</span>
         </div>
-        <div className="w-full h-2 bg-neutral-900 rounded-full overflow-hidden border border-neutral-800/80">
+        <div className="w-full h-1.5 sm:h-2 bg-neutral-900 rounded-full overflow-hidden border border-neutral-800/80">
           <div
             className="h-full bg-linear-to-r from-indigo-500 via-cyan-500 to-indigo-500 bg-[length:200%_auto] animate-shimmer transition-all duration-1000 motion-reduce:animate-none"
             style={{ width: `${percentagePassed}%` }}
