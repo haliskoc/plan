@@ -56,12 +56,10 @@ export const TopicSelector = React.memo(function TopicSelector() {
   const plan = useActivePlan();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [expandedSubjects, setExpandedSubjects] = useState<Record<string, boolean>>({
-    "Matematik": true,
-  });
+  const [expandedSubject, setExpandedSubject] = useState<string | null>("Matematik");
 
   const toggleSubject = useCallback((subjectName: string) => {
-    setExpandedSubjects((prev) => ({ ...prev, [subjectName]: !prev[subjectName] }));
+    setExpandedSubject((prev) => (prev === subjectName ? null : subjectName));
   }, []);
 
   const filteredTopics = useMemo(() => {
@@ -303,7 +301,7 @@ export const TopicSelector = React.memo(function TopicSelector() {
             <div className="text-center py-8 text-neutral-500 text-xs">Aranan kriterlere uygun konu bulunamadı.</div>
           ) : (
             Object.keys(groupedTopics).sort().map((subjectName) => {
-              const isExpanded = expandedSubjects[subjectName] || !!selectedSubject;
+              const isExpanded = expandedSubject === subjectName || !!selectedSubject;
               const topicsInGroup = groupedTopics[subjectName];
               
               const aes = SUBJECT_AESTHETICS[subjectName] || DEFAULT_AESTHETIC;
